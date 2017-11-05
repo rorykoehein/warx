@@ -1,7 +1,7 @@
 {
   "name": "nodewarx-server",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "server/index.js",
   "license": "MIT",
   "dependencies": {
     "babel-cli": "^6.26.0",
@@ -14,6 +14,7 @@
     "socket.io": "^2.0.4"
   },
   "scripts": {
-    "start": "babel-node index.js"
+    "start": "babel-node index.js",
+    "build-server": "babel ./server -d ./dist"
   }
 }

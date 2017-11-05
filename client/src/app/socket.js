@@ -1,7 +1,7 @@
 import io from 'socket.io-client';
 import store from './store';
 
-const socket = io('http://localhost:5000');
+const socket = io();
 
 // todo use rxjs for socket communication
 
