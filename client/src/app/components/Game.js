@@ -3,7 +3,7 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'react-redux';
 import type { Connector } from 'react-redux';
-import type { State, Players } from '../types';
+import type { State, Players } from '../types/game';
 import WorldSprite from '../../lib/styled/WorldSprite';
 import Player from './Player';
 import KeyBoardHandler from './KeyboardHandler';

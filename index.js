@@ -17,6 +17,8 @@ server.listen(port, () => {
     console.log('Server listening at port %d', port);
 });
 
+// todo use rxjs for socket communication
+
 // listen to new client websocket connections, and then to actions sent by each client
 io.on('connection', socket => {
     const playerId = socket.id;
@@ -25,7 +27,10 @@ io.on('connection', socket => {
     // tell the server store that we have a new connection
     store.dispatch({
         type: 'CONNECT',
-        playerId: playerId,
+        origin: 'client',
+        data: {
+            playerId: playerId,
+        },
     });
 
     const players = store.getState().players;
@@ -33,43 +38,62 @@ io.on('connection', socket => {
     // send the current game state to the client when he logs in
     socket.emit('action', {
         type: 'GAME_STATE_CHANGED',
-        state: {
-            players,
-            currentPlayerId: playerId,
+        origin: 'server',
+        data: {
+            state: {
+                players,
+                currentPlayerId: playerId,
+            },
         },
     });
 
     // let the other cients know a new player has joined
     socket.broadcast.emit('action', {
         type: 'PLAYER_JOINED',
-        player: players[playerId],
+        origin: 'server',
+        data: {
+            player: players[playerId],
+        },
     });
 
     // listen to actions from the users and dispatch them on the store
-    socket.on('action', ({ type, ...data }) => {
+    socket.on('action', ({ type, data }) => {
         console.log('action', type, data);
         store.dispatch({
             type,
-            ...data,
-            // always overwrite the player id with that of the connection, so the client can't just send any id
-            id: playerId,
+            origin: 'client',
+            data: {
+                ...data,
+                // always overwrite the player id with that of the connection, so the client can't just send any id
+                id: playerId,
+            },
         });
 
         // broadcast action to all other users
-        socket.broadcast.emit('action', { type, ...data });
+        socket.broadcast.emit('action', {
+            type,
+            origin: 'server',
+            data
+        });
     });
 
     // dispatch disconnect actions to the store to remove the disconnected player
     socket.on('disconnect', () => {
         store.dispatch({
             type: 'DISCONNECT',
-            playerId,
+            origin: 'client',
+            data: {
+                playerId,
+            },
         });
 
         // let all users know this player is now gone
         socket.broadcast.emit('action', {
             type: 'PLAYER_LEFT',
-            id: playerId,
+            origin: 'server',
+            data: {
+                id: playerId,
+            },
         });
     })
 });

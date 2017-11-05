@@ -3,6 +3,8 @@ import store from './store';
 
 const socket = io('http://localhost:5000');
 
+// todo use rxjs for socket communication
+
 console.log('socket', socket);
 
 socket.on('connect', (data) => {

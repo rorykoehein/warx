@@ -3,7 +3,8 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'react-redux';
 import type { Connector } from 'react-redux';
-import type { State, Dispatch, Direction, PlayerId } from '../types';
+import type { State, Direction, PlayerId } from '../types/game';
+import type { Dispatch } from '../types/framework';
 import { move } from '../actions';
 
 type Props = {

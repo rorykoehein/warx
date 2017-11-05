@@ -2,7 +2,7 @@
 
 import React, { PureComponent } from 'react';
 import PlayerSprite from '../../lib/styled/PlayerSprite';
-import type { Direction } from '../types';
+import type { Direction } from '../types/game';
 
 type Props = {
     x: number,

@@ -1,16 +1,15 @@
 // @flow
 
-import { sendAction } from './socket';
-import type { MoveAction, Direction, PlayerId } from './types';
+import type { Direction, PlayerId } from './types/game';
+import type { MoveAction } from './types/actions';
 
 export const move = ({ direction, id } : { direction: Direction, id: PlayerId }): MoveAction => {
-    const action = {
+    return {
         type: 'MOVE',
-        direction,
-        id,
+        origin: 'client',
+        data: {
+            direction,
+            id,
+        }
     };
-
-    sendAction(action); // todo: move to middleware, rxjs or sagas
-
-    return action
 };

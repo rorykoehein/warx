@@ -1,6 +1,6 @@
 // @flow
 
-import type { Player } from './client/src/app/types';
+import type { Player } from './client/src/app/types/game';
 
 const initialState = {
     players: {},
@@ -25,7 +25,7 @@ const reducer = (state = initialState, action) => {
     switch (action.type) {
         case 'CONNECT': {
             const { players, ...rest } = state;
-            const { playerId } = action;
+            const { data: { playerId } } = action;
             return {
                 players: {
                     ...players,
@@ -40,8 +40,8 @@ const reducer = (state = initialState, action) => {
             };
         }
         case 'DISCONNECT': {
-            const { playerId } = action;
             const { players, ...restState } = state;
+            const { data: { playerId } } = action;
             const { [playerId]: playerToRemove, ...restPlayers } = players;
             return {
                 players: restPlayers,
@@ -50,7 +50,7 @@ const reducer = (state = initialState, action) => {
         }
         case 'MOVE': {
             const { players, ...rest } = state;
-            const { direction, id } = action;
+            const { data: { direction, id } } = action;
             const player = players[id];
             if(!player) return state;
             return {

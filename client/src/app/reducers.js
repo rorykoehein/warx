@@ -1,6 +1,7 @@
 // @flow
 
-import type { Player, Action, State } from './types';
+import type { Player, State } from './types/game';
+import type { Action } from './types/actions';
 import initialState from './initial-state';
 
 const move = (player: Player, direction): Player => ({
@@ -15,7 +16,7 @@ const reducer = (state: State = initialState, action: Action): State => {
 
     switch (action.type) {
         case 'GAME_STATE_CHANGED': {
-            const { state: { players, currentPlayerId } } = action;
+            const { data: { state: { players, currentPlayerId } } } = action;
             return {
                 ...state,
                 players,
@@ -24,7 +25,7 @@ const reducer = (state: State = initialState, action: Action): State => {
         }
 
         case 'PLAYER_JOINED': {
-            const { player } = action;
+            const { data: { player } } = action;
             return {
                 ...state,
                 players: {
@@ -35,7 +36,7 @@ const reducer = (state: State = initialState, action: Action): State => {
         }
 
         case 'PLAYER_LEFT': {
-            const { id } = action;
+            const { data: { id } } = action;
             const { [id]: leftPlayer, ...restPlayers } = players;
             return {
                 ...state,
@@ -44,7 +45,7 @@ const reducer = (state: State = initialState, action: Action): State => {
         }
 
         case 'MOVE': {
-            const { direction, id } = action;
+            const { data: { direction, id } } = action;
             const player = players[id];
             if(!player) return state;
             return {
