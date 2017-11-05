@@ -51,6 +51,8 @@ io.on('connection', socket => {
         store.dispatch({
             type,
             ...data,
+            // always overwrite the player id with that of the connection, so the client can't just send any id
+            id: playerId,
         });
 
         // broadcast action to all other users
