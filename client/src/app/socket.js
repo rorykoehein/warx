@@ -1,7 +1,8 @@
 import io from 'socket.io-client';
 import store from './store';
 
-const socket = io();
+const address = process.env.NODE_ENV === 'development' ? 'http://localhost:5000' : null;
+const socket = io(address);
 
 // todo use rxjs for socket communication
 

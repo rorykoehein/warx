@@ -11,10 +11,11 @@
     "express": "^4.16.2",
     "redux": "^3.7.2",
     "redux-node-logger": "^0.1.0",
+    "rxjs": "^5.5.2",
     "socket.io": "^2.0.4"
   },
   "scripts": {
-    "start": "babel-node index.js",
+    "start": "babel-node ./server/index.js",
     "build-server": "babel ./server -d ./dist"
   }
 }
