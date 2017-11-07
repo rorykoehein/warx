@@ -12,8 +12,7 @@ import * as actions from './actions';
  */
 const sendToServer = (action$) => {
     return action$
-        .ofType('MOVE')
-        .filter(action => action.origin === 'client')
+        .filter(action => action.origin === 'client' && action.network === true)
         .forEach(action => {
             sendAction(action);
         });

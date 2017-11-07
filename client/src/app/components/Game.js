@@ -25,6 +25,10 @@ class Game extends PureComponent<Props> {
                     {players && Object.keys(players).map(key =>
                         <Player key={key} x={players[key].x} y={players[key].y} direction={players[key].direction} />
                     )}
+                    {/* todo render shots */}
+                    {/*{shots && Object.keys(shots).map(key =>*/}
+                        {/*<Player key={key} x={players[key].x} y={players[key].y} direction={players[key].direction} />*/}
+                    {/*)}*/}
                 </WorldSprite>
             </KeyBoardHandler>
         )

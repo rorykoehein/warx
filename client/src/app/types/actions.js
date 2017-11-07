@@ -40,6 +40,14 @@ export type MoveAction = {
     }
 };
 
+export type ShootAction = {
+    +type: 'SHOOT',
+    +origin: ActionOrigin,
+    +data: {
+        +id: PlayerId,
+    }
+};
+
 export type GameStateChangedAction = {
     +type: 'GAME_STATE_CHANGED',
     +origin: 'server',
@@ -48,4 +56,5 @@ export type GameStateChangedAction = {
     }
 };
 
-export type Action = ReduxInitAction | PlayerJoinAction | PlayerLeftAction | MoveAction | GameStateChangedAction;
+export type Action = ReduxInitAction | PlayerJoinAction | PlayerLeftAction | MoveAction | ShootAction |
+    GameStateChangedAction;
