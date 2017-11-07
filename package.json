@@ -1,7 +1,7 @@
 {
   "name": "nodewarx-server",
   "version": "1.0.0",
-  "main": "server/index.js",
+  "main": "www/index.js",
   "license": "MIT",
   "dependencies": {
     "babel-cli": "^6.26.0",
@@ -11,11 +11,13 @@
     "express": "^4.16.2",
     "redux": "^3.7.2",
     "redux-node-logger": "^0.1.0",
+    "redux-observable": "^0.17.0",
     "rxjs": "^5.5.2",
     "socket.io": "^2.0.4"
   },
   "scripts": {
-    "start": "babel-node ./server/index.js",
-    "build-server": "babel ./server -d ./dist"
+    "start": "node ./www",
+    "dev": "babel-node ./server/www",
+    "build-server": "babel ./server/ -d ./dist"
   }
 }

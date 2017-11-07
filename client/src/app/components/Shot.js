@@ -1,7 +1,7 @@
 // @flow
 
 import React, { PureComponent } from 'react';
-import PlayerSprite from '../../lib/styled/PlayerSprite';
+import ShotSprite from '../../lib/styled/ShotSprite';
 import type { Direction } from '../types/game';
 
 type Props = {
@@ -11,19 +11,18 @@ type Props = {
 };
 
 const getRotation = (d) =>
-    d === 'up' ? 0 :
-        d === 'right' ? 90 :
-            d === 'down' ? 180 : 270;
+    d === 'up' ? 180 :
+        d === 'right' ? 270 :
+            d === 'down' ? 0 : 90;
 
-class Player extends PureComponent<Props> {
+class Shot extends PureComponent<Props> {
     render() {
         const { x, y, direction } = this.props;
-        // todo styles should be in the style layer
         const style = {
             transform: `translate(${x}px, ${y}px) rotate(${getRotation(direction)}deg)`
         };
-        return <PlayerSprite style={style} />;
+        return <ShotSprite style={style} />;
     }
 }
 
-export default Player;
+export default Shot;
