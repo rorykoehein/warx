@@ -1,5 +1,5 @@
 import type { Store } from '../../client/src/app/types/framework';
-import { send, broadcast } from "../send-messages";
+import { send, broadcast, all } from "../send-messages";
 
 export const connects = (action$, store: Store) =>
     action$
@@ -35,7 +35,7 @@ export const disconnects = (action$, store: Store) =>
         .ofType('DISCONNECT')
         .forEach(({ data: { playerId } }) => {
             // let all users know this player is now gone
-            broadcast(playerId, 'action', {
+            all('action', {
                 type: 'PLAYER_LEFT',
                 origin: 'server',
                 data: {
