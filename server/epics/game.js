@@ -1,7 +1,6 @@
 import 'rxjs';
 import { Observable } from 'rxjs/Observable';
-import { combineEpics } from 'redux-observable';
-import type { Store } from '../client/src/app/types/framework';
+import type { Store } from '../../client/src/app/types/framework';
 
 /**
  * search products epic
@@ -9,11 +8,11 @@ import type { Store } from '../client/src/app/types/framework';
  * @param store
  * @returns {any|*|Observable}
  */
-const shots = (action$, store: Store) => {
-    return action$
+export const shots = (action$, store: Store) =>
+    action$
         .ofType('SHOOT')
         .filter(action => action.origin === 'client')
-        .forEach(({ id }) => {
+        .forEach(({ data: { id } }) => {
             // todo types
             const { players } = store.getState();
             const shooter = players[id];
@@ -25,8 +24,3 @@ const shots = (action$, store: Store) => {
                 // 3. process HIT/KILL in the the store: change score and respawn hit player to a new place
             }
         });
-};
-
-export const rootEpic = combineEpics(
-    shots
-);

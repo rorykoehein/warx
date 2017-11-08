@@ -1,6 +1,6 @@
 // @flow
 
-import type { Player } from './client/src/app/types/game';
+import type { Player } from '../client/src/app/types/game';
 
 const initialState = {
     players: {},
