@@ -2,7 +2,7 @@ import 'rxjs';
 import { Observable } from 'rxjs/Observable';
 import { combineEpics } from 'redux-observable';
 import { sendAction } from './socket';
-import * as actions from './actions';
+import { shootRemove } from './actions';
 
 /**
  * search products epic
@@ -12,12 +12,20 @@ import * as actions from './actions';
  */
 const sendToServer = (action$) => {
     return action$
-        .filter(action => action.origin === 'client' && action.network === true)
+        .filter(action => action.origin === 'client' && action.sendToServer === true)
         .forEach(action => {
             sendAction(action);
         });
 };
 
+const shots = (action$) => {
+    return action$
+        .ofType('SHOOT') // todo rename to SHOT_FIRED
+        .delay(250)
+        .map(({ data: { playerId } }) => shootRemove({ playerId }))
+};
+
 export const rootEpic = combineEpics(
-    sendToServer
+    sendToServer,
+    shots,
 );

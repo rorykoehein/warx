@@ -13,8 +13,12 @@ socket.on('connect', (data) => {
 });
 
 socket.on('action', (action) => {
-    console.log('action', action);
-    store.dispatch(action);
+    // listen to server actions and map them to redux actions
+    store.dispatch({
+        ...action,
+        origin: 'server',
+        sendToServer: false,
+    });
 });
 
 export const sendAction = (data) => {

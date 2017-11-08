@@ -36,8 +36,8 @@ const reducer = (state: State = initialState, action: Action): State => {
         }
 
         case 'PLAYER_LEFT': {
-            const { data: { id } } = action;
-            const { [id]: leftPlayer, ...restPlayers } = players;
+            const { data: { playerId } } = action;
+            const { [playerId]: leftPlayer, ...restPlayers } = players;
             return {
                 ...state,
                 players: restPlayers,
@@ -45,15 +45,38 @@ const reducer = (state: State = initialState, action: Action): State => {
         }
 
         case 'MOVE': {
-            const { data: { direction, id } } = action;
-            const player = players[id];
+            const { data: { direction, playerId } } = action;
+            const player = players[playerId];
             if(!player) return state;
             return {
                 ...state,
                 players: {
                     ...players,
-                    [id]: move(player, direction),
+                    [playerId]: move(player, direction),
                 },
+            };
+        }
+
+        case 'SHOOT': {
+            const { data: { playerId } } = action;
+            const { shots } = state;
+            const { direction, x, y } = players[playerId];
+            return {
+                ...state,
+                shots: {
+                    ...shots,
+                    [playerId] : { direction, x, y, playerId }
+                },
+            };
+        }
+
+        case 'SHOOT_REMOVE': {
+            const { data: { playerId } } = action;
+            const { shots } = state;
+            const { [playerId]: removeShot, ...restShots } = shots;
+            return {
+                ...state,
+                shots: restShots,
             };
         }
 

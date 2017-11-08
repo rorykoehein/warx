@@ -12,11 +12,23 @@ export type Player = {
     +direction: Direction,
 }
 
+export type Shot = {
+    +playerId: PlayerId,
+    +x: number,
+    +y: number,
+    +direction: Direction,
+}
+
+export type Shots = {
+    +[playerId: PlayerId]: Shot
+};
+
 export type Players = {
     +[id: PlayerId]: Player
 };
 
 export type State = {
     +players: Players,
+    +shots: Shots,
     +currentPlayerId?: PlayerId,
 };

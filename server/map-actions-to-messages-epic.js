@@ -1,5 +1,5 @@
-import type { Store } from '../../client/src/app/types/framework';
-import { send, broadcast, all } from "../send-messages";
+import type { Store } from '../client/src/app/types/framework';
+import { send, broadcast, all } from "./socket/send-messages";
 
 export const connects = (action$, store: Store) =>
     action$
@@ -27,6 +27,18 @@ export const connects = (action$, store: Store) =>
                 data: {
                     player: players[playerId],
                 },
+            });
+        });
+
+export const networkActions = (action$, store: Store) =>
+    action$
+        .filter(({ sendToClient }) => sendToClient)
+        .forEach(({ type, data }) => {
+            // todo: these are only broadcast actions
+            console.log('broadcast', data.playerId, type, data);
+            broadcast(data.playerId, 'action', {
+                type,
+                data
             });
         });
 

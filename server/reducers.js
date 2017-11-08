@@ -50,14 +50,14 @@ const reducer = (state = initialState, action) => {
         }
         case 'MOVE': {
             const { players, ...rest } = state;
-            const { data: { direction, id } } = action;
-            const player = players[id];
+            const { data: { direction, playerId } } = action;
+            const player = players[playerId];
             if(!player) return state;
             return {
                 ...rest,
                 players: {
                     ...players,
-                    [id]: move(player, direction),
+                    [playerId]: move(player, direction),
                 },
             };
         }

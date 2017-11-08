@@ -7,6 +7,7 @@ export type ActionOrigin = 'server' | 'client' | 'all';
 export type ActionInterface = {
     +type: string,
     +origin: ActionOrigin,
+    +sendToServer: boolean,
     +data: any,
 }
 
@@ -27,7 +28,7 @@ export type PlayerLeftAction = {
     +type: 'PLAYER_LEFT',
     +origin: 'server',
     +data: {
-        +id: PlayerId,
+        +playerId: PlayerId,
     }
 };
 
@@ -35,7 +36,7 @@ export type MoveAction = {
     +type: 'MOVE',
     +origin: ActionOrigin,
     +data: {
-        +id: PlayerId,
+        +playerId: PlayerId,
         +direction: Direction,
     }
 };
@@ -44,7 +45,15 @@ export type ShootAction = {
     +type: 'SHOOT',
     +origin: ActionOrigin,
     +data: {
-        +id: PlayerId,
+        +playerId: PlayerId,
+    }
+};
+
+export type ShootRemoveAction = {
+    +type: 'SHOOT_REMOVE',
+    +origin: ActionOrigin,
+    +data: {
+        +playerId: PlayerId,
     }
 };
 
@@ -57,4 +66,4 @@ export type GameStateChangedAction = {
 };
 
 export type Action = ReduxInitAction | PlayerJoinAction | PlayerLeftAction | MoveAction | ShootAction |
-    GameStateChangedAction;
+    ShootRemoveAction | GameStateChangedAction;

@@ -10,8 +10,8 @@ import { move, shoot } from '../actions';
 type Props = {
     children?: any,
     currentPlayerId: PlayerId,
-    onMove: ({ direction: Direction, id: PlayerId }) => void,
-    onShoot: ({ id: PlayerId }) => void,
+    onMove: ({ direction: Direction, playerId: PlayerId }) => void,
+    onShoot: ({ playerId: PlayerId }) => void,
 };
 
 const left = 37;
@@ -23,8 +23,8 @@ const space = 32;
 const mapStateToProps = (state: State) => ({ currentPlayerId: state.currentPlayerId });
 
 const mapDispatchToProps = (dispatch: Dispatch) => ({
-    onMove: ({ direction, id }) => dispatch(move({ direction, id })),
-    onShoot: ({ id }) => dispatch(shoot({ id }))
+    onMove: ({ direction, playerId }) => dispatch(move({ direction, playerId })),
+    onShoot: ({ playerId }) => dispatch(shoot({ playerId }))
 });
 
 const connector: Connector<{}, Props> = connect(mapStateToProps, mapDispatchToProps);
@@ -43,19 +43,19 @@ class KeyboardHandler extends PureComponent<Props> {
         const { onMove, onShoot, currentPlayerId } = this.props;
         switch (event.keyCode) {
             case left:
-                onMove({ direction: 'left', id: currentPlayerId });
+                onMove({ direction: 'left', playerId: currentPlayerId });
                 break;
             case up:
-                onMove({ direction: 'up', id: currentPlayerId });
+                onMove({ direction: 'up', playerId: currentPlayerId });
                 break;
             case right:
-                onMove({ direction: 'right', id: currentPlayerId });
+                onMove({ direction: 'right', playerId: currentPlayerId });
                 break;
             case down:
-                onMove({ direction: 'down', id: currentPlayerId });
+                onMove({ direction: 'down', playerId: currentPlayerId });
                 break;
             case space:
-                onShoot({ id: currentPlayerId });
+                onShoot({ playerId: currentPlayerId });
                 break;
         }
     };

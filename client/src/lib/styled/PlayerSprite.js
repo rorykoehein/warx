@@ -5,8 +5,8 @@ export default styled.div`
     position: absolute;
     width: 0; 
     height: 0; 
-    border-left: 5px solid transparent;
-    border-right: 5px solid transparent;
-    border-bottom: 5px solid yellow;
+    border-left: 6px solid transparent;
+    border-right: 6px solid transparent;
+    border-bottom: 6px solid yellow;
     transition: transform .1s ease;
 `;
