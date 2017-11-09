@@ -5,6 +5,6 @@ import { shots } from './game-epic';
 export default combineEpics(
     connects,
     disconnects,
-    networkActions,
     shots,
+    networkActions,
 );

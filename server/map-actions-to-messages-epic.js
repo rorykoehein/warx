@@ -4,8 +4,8 @@ import { send, broadcast, all } from "./socket/send-messages";
 export const connects = (action$, store: Store) =>
     action$
         .ofType('CONNECT')
-        .forEach(({ data: { playerId } }) => {
-            console.log('connect epic runs');
+        .map(payload => {
+            const { data: { playerId } } = payload;
             const { players } = store.getState();
 
             // send the current game state to the client when he logs in
@@ -28,24 +28,23 @@ export const connects = (action$, store: Store) =>
                     player: players[playerId],
                 },
             });
+
+            return { type: 'VOID' };
         });
 
 export const networkActions = (action$, store: Store) =>
     action$
         .filter(({ sendToClient }) => sendToClient)
-        .forEach(({ type, data }) => {
-            // todo: these are only broadcast actions
-            console.log('broadcast', data.playerId, type, data);
-            broadcast(data.playerId, 'action', {
-                type,
-                data
-            });
+        .map(payload => {
+            const { type, data, toAll } = payload;
+            toAll ? all('action', { type, data }) : broadcast(data.playerId, 'action', { type, data });
+            return { type: 'VOID' };
         });
 
 export const disconnects = (action$, store: Store) =>
     action$
         .ofType('DISCONNECT')
-        .forEach(({ data: { playerId } }) => {
+        .map(({ data: { playerId } }) => {
             // let all users know this player is now gone
             all('action', {
                 type: 'PLAYER_LEFT',
@@ -54,4 +53,6 @@ export const disconnects = (action$, store: Store) =>
                     id: playerId,
                 },
             });
+
+            return { type: 'VOID' };
         });

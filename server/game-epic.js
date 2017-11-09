@@ -2,6 +2,15 @@ import 'rxjs';
 import { Observable } from 'rxjs/Observable';
 import type { Store } from '../client/src/app/types/framework';
 
+const isHit = (shooter, opponent) => {
+    const { direction, x, y } = shooter;
+    const { x: opponentX, y: opponentY } = opponent ;
+    return (direction === 'left' && opponentY === y && opponentX < x)
+        || (direction === 'right' && opponentY === y && opponentX > x)
+        || (direction === "down" && opponentX === x && opponentY > y)
+        || (direction === "up" && opponentX === x && opponentY < y);
+};
+
 /**
  * search products epic
  * @param action$
@@ -10,17 +19,21 @@ import type { Store } from '../client/src/app/types/framework';
  */
 export const shots = (action$, store: Store) =>
     action$
-        .ofType('SHOOT')
-        .filter(action => action.origin === 'client')
-        .forEach(({ data: { id } }) => {
-            // todo types
+        .ofType('SHOT_FIRED')
+        .map(({ data: { playerId } }) => {
             const { players } = store.getState();
-            // const shooter = players[id];
-            // const { direction, x, y } = shooter;
-            // if(direction === 'up') {
-                // todo:
-                // 1. get all players that collide with y higher than shooter and the same x
-                // 2. if we have a hit, fire HIT action, with shooter, hit player
-                // 3. process HIT/KILL in the the store: change score and respawn hit player to a new place
-            // }
+            const shooter = players[playerId];
+            const hits = Object.keys(players).filter(key => isHit(shooter, players[key]));
+            // todo: HIT is not helpful for clients? maybe send the complete new state of the client?
+            return {
+                type: 'HIT',
+                origin: 'server', // todo fugly
+                sendToClient: true, // todo fugly
+                toAll: true, // todo fugly
+                data: {
+                    shooter: playerId,
+                    hits
+                },
+            };
         });
+        // send respawn after 250ms?

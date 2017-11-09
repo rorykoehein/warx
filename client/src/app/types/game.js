@@ -10,6 +10,7 @@ export type Player = {
     +x: number,
     +y: number,
     +direction: Direction,
+    +alive: boolean,
 }
 
 export type Shot = {

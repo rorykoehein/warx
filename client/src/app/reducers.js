@@ -57,7 +57,7 @@ const reducer = (state: State = initialState, action: Action): State => {
             };
         }
 
-        case 'SHOOT': {
+        case 'SHOT_FIRED': {
             const { data: { playerId } } = action;
             const { shots } = state;
             const { direction, x, y } = players[playerId];
@@ -70,13 +70,27 @@ const reducer = (state: State = initialState, action: Action): State => {
             };
         }
 
-        case 'SHOOT_REMOVE': {
+        case 'SHOT_COOLED': {
             const { data: { playerId } } = action;
             const { shots } = state;
             const { [playerId]: removeShot, ...restShots } = shots;
             return {
                 ...state,
                 shots: restShots,
+            };
+        }
+
+        case 'HIT': {
+            const { data: { shooter, hits } } = action;
+            const newPlayers = Object.keys(players).reduce((acc, key) => {
+                const player = players[key];
+                acc[key] = !hits.includes(key) ? player : ({ ...player, alive: false });
+                return acc;
+            }, {});
+
+            return {
+                ...state,
+                players: newPlayers
             };
         }
 

@@ -1,7 +1,7 @@
 // @flow
 
 import type { Direction, PlayerId } from './types/game';
-import type { MoveAction, ShootAction, ShootRemoveAction } from './types/actions';
+import type { MoveAction, SelfShotFireAction, ShotFireAction, ShotCoolAction, ActionOrigin, ActionInterface } from './types/actions';
 
 export const move = ({ direction, playerId } : { direction: Direction, playerId: PlayerId }): MoveAction => {
     return {
@@ -15,20 +15,35 @@ export const move = ({ direction, playerId } : { direction: Direction, playerId:
     };
 };
 
-export const shoot = ({ playerId } : { playerId: PlayerId }): ShootAction => {
+// to be used from the UI
+export const selfShotFire = (): SelfShotFireAction => {
     return {
-        type: 'SHOOT',
+        type: 'SELF_SHOT_FIRED',
         origin: 'client',
-        sendToServer: true,
+    };
+};
+
+// to eceive from server
+export const shotFire = (payload : { playerId: PlayerId, origin: ActionOrigin }): ShotFireAction => {
+    return {
+        type: 'SHOT_FIRED',
+        origin: payload.origin,
         data: {
-            playerId,
+            playerId: payload.playerId,
         }
     };
 };
 
-export const shootRemove = ({ playerId } : { playerId: PlayerId }): ShootRemoveAction => {
+// to send to server
+export const shotFireToServer = (): ActionInterface => {
     return {
-        type: 'SHOOT_REMOVE',
+        type: 'SHOT_FIRED',
+    };
+};
+
+export const shotCool = ({ playerId } : { playerId: PlayerId }): ShotCoolAction => {
+    return {
+        type: 'SHOT_COOLED',
         origin: 'client',
         sendToServer: false,
         data: {

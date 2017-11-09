@@ -10,6 +10,7 @@ export default (messages) => {
     // respond to new connections
     messages
         .subscribe(({ id, event, payload = {} }) => {
+            console.log('message', id, event);
             const { type, data = {} } = payload;
             // the 'type' in case the event is 'action', else try to get the action from the map
             const action = event === 'action' ? type : eventActionMap[event];

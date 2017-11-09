@@ -6,18 +6,19 @@ const initialState = {
     players: {},
 };
 
+const step = 10; // share this
 const getRandomPosition = () => {
-    const min = 10;
+    const min = step;
     const max = 800;
-    return Math.floor(Math.random() * (max - min)) + min; //The maximum is exclusive and the minimum is inclusive
+    return Math.floor(Math.random() * (max - min) / step) * step + min;
 };
 
-// todo: share this?
+// todo: share this
 const move = (player: Player, direction): Player => ({
     ...player,
     direction,
-    x: direction === 'left' ? player.x - 10 : direction === 'right' ? player.x + 10 : player.x,
-    y: direction === 'up' ? player.y - 10 : direction === 'down' ? player.y + 10 : player.y,
+    x: direction === 'left' ? player.x - step : direction === 'right' ? player.x + step : player.x,
+    y: direction === 'up' ? player.y - step : direction === 'down' ? player.y + step : player.y,
 });
 
 // todo: server state and action types
@@ -34,11 +35,13 @@ const reducer = (state = initialState, action) => {
                         name: `Player ${playerId}`,
                         x: getRandomPosition(),
                         y: getRandomPosition(),
+                        alive: true, // todo: don't set alive until after spawn
                     }
                 },
                 ...rest,
             };
         }
+
         case 'DISCONNECT': {
             const { players, ...restState } = state;
             const { data: { playerId } } = action;
@@ -48,6 +51,7 @@ const reducer = (state = initialState, action) => {
                 ...restState,
             };
         }
+
         case 'MOVE': {
             const { players, ...rest } = state;
             const { data: { direction, playerId } } = action;
@@ -61,6 +65,11 @@ const reducer = (state = initialState, action) => {
                 },
             };
         }
+
+        case 'SPAWN': {
+            // todo call spawn after connecting and after hits
+        }
+
         default:
             return state;
     }
