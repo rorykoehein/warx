@@ -4,7 +4,7 @@ import { send, broadcast, all } from "./socket/send-messages";
 export const connects = (action$, store: Store) =>
     action$
         .ofType('CONNECT')
-        .map(payload => {
+        .do(payload => {
             const { data: { playerId } } = payload;
             const { players } = store.getState();
 
@@ -28,23 +28,22 @@ export const connects = (action$, store: Store) =>
                     player: players[playerId],
                 },
             });
-
-            return { type: 'VOID' };
-        });
+        })
+        .ignoreElements();
 
 export const networkActions = (action$, store: Store) =>
     action$
         .filter(({ sendToClient }) => sendToClient)
-        .map(payload => {
+        .do(payload => {
             const { type, data, toAll } = payload;
             toAll ? all('action', { type, data }) : broadcast(data.playerId, 'action', { type, data });
-            return { type: 'VOID' };
-        });
+        })
+        .ignoreElements();
 
 export const disconnects = (action$, store: Store) =>
     action$
         .ofType('DISCONNECT')
-        .map(({ data: { playerId } }) => {
+        .do(({ data: { playerId } }) => {
             // let all users know this player is now gone
             all('action', {
                 type: 'PLAYER_LEFT',
@@ -53,6 +52,5 @@ export const disconnects = (action$, store: Store) =>
                     id: playerId,
                 },
             });
-
-            return { type: 'VOID' };
-        });
+        })
+        .ignoreElements();

@@ -11,6 +11,7 @@ const isHit = (shooter, opponent) => {
         || (direction === "up" && opponentX === x && opponentY < y);
 };
 
+        // send respawn after 250ms?
 /**
  * search products epic
  * @param action$
@@ -24,6 +25,10 @@ export const shots = (action$, store: Store) =>
             const { players } = store.getState();
             const shooter = players[playerId];
             const hits = Object.keys(players).filter(key => isHit(shooter, players[key]));
+            return { hits, playerId };
+        })
+        .filter(({ hits, playerId })=> hits.length > 0)
+        .map(({ hits, playerId }) => {
             // todo: HIT is not helpful for clients? maybe send the complete new state of the client?
             return {
                 type: 'HIT',
@@ -36,4 +41,3 @@ export const shots = (action$, store: Store) =>
                 },
             };
         });
-        // send respawn after 250ms?

@@ -15,9 +15,10 @@ import { shotCool, shotFire, shotFireToServer } from './actions';
 const sendToServer = (action$) => {
     return action$
         .filter(action => action.origin === 'client' && action.sendToServer === true)
-        .forEach(action => {
+        .do(action => {
             sendAction(action);
-        });
+        })
+        .ignoreElements();
 };
 
 const selfShots = (action$, store: Store) => {
