@@ -1,6 +1,4 @@
 import 'rxjs';
-import { Observable } from 'rxjs/Observable';
-import rules from './rules';
 import { spawn } from './actions';
 import type { Store } from '../../client/src/app/types/framework';
 
@@ -17,18 +15,20 @@ const isHit = (shooter, opponent) => {
 export const spawnConnects = (action$, store: Store) =>
     action$
         .ofType('CONNECT')
-        .map(({ data: { playerId } }) =>
-            spawn({ playerId })
-        );
+        .map(({ data: { playerId } }) => {
+            const { rules: { worldWidth, worldHeight, moveDistance }} = store.getState();
+            return spawn({ playerId, worldWidth, worldHeight, moveDistance });
+        });
 
 export const hits = (action$, store: Store) =>
     action$
         .ofType('HIT')
-        .delay(rules.respawnTime)
+        .delay(() => store.getState().rules.respawnTime)
         .flatMap(({ data: { hits }}) =>
-            hits.map(playerId =>
-                spawn({ playerId })
-            )
+            hits.map(playerId => {
+                const { rules: { worldWidth, worldHeight, moveDistance }} = store.getState();
+                return spawn({ playerId, worldWidth, worldHeight, moveDistance });
+            })
         );
 
 export const shots = (action$, store: Store) =>
@@ -60,7 +60,7 @@ export const requestedShots = (action$, store: Store) =>
         .ofType('SHOT_REQUESTED')
         .groupBy(payload => payload.data.playerId)
         .flatMap(group => group
-            .throttleTime(rules.reloadTime)
+            .throttleTime(store.getState().rules.reloadTime)
             .map(payload => ({
                 ...payload,
                 type: 'SHOT_FIRED',
@@ -74,13 +74,37 @@ export const moves = (action$, store: Store) =>
         .ofType('MOVE_REQUESTED')
         .groupBy(payload => payload.data.playerId)
         .flatMap(group => group
-            .throttleTime(rules.moveTime)
+            .throttleTime(store.getState().rules.moveTime)
             .map(({ data: { playerId, direction } }) => {
+                const { rules, players } = store.getState();
+                const { moveDistance, worldWidth, worldHeight } = rules;
+                const player = players[playerId]; // todo use selector function for getting players?
+                const { x, y } = player;
+                const canMove =
+                    (direction === 'left' && x - moveDistance >= 0) ||
+                    (direction === 'right' && x + moveDistance < worldWidth) ||
+                    (direction === 'up' && y - moveDistance >= 0) ||
+                    (direction === 'down' && y + moveDistance < worldHeight);
+
+                if(!canMove) {
+                    // todo only send move to the spefic client
+                    return {
+                        type: 'MOVE_REJECTED',
+                        origin: 'server', // todo fugly
+                        // sendToClient: true, // todo fugly
+                        // toAll: false, // todo fugly
+                        data: {
+                            playerId,
+                            direction
+                        },
+                    };
+                }
+
                 return {
                     type: 'MOVE',
                     origin: 'server', // todo fugly
                     sendToClient: true, // todo fugly
-                    toAll: false, // todo fugly
+                    toAll: true, // todo fugly
                     data: {
                         playerId,
                         direction

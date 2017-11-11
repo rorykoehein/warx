@@ -6,7 +6,7 @@ import HudContainer from '../../lib/styled/HudContainer';
 import HudBottom from '../../lib/styled/HudBottom';
 import WeaponLoader from './WeaponLoader';
 
-class Hud extends PureComponent<> {
+class Hud extends PureComponent<{}> {
     render() {
         return (
             <HudContainer>

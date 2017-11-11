@@ -43,18 +43,23 @@ class KeyboardHandler extends PureComponent<Props> {
         const { onMove, onShoot, currentPlayerId } = this.props;
         switch (event.keyCode) {
             case left:
+                event.preventDefault();
                 onMove({ direction: 'left', playerId: currentPlayerId });
                 break;
             case up:
+                event.preventDefault();
                 onMove({ direction: 'up', playerId: currentPlayerId });
                 break;
             case right:
+                event.preventDefault();
                 onMove({ direction: 'right', playerId: currentPlayerId });
                 break;
             case down:
+                event.preventDefault();
                 onMove({ direction: 'down', playerId: currentPlayerId });
                 break;
             case space:
+                event.preventDefault();
                 onShoot();
                 break;
         }

@@ -27,19 +27,22 @@ const selfMoves = (action$, store: Store) => {
     return action$
         .ofType('SELF_MOVED')
         .throttle(() => Observable.interval(store.getState().rules.moveTime))
-        .map(({ data: { direction } }) => {
-            // convert the action to something the store understands
-            const state = store.getState();
-            const currentPlayerId = state.currentPlayerId;
-            return move({
-                playerId: currentPlayerId,
-                direction
-            })
-        })
+        // todo: right now we wait for the server to reply to move, because the server tells if we can move
+        // todo: client should also have this canMove logic, and server's MOVE_REJECTED should be a failsafe
+        // .map(({ data: { direction } }) => {
+        //     // convert the action to something the store understands
+        //     const state = store.getState();
+        //     const currentPlayerId = state.currentPlayerId;
+        //     return move({
+        //         playerId: currentPlayerId,
+        //         direction
+        //     })
+        // })
         .do(({ data: { direction }}) => {
             // tell the server about this client initiated action
             sendAction(moveToServer({ direction }));
-        });
+        })
+        .ignoreElements();
 };
 
 const selfShots = (action$, store: Store) => {
