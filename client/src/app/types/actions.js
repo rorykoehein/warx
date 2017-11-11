@@ -64,6 +64,14 @@ export type ShotCoolAction = {
     }
 };
 
+export type WeaponReloadAction = {
+    +type: 'WEAPON_RELOADED',
+    +origin: ActionOrigin,
+    +data: {
+        +playerId: PlayerId,
+    }
+};
+
 export type GameStateChangedAction = {
     +type: 'GAME_STATE_CHANGED',
     +origin: 'server',
@@ -82,5 +90,14 @@ export type SpawnAction = {
     }
 };
 
+export type HitAction = {
+    +type: 'HIT',
+    +origin: 'server',
+    +data: {
+        +hits: [PlayerId],
+        +shooter: PlayerId,
+    }
+};
+
 export type Action = ReduxInitAction | PlayerJoinAction | PlayerLeftAction | MoveAction | ShotFireAction |
-    ShotCoolAction | GameStateChangedAction | GameStateChangedAction | SpawnAction;
+    ShotCoolAction | GameStateChangedAction | GameStateChangedAction | SpawnAction | WeaponReloadAction | HitAction;

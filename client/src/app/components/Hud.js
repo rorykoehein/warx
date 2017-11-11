@@ -1,29 +1,21 @@
 // @flow
 
 import React, { PureComponent } from 'react';
-import { connect } from 'react-redux';
 import type { Connector } from 'react-redux';
-import type { State, Players, Shots } from '../types/game';
+import HudContainer from '../../lib/styled/HudContainer';
+import HudBottom from '../../lib/styled/HudBottom';
+import WeaponLoader from './WeaponLoader';
 
-type Props = {
-    reloadTime: number,
-};
-
-const connector: Connector<{}, Props> = connect(
-    (state: State) => ({
-        reloadTime: state.rules.reloadTime,
-    })
-);
-
-class Hud extends PureComponent<Props> {
+class Hud extends PureComponent<> {
     render() {
-        const { reloadTime } = this.props;
         return (
-            <div>
-
-            </div>
+            <HudContainer>
+                <HudBottom>
+                    <WeaponLoader />
+                </HudBottom>
+            </HudContainer>
         )
     }
 }
 
-export default connector(Hud);
+export default Hud;

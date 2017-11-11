@@ -12,7 +12,7 @@ const move = (player: Player, direction, step): Player => ({
 });
 
 const reducer = (state: State = initialState, action: Action): State => {
-    const { players, rules } = state;
+    const { players, currentPlayerId, rules } = state;
     switch (action.type) {
         case 'GAME_STATE_CHANGED': {
             const { data: { state: { players, currentPlayerId, rules } } } = action;
@@ -47,6 +47,7 @@ const reducer = (state: State = initialState, action: Action): State => {
                         x,
                         y,
                         alive: true,
+                        weaponLoaded: true,
                     },
                 }
             };
@@ -84,6 +85,13 @@ const reducer = (state: State = initialState, action: Action): State => {
                     ...shots,
                     [playerId] : { direction, x, y, playerId }
                 },
+                players: {
+                    ...players,
+                    [playerId]: {
+                        ...players[playerId],
+                        weaponLoaded: false,
+                    }
+                },
             };
         }
 
@@ -97,8 +105,24 @@ const reducer = (state: State = initialState, action: Action): State => {
             };
         }
 
+        case 'WEAPON_RELOADED': {
+            const { data: { playerId } } = action;
+            const player = players[playerId];
+            if(!player) return state;
+            return {
+                ...state,
+                players: {
+                    ...players,
+                    [playerId]: {
+                        ...player,
+                        weaponLoaded: true,
+                    }
+                },
+            };
+        }
+
         case 'HIT': {
-            const { data: { shooter, hits } } = action;
+            const { data: { hits } } = action;
             const newPlayers = Object.keys(players).reduce((acc, key) => {
                 const player = players[key];
                 acc[key] = !hits.includes(key) ? player : ({ ...player, alive: false });

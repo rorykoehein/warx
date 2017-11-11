@@ -70,3 +70,13 @@ export const shotCool = ({ playerId } : { playerId: PlayerId }): ShotCoolAction 
         }
     };
 };
+
+export const weaponReload = ({ playerId } : { playerId: PlayerId }): ActionInterface => {
+    return {
+        type: 'WEAPON_RELOADED',
+        origin: 'client',
+        data: {
+            playerId,
+        }
+    };
+};

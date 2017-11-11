@@ -6,6 +6,7 @@ import type { Connector } from 'react-redux';
 import type { State, Players, Shots } from '../types/game';
 import WorldSprite from '../../lib/styled/WorldSprite';
 import KeyBoardHandler from './KeyboardHandler';
+import Hud from './Hud';
 import Shot from './Shot';
 import Player from './Player';
 
@@ -34,6 +35,7 @@ class Game extends PureComponent<Props> {
                         <Shot key={key} x={shots[key].x} y={shots[key].y} direction={shots[key].direction} />
                     )}
                 </WorldSprite>
+                <Hud />
             </KeyBoardHandler>
         )
     }

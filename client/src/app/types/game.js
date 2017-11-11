@@ -11,6 +11,7 @@ export type Player = {
     +y: number,
     +direction: Direction,
     +alive: boolean,
+    +weaponLoaded: boolean,
 }
 
 export type Shot = {
@@ -38,6 +39,6 @@ export type Rules = {
 export type State = {
     +players: Players,
     +rules: Rules,
-    +shots?: Shots,
-    +currentPlayerId?: PlayerId,
+    +shots: Shots,
+    +currentPlayerId: PlayerId,
 };

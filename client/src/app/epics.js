@@ -4,7 +4,7 @@ import { combineEpics } from 'redux-observable';
 import type { State, PlayerId } from './types/game.js'
 import type { Store } from './types/framework.js'
 import { sendAction } from './socket';
-import { move, shotCool, shotFire, shotFireToServer, moveToServer } from './actions';
+import { weaponReload, move, shotCool, shotFire, shotFireToServer, moveToServer } from './actions';
 
 /**
  * search products epic
@@ -65,11 +65,17 @@ const selfShots = (action$, store: Store) => {
 
 
 const shots = (action$, store: Store) => {
-    // todo this time needs to come from the server
     return action$
         .ofType('SHOT_FIRED')
         .delayWhen(() => Observable.timer(store.getState().rules.coolTime))
         .map(({ data: { playerId } }) => shotCool({ playerId }));
+};
+
+const reloads = (action$, store: Store) => {
+    return action$
+        .ofType('SHOT_FIRED')
+        .delayWhen(() => Observable.timer(store.getState().rules.reloadTime))
+        .map(({ data: { playerId } }) => weaponReload({ playerId }));
 };
 
 export const rootEpic = combineEpics(
@@ -77,4 +83,5 @@ export const rootEpic = combineEpics(
     selfShots,
     selfMoves,
     shots,
+    reloads,
 );
