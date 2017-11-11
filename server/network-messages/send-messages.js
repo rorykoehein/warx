@@ -1,4 +1,4 @@
-import { io } from '../app';
+import io from './socket';
 
 export const send = (id, eventName, data) => {
     const sockets = io.sockets.sockets;

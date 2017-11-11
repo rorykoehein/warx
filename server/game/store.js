@@ -3,7 +3,7 @@ import createNodeLogger from 'redux-node-logger'
 import { createEpicMiddleware } from 'redux-observable';
 import epic from './epics';
 import reducers from './reducers';
-import type { Store } from '../client/src/app/types/framework';
+import type { Store } from '../../client/src/app/types/framework';
 
 console.log('epic', epic);
 

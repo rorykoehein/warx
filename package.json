@@ -16,7 +16,7 @@
     "socket.io": "^2.0.4"
   },
   "scripts": {
-    "start": "babel-node ./server/bin/www",
-    "build-server": "babel ./server/bin/www -d ./dist"
+    "start": "babel-node ./server/www",
+    "build-server": "babel ./server/www -d ./dist"
   }
 }

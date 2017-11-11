@@ -1,4 +1,4 @@
-import store from './store'; // the redux server store
+import store from '../game/store'; // the redux server store
 
 // socket.io default
 const eventActionMap = {

@@ -1,5 +1,6 @@
-import type { Store } from '../client/src/app/types/framework';
-import { send, broadcast, all } from "./socket/send-messages";
+import type { Store } from '../../client/src/app/types/framework';
+// possibly inject these functions from network-messages on setup, but for now this is decoupled enough
+import { send, broadcast, all } from "../network-messages/send-messages";
 
 export const connects = (action$, store: Store) =>
     action$

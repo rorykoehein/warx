@@ -18,6 +18,7 @@ const getRotation = (d) =>
 class Player extends PureComponent<Props> {
     render() {
         const { x, y, direction } = this.props;
+        // todo styles should be in the style layer
         const style = {
             transform: `translate(${x}px, ${y}px) rotate(${getRotation(direction)}deg)`
         };

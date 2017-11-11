@@ -1,6 +1,6 @@
 import 'rxjs';
 import { Observable } from 'rxjs/Observable';
-import type { Store } from '../client/src/app/types/framework';
+import type { Store } from '../../client/src/app/types/framework';
 
 const isHit = (shooter, opponent) => {
     const { direction, x, y } = shooter;
