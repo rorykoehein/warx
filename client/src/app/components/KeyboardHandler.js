@@ -40,6 +40,7 @@ class KeyboardHandler extends PureComponent<Props> {
     }
 
     handleKey = (event: KeyboardEvent) => {
+        event.preventDefault();
         const { onMove, onShoot, currentPlayerId } = this.props;
         switch (event.keyCode) {
             case left:

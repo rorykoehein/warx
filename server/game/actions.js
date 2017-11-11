@@ -2,7 +2,7 @@ import rules from './rules';
 
 const getRandomPosition = (step) => {
     const min = step;
-    const max = 800;
+    const max = 600;
     return Math.floor(Math.random() * (max - min) / step) * step + min;
 };
 
