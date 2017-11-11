@@ -52,7 +52,7 @@ export const disconnects = (action$, store: Store) =>
                 type: 'PLAYER_LEFT',
                 origin: 'server',
                 data: {
-                    id: playerId,
+                    playerId,
                 },
             });
         })

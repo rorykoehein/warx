@@ -13,7 +13,6 @@ const move = (player: Player, direction, step): Player => ({
 
 const reducer = (state: State = initialState, action: Action): State => {
     const { players, rules } = state;
-
     switch (action.type) {
         case 'GAME_STATE_CHANGED': {
             const { data: { state: { players, currentPlayerId, rules } } } = action;
@@ -32,6 +31,23 @@ const reducer = (state: State = initialState, action: Action): State => {
                 players: {
                     ...players,
                     [player.id]: player,
+                }
+            };
+        }
+
+        case 'SPAWN': {
+            const { data: { playerId, x, y } } = action;
+            const player = players[playerId];
+            return {
+                ...state,
+                players: {
+                    ...players,
+                    [playerId]: {
+                        ...player,
+                        x,
+                        y,
+                        alive: true,
+                    },
                 }
             };
         }

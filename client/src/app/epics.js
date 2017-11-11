@@ -60,6 +60,7 @@ const selfShots = (action$, store: Store) => {
             // tell the server about this client initiated action
             sendAction(shotFireToServer());
         })
+
 };
 
 

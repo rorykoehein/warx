@@ -72,5 +72,15 @@ export type GameStateChangedAction = {
     }
 };
 
+export type SpawnAction = {
+    +type: 'SPAWN',
+    +origin: 'server',
+    +data: {
+        +playerId: PlayerId,
+        +x: number,
+        +y: number,
+    }
+};
+
 export type Action = ReduxInitAction | PlayerJoinAction | PlayerLeftAction | MoveAction | ShotFireAction |
-    ShotCoolAction | GameStateChangedAction | GameStateChangedAction;
+    ShotCoolAction | GameStateChangedAction | GameStateChangedAction | SpawnAction;

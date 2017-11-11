@@ -7,7 +7,6 @@ export const move = ({ direction, playerId } : { direction: Direction, playerId:
     return {
         type: 'MOVE',
         origin: 'client',
-        sendToServer: true,
         data: {
             direction,
             playerId,
@@ -48,7 +47,7 @@ export const shotFire = (payload : { playerId: PlayerId, origin: ActionOrigin })
 // to send to server
 export const shotFireToServer = (): ActionInterface => {
     return {
-        type: 'SHOT_FIRED',
+        type: 'SHOT_REQUESTED',
     };
 };
 
@@ -66,7 +65,6 @@ export const shotCool = ({ playerId } : { playerId: PlayerId }): ShotCoolAction 
     return {
         type: 'SHOT_COOLED',
         origin: 'client',
-        sendToServer: false,
         data: {
             playerId,
         }

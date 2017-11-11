@@ -18,8 +18,7 @@ export default (messages) => {
                 store.dispatch({
                     type: action,
                     origin: 'client',
-                    // todo: send all received actions to all clients? maybe filter by a list of 'broadcast' actions
-                    sendToClient: event === 'action',
+                    sendToClient: false, // don't send any incoming messages to clients
                     data: {
                         ...data,
                         // overwrite the player id with that of the connection, so the client can't just send any id

@@ -8,12 +8,6 @@ const initialState = {
     rules: {},
 };
 
-const getRandomPosition = (step) => {
-    const min = step;
-    const max = 800;
-    return Math.floor(Math.random() * (max - min) / step) * step + min;
-};
-
 // todo: share this
 const move = (player: Player, direction, step): Player => ({
     ...player,
@@ -24,6 +18,7 @@ const move = (player: Player, direction, step): Player => ({
 
 // todo: server state and action types
 const reducer = (state = initialState, action) => {
+    console.log('reduce', action);
     switch (action.type) {
         case 'CONNECT': {
             const { players, ...rest } = state;
@@ -34,9 +29,42 @@ const reducer = (state = initialState, action) => {
                     [`${playerId}`]: {
                         id: playerId,
                         name: `Player ${playerId}`,
-                        x: getRandomPosition(rules.moveDistance),
-                        y: getRandomPosition(rules.moveDistance),
+                        alive: false, // todo: don't set alive until after spawn
+                    }
+                },
+                ...rest,
+            };
+        }
+
+        case 'SPAWN': {
+            // todo call spawn after connecting and after hits
+            const { players, ...rest } = state;
+            const { data: { playerId, x, y } } = action;
+            const player = players[playerId];
+            return {
+                players: {
+                    ...players,
+                    [`${playerId}`]: {
+                        ...player,
+                        x,
+                        y,
                         alive: true, // todo: don't set alive until after spawn
+                    }
+                },
+                ...rest,
+            };
+        }
+
+        case 'HIT': {
+            const { players, ...rest } = state;
+            const { data: { playerId } } = action;
+            const player = players[playerId];
+            return {
+                players: {
+                    ...players,
+                    [`${playerId}`]: {
+                        ...player,
+                        alive: false, // todo: don't set alive until after spawn
                     }
                 },
                 ...rest,
@@ -65,10 +93,6 @@ const reducer = (state = initialState, action) => {
                     [playerId]: move(player, direction, rules.moveDistance),
                 },
             };
-        }
-
-        case 'SPAWN': {
-            // todo call spawn after connecting and after hits
         }
 
         default:
