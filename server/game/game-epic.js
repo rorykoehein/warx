@@ -8,20 +8,11 @@ import type { Store } from '../../client/src/app/types/framework';
 const isHit = (shooter, opponent) => {
     const { direction, x, y } = shooter;
     const { x: opponentX, y: opponentY, alive } = opponent ;
-    console.log('isHit alive', alive);
     return alive && ((direction === 'left' && opponentY === y && opponentX < x)
         || (direction === 'right' && opponentY === y && opponentX > x)
         || (direction === "down" && opponentX === x && opponentY > y)
         || (direction === "up" && opponentX === x && opponentY < y));
 };
-
-export const all = (action$, store: Store) =>
-    action$
-        .filter(({ type }) => type !== 'TEST')
-        .do((action) => {
-            console.log('epic', action);
-        })
-        .ignoreElements();
 
 export const spawnConnects = (action$, store: Store) =>
     action$

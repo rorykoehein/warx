@@ -18,7 +18,6 @@ const move = (player: Player, direction, step): Player => ({
 
 // todo: server state and action types
 const reducer = (state = initialState, action) => {
-    console.log('reduce', action);
     switch (action.type) {
         case 'CONNECT': {
             const { players, ...rest } = state;

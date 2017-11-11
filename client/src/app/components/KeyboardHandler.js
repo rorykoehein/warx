@@ -61,7 +61,6 @@ class KeyboardHandler extends PureComponent<Props> {
     };
 
     render() {
-        console.log('this.props.currentPlayerId', this.props.currentPlayerId);
         return this.props.children;
     }
 }
