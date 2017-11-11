@@ -25,6 +25,7 @@ const selfShots = (action$, store: Store) => {
     // todo this time needs to come from the server
     return action$
         .ofType('SELF_SHOT_FIRED')
+        .throttle(() => Observable.interval(store.getState().rules.reloadTime))
         .map(() => {
             // convert the action to something the store understands
             const state = store.getState();
@@ -41,11 +42,11 @@ const selfShots = (action$, store: Store) => {
 };
 
 
-const shots = (action$) => {
+const shots = (action$, store: Store) => {
     // todo this time needs to come from the server
     return action$
         .ofType('SHOT_FIRED')
-        .delay(250)
+        .delayWhen(() => Observable.timer(store.getState().rules.coolTime))
         .map(({ data: { playerId } }) => shotCool({ playerId }));
 };
 

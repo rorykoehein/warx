@@ -1,6 +1,7 @@
 import type { Store } from '../../client/src/app/types/framework';
 // possibly inject these functions from network-messages on setup, but for now this is decoupled enough
 import { send, broadcast, all } from "../network-messages/send-messages";
+import rules from '../game/rules';
 
 export const connects = (action$, store: Store) =>
     action$
@@ -17,6 +18,7 @@ export const connects = (action$, store: Store) =>
                     state: {
                         players,
                         currentPlayerId: playerId,
+                        rules,
                     },
                 },
             });

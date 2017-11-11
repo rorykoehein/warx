@@ -16,11 +16,12 @@ const reducer = (state: State = initialState, action: Action): State => {
 
     switch (action.type) {
         case 'GAME_STATE_CHANGED': {
-            const { data: { state: { players, currentPlayerId } } } = action;
+            const { data: { state: { players, currentPlayerId, rules } } } = action;
             return {
                 ...state,
                 players,
-                currentPlayerId
+                currentPlayerId,
+                rules,
             };
         }
 
