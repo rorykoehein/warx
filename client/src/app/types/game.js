@@ -37,7 +37,7 @@ export type Rules = {
 
 export type State = {
     +players: Players,
+    +rules: Rules,
     +shots?: Shots,
     +currentPlayerId?: PlayerId,
-    +rules?: Rules,
 };

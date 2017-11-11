@@ -12,7 +12,6 @@ const isHit = (shooter, opponent) => {
         || (direction === "up" && opponentX === x && opponentY < y);
 };
 
-        // send respawn after 250ms?
 /**
  * search products epic
  * @param action$
@@ -43,6 +42,28 @@ export const shots = (action$, store: Store) =>
                     data: {
                         shooter: playerId,
                         hits
+                    },
+                };
+            })
+        );
+
+export const moves = (action$, store: Store) =>
+    // todo: split in shot fired request and shot fired action?
+    action$
+        .ofType('MOVE_REQUESTED')
+        .groupBy(payload => payload.data.playerId)
+        .flatMap(group => group
+            .throttleTime(rules.moveTime)
+            .map(({ data: { playerId, direction } }) => {
+                // todo: HIT is not helpful for clients? maybe send the complete new state of the client?
+                return {
+                    type: 'MOVE',
+                    origin: 'server', // todo fugly
+                    sendToClient: true, // todo fugly
+                    toAll: false, // todo fugly
+                    data: {
+                        playerId,
+                        direction
                     },
                 };
             })

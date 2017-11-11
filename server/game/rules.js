@@ -3,4 +3,5 @@ export default {
     moveTime: 250,
     moveDistance: 5,
     coolTime: 100,
+    respawnTime: 1500,
 };

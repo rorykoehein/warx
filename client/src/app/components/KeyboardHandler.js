@@ -5,7 +5,7 @@ import { connect } from 'react-redux';
 import type { Connector } from 'react-redux';
 import type { State, Direction, PlayerId } from '../types/game';
 import type { Dispatch } from '../types/framework';
-import { move, selfShotFire } from '../actions';
+import { selfMove, selfShotFire } from '../actions';
 
 type Props = {
     children?: any,
@@ -23,7 +23,7 @@ const space = 32;
 const mapStateToProps = (state: State) => ({ currentPlayerId: state.currentPlayerId });
 
 const mapDispatchToProps = (dispatch: Dispatch) => ({
-    onMove: ({ direction, playerId }) => dispatch(move({ direction, playerId })),
+    onMove: ({ direction }) => dispatch(selfMove({ direction })),
     onShoot: () => dispatch(selfShotFire())
 });
 
@@ -32,11 +32,11 @@ const connector: Connector<{}, Props> = connect(mapStateToProps, mapDispatchToPr
 class KeyboardHandler extends PureComponent<Props> {
 
     componentDidMount(){
-        window.document.addEventListener('keyup', this.handleKey);
+        window.document.addEventListener('keydown', this.handleKey);
     }
 
     componentWillUnmount(){
-        window.document.removeEventListener('keyup', this.handleKey);
+        window.document.removeEventListener('keydown', this.handleKey);
     }
 
     handleKey = (event: KeyboardEvent) => {

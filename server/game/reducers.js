@@ -1,20 +1,21 @@
 // @flow
 
 import type { Player } from '../../client/src/app/types/game';
+import rules from './rules';
 
 const initialState = {
     players: {},
+    rules: {},
 };
 
-const step = 10; // share this
-const getRandomPosition = () => {
+const getRandomPosition = (step) => {
     const min = step;
     const max = 800;
     return Math.floor(Math.random() * (max - min) / step) * step + min;
 };
 
 // todo: share this
-const move = (player: Player, direction): Player => ({
+const move = (player: Player, direction, step): Player => ({
     ...player,
     direction,
     x: direction === 'left' ? player.x - step : direction === 'right' ? player.x + step : player.x,
@@ -33,8 +34,8 @@ const reducer = (state = initialState, action) => {
                     [`${playerId}`]: {
                         id: playerId,
                         name: `Player ${playerId}`,
-                        x: getRandomPosition(),
-                        y: getRandomPosition(),
+                        x: getRandomPosition(rules.moveDistance),
+                        y: getRandomPosition(rules.moveDistance),
                         alive: true, // todo: don't set alive until after spawn
                     }
                 },
@@ -61,7 +62,7 @@ const reducer = (state = initialState, action) => {
                 ...rest,
                 players: {
                     ...players,
-                    [playerId]: move(player, direction),
+                    [playerId]: move(player, direction, rules.moveDistance),
                 },
             };
         }

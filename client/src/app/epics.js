@@ -4,7 +4,7 @@ import { combineEpics } from 'redux-observable';
 import type { State, PlayerId } from './types/game.js'
 import type { Store } from './types/framework.js'
 import { sendAction } from './socket';
-import { shotCool, shotFire, shotFireToServer } from './actions';
+import { move, shotCool, shotFire, shotFireToServer, moveToServer } from './actions';
 
 /**
  * search products epic
@@ -19,6 +19,27 @@ const sendToServer = (action$) => {
             sendAction(action);
         })
         .ignoreElements();
+};
+
+
+const selfMoves = (action$, store: Store) => {
+    // todo this time needs to come from the server
+    return action$
+        .ofType('SELF_MOVED')
+        .throttle(() => Observable.interval(store.getState().rules.moveTime))
+        .map(({ data: { direction } }) => {
+            // convert the action to something the store understands
+            const state = store.getState();
+            const currentPlayerId = state.currentPlayerId;
+            return move({
+                playerId: currentPlayerId,
+                direction
+            })
+        })
+        .do(({ data: { direction }}) => {
+            // tell the server about this client initiated action
+            sendAction(moveToServer({ direction }));
+        });
 };
 
 const selfShots = (action$, store: Store) => {
@@ -53,5 +74,6 @@ const shots = (action$, store: Store) => {
 export const rootEpic = combineEpics(
     sendToServer,
     selfShots,
+    selfMoves,
     shots,
 );

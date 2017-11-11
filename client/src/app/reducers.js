@@ -4,15 +4,15 @@ import type { Player, State } from './types/game';
 import type { Action } from './types/actions';
 import initialState from './initial-state';
 
-const move = (player: Player, direction): Player => ({
+const move = (player: Player, direction, step): Player => ({
     ...player,
     direction,
-    x: direction === 'left' ? player.x - 10 : direction === 'right' ? player.x + 10 : player.x,
-    y: direction === 'up' ? player.y - 10 : direction === 'down' ? player.y + 10 : player.y,
+    x: direction === 'left' ? player.x - step : direction === 'right' ? player.x + step : player.x,
+    y: direction === 'up' ? player.y - step : direction === 'down' ? player.y + step : player.y,
 });
 
 const reducer = (state: State = initialState, action: Action): State => {
-    const { players } = state;
+    const { players, rules } = state;
 
     switch (action.type) {
         case 'GAME_STATE_CHANGED': {
@@ -53,7 +53,7 @@ const reducer = (state: State = initialState, action: Action): State => {
                 ...state,
                 players: {
                     ...players,
-                    [playerId]: move(player, direction),
+                    [playerId]: move(player, direction, rules.moveDistance),
                 },
             };
         }
