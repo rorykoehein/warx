@@ -1,20 +1,12 @@
 // @flow
 
-import type { Player } from '../../client/src/app/types/game';
-import rules from './rules';
+import rules from './default-rules';
+import movePlayer from './move-player';
 
 const initialState = {
     players: {},
-    rules: {},
+    rules: { ...rules },
 };
-
-// todo: share this
-const move = (player: Player, direction, step): Player => ({
-    ...player,
-    direction,
-    x: direction === 'left' ? player.x - step : direction === 'right' ? player.x + step : player.x,
-    y: direction === 'up' ? player.y - step : direction === 'down' ? player.y + step : player.y,
-});
 
 // todo: server state and action types
 const reducer = (state = initialState, action) => {
@@ -89,7 +81,7 @@ const reducer = (state = initialState, action) => {
                 ...rest,
                 players: {
                     ...players,
-                    [playerId]: move(player, direction, rules.moveDistance),
+                    [playerId]: movePlayer(player, direction, rules.moveDistance),
                 },
             };
         }
