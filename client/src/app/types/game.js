@@ -34,6 +34,7 @@ export type Rules = {
     coolTime: number, // time the shot stays visible
     moveTime: number,
     moveDistance: number, // px
+    worldRatio: number, // height compared to a width of 1
 };
 
 export type State = {

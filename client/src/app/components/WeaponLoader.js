@@ -23,7 +23,7 @@ const connector: Connector<{}, Props> = connect(
     })
 );
 
-const transitionDownTime = 50;
+const transitionDownTime = 0;
 
 class Hud extends PureComponent<Props, HudState> {
 

@@ -2,10 +2,10 @@ import styled from 'styled-components';
 
 export default styled.div`
     position: absolute;
-    width: calc((100vh - 20px) * 1.7777);
-    max-height: calc(100vh - 20px);
-    max-width: calc(100vw - 20px);
-    height: calc((100vw - 20px) * 0.5625);
+    width: ${({ ratio = 2 }) => `calc((100vh - 1vw) * ${ratio})`};
+    height: ${({ ratio = 2 }) => `calc((100vw - 1vw) * ${1/ratio})`};
+    max-height: calc(100vh - 1vw);
+    max-width: calc(100vw - 1vw);
     background: linear-gradient(#282630, #111);
     overflow: hidden;
     box-shadow: 0 0 .2rem rgba(255, 255, 255, 0.75);
