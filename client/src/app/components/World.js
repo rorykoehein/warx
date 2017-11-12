@@ -12,7 +12,9 @@ import Player from './Player';
 type Props = {
     players?: Players,
     shots?: Shots,
-    worldRatio: number,
+    worldWidth: number,
+    worldHeight: number,
+    playerSize: number,
 };
 
 type WorldState = {
@@ -26,14 +28,18 @@ const connector: Connector<{}, Props> = connect(
     (state: State) => ({
         players: state.players,
         shots: state.shots,
-        worldRatio: state.rules.worldRatio,
+        worldWidth: state.rules.worldWidth,
+        worldHeight: state.rules.worldHeight,
+        playerSize: state.rules.playerSize,
     })
 );
 
 class World extends PureComponent<Props, WorldState> {
 
     static defaultProps = {
-        worldRatio: .5
+        worldWidth: 100,
+        worldHeight: 50,
+        playerSize: .6,
     };
 
     state = {
@@ -64,12 +70,9 @@ class World extends PureComponent<Props, WorldState> {
     };
 
     render() {
-        const { players, shots, worldRatio } = this.props;
+        const { players, shots, worldWidth, worldHeight, playerSize } = this.props;
         const { size: { width, height } } = this.state;
-        // the world has a certain ratio, which it gets from the game rules, for instance .5, which means width is twice
-        // the height, we want a horizontal step, to be the same as a vertical step
-        const worldWidth = worldRatio <= 1 ? 100: 100 * worldRatio;
-        const worldHeight = worldRatio <= 1 ? 100 * worldRatio : 100;
+        const size = (width > height ? width / 1000 : height / 1000) * playerSize;
         return (
             <WorldSprite ref={ref => this.world = ref}>
                 {players && Object.keys(players).map(key => players[key].alive &&
@@ -77,6 +80,7 @@ class World extends PureComponent<Props, WorldState> {
                         key={key}
                         x={width/worldWidth * players[key].x}
                         y={height/worldHeight * players[key].y}
+                        size={size}
                         direction={players[key].direction}
                     />
                 )}
@@ -85,6 +89,7 @@ class World extends PureComponent<Props, WorldState> {
                         key={key}
                         x={width/worldWidth * shots[key].x}
                         y={height/worldHeight * shots[key].y}
+                        size={size}
                         direction={shots[key].direction}
                     />
                 )}

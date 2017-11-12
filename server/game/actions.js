@@ -1,9 +1,8 @@
 import rules from './rules';
 
-const getRandomPosition = (ratio, step) => {
+const getRandomPosition = (size, step) => {
     const min = 0;
-    const max = 100 * ratio;
-    return Math.floor(Math.random() * (max - min) / step) * step + min;
+    return Math.floor(Math.random() * (size - min) / step) * step + min;
 };
 
 export const spawn = ({ playerId }) => ({
@@ -13,7 +12,7 @@ export const spawn = ({ playerId }) => ({
     toAll: true,
     data: {
         playerId,
-        x: getRandomPosition(1, rules.moveDistance),
-        y: getRandomPosition(rules.worldRatio, rules.moveDistance),
+        x: getRandomPosition(rules.worldWidth, rules.moveDistance),
+        y: getRandomPosition(rules.worldHeight, rules.moveDistance),
     }
 });
