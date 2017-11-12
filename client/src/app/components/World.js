@@ -73,8 +73,10 @@ class World extends PureComponent<Props, WorldState> {
         const { players, shots, worldWidth, worldHeight, playerSize } = this.props;
         const { size: { width, height } } = this.state;
         const size = (width > height ? width / 1000 : height / 1000) * playerSize;
+        const ratio = worldWidth / worldHeight;
+        // todo: only 100x50 ratio works, with a ratio of 100*100 the player moves horizontally faster than vertically
         return (
-            <WorldSprite ref={ref => this.world = ref}>
+            <WorldSprite ref={ref => this.world = ref} ratio={ratio}>
                 {players && Object.keys(players).map(key => players[key].alive &&
                     <Player
                         key={key}
