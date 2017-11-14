@@ -4,7 +4,8 @@ const initialState: State = {
     players: {},
     currentPlayerId: null,
     rules: {},
-    shots: []
+    shots: [],
+    latency: null,
 };
 
 export default initialState;

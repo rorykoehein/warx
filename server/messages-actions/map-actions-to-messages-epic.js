@@ -11,6 +11,15 @@ export const connects = (action$, store: Store) =>
 
             // send the current game state to the client when he logs in
             send(playerId, 'action', {
+                type: 'CONNECTED',
+                origin: 'server',
+                data: {
+                    playerId,
+                },
+            });
+
+            // send the current game state to the client when he logs in
+            send(playerId, 'action', {
                 type: 'GAME_STATE_CHANGED',
                 origin: 'server',
                 data: {
@@ -30,13 +39,26 @@ export const connects = (action$, store: Store) =>
                     player: players[playerId],
                 },
             });
+
+            all('test', { test: 'wat' })
+        })
+        .ignoreElements();
+
+export const pings = (action$, store: Store) =>
+    action$
+        .ofType('PING')
+        .do(payload => {
+            const { data: { playerId } } = payload;
+            send(playerId, 'action', { type: 'PONG' })
         })
         .ignoreElements();
 
 export const networkActions = (action$, store: Store) =>
     action$
         .filter(({ sendToClient }) => sendToClient)
+        // .bufferTime(16) todo buffertime to send multiple actions within one tick (16ms)
         .do(payload => {
+            console.log('hello', payload);
             const { type, data, toAll } = payload;
             toAll ? all('action', { type, data }) : broadcast(data.playerId, 'action', { type, data });
         })

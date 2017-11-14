@@ -21,6 +21,38 @@ const sendToServer = (action$) => {
         .ignoreElements();
 };
 
+const connected = (action$, store: Store) => {
+    // todo this time needs to come from the server
+    return action$
+        .ofType('CONNECTED')
+        .switchMap(() =>
+            Observable.interval(5000)
+                .takeUntil(action$.ofType('DISCONNECTED'))
+                .map(() => ({ type: 'PING', origin: 'client', data: { sendTime: new Date() } }))
+                .do(action => sendAction(action))
+        )
+};
+
+const pings = (action$, store: Store) =>
+    Observable
+        .combineLatest(
+            action$.ofType('PING'),
+            action$.ofType('PONG')
+                .map(({ data, ...rest }) => ({ ...rest, data: { ...data, receiveTime: new Date() }}))
+        )
+        .map(([ping, pong]) =>
+            ping.type === 'PING' && pong.type === 'PONG' ?
+                ({
+                    type: 'PING_LATENCY',
+                    origin: 'client',
+                    data: {
+                        latency: pong.data.receiveTime - ping.data.sendTime
+                    }
+                }) : ({
+                    type: 'PING_CORRUPT', // TODO
+                    origin: 'client',
+                })
+        );
 
 const selfMoves = (action$, store: Store) => {
     // todo this time needs to come from the server
@@ -63,7 +95,6 @@ const selfShots = (action$, store: Store) => {
             // tell the server about this client initiated action
             sendAction(shotFireToServer());
         })
-
 };
 
 
@@ -82,6 +113,8 @@ const reloads = (action$, store: Store) => {
 };
 
 export const rootEpic = combineEpics(
+    connected,
+    pings,
     sendToServer,
     selfShots,
     selfMoves,

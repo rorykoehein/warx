@@ -99,5 +99,14 @@ export type HitAction = {
     }
 };
 
+export type PingLatencyAction = {
+    +type: 'PING_LATENCY',
+    +origin: 'client',
+    +data: {
+        +latency: number,
+    }
+};
+
 export type Action = ReduxInitAction | PlayerJoinAction | PlayerLeftAction | MoveAction | ShotFireAction |
-    ShotCoolAction | GameStateChangedAction | GameStateChangedAction | SpawnAction | WeaponReloadAction | HitAction;
+    ShotCoolAction | GameStateChangedAction | GameStateChangedAction | SpawnAction | WeaponReloadAction | HitAction |
+    PingLatencyAction;

@@ -135,6 +135,14 @@ const reducer = (state: State = initialState, action: Action): State => {
             };
         }
 
+        case 'PING_LATENCY': {
+            const { data: { latency } } = action;
+            return {
+                ...state,
+                latency: latency
+            };
+        }
+
         default:
             return state;
     }
