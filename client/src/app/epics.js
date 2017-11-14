@@ -30,7 +30,8 @@ const connected = (action$, store: Store) => {
                 .takeUntil(action$.ofType('DISCONNECTED'))
                 .map(() => ({ type: 'PING', origin: 'client', data: { sendTime: new Date() } }))
                 .do(action => sendAction(action))
-        );
+        )
+        .ignoreElements();
 };
 
 const pings = (action$, store: Store) => {
@@ -88,7 +89,6 @@ const selfShots = (action$, store: Store) => {
             // tell the server about this client initiated action
             sendAction(shotFireToServer());
         })
-
 };
 
 
@@ -107,8 +107,8 @@ const reloads = (action$, store: Store) => {
 };
 
 export const rootEpic = combineEpics(
-    connected,
-    pings,
+    // connected,
+    // pings,
     sendToServer,
     selfShots,
     selfMoves,

@@ -76,6 +76,7 @@ export const moves = (action$, store: Store) =>
         .flatMap(group => group
             .throttleTime(store.getState().rules.moveTime)
             .map(({ data: { playerId, direction } }) => {
+                console.log('move req');
                 const { rules, players } = store.getState();
                 const { moveDistance, worldWidth, worldHeight } = rules;
                 const player = players[playerId]; // todo use selector function for getting players?

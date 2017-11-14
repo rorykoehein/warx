@@ -11,7 +11,7 @@ import type { Connector } from 'react-redux';
 import type { State } from '../types/game';
 
 type Props = {
-    latency: number,
+    latency?: number,
 };
 
 const connector: Connector<{}, Props> = connect((state : State) => ({
