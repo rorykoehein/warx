@@ -44,4 +44,5 @@ export type State = {
     +rules: Rules,
     +shots: Shots,
     +currentPlayerId: PlayerId,
+    +latency: number,
 };

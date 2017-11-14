@@ -21,6 +21,31 @@ const sendToServer = (action$) => {
         .ignoreElements();
 };
 
+const connected = (action$, store: Store) => {
+    // todo this time needs to come from the server
+    return action$
+        .ofType('CONNECTED')
+        .switchMap(() =>
+            Observable.interval(5000)
+                .takeUntil(action$.ofType('DISCONNECTED'))
+                .map(() => ({ type: 'PING', origin: 'client', data: { sendTime: new Date() } }))
+                .do(action => sendAction(action))
+        );
+};
+
+const pings = (action$, store: Store) => {
+    return action$
+        .filter(({ type }) => type === 'PING' || type === 'PONG')
+        .map(action => ({ ...action, data: { ...action.data, receiveTime: new Date() }}))
+        .pairwise() // assumes pong always comes after ping, todo: handle non ping-pong combinations
+        .map(([ping, pong]) => ({
+            type: 'PING_LATENCY',
+            origin: 'client',
+            data: {
+                latency: pong.data.receiveTime - ping.data.sendTime
+            }
+        }));
+};
 
 const selfMoves = (action$, store: Store) => {
     // todo this time needs to come from the server
@@ -82,6 +107,8 @@ const reloads = (action$, store: Store) => {
 };
 
 export const rootEpic = combineEpics(
+    connected,
+    pings,
     sendToServer,
     selfShots,
     selfMoves,
