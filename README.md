@@ -17,3 +17,20 @@ Each of these should be replacable with out touching other layers (much). Ideall
 - client-to-server actions (i.e. connect-request, move request)
 - server-to-client actions (i.e. new connection, player moved)
 - server-to-server actions ?
+
+
+## Deployments
+
+### Heroku
+1. initialize heroku in the dist folder
+
+```
+$ cd my-project/
+$ git init
+$ heroku git:remote -a {my-heroku-project}
+```
+
+2. run `./build.sh` and then `./heroku.sh` from the root project folder
+
+### Now.sh
+Run `now` from the dist folder
