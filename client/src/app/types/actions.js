@@ -6,8 +6,9 @@ export type ActionOrigin = 'server' | 'client' | 'all';
 // todo figure out subtypes or interfaces for this
 export type ActionInterface = {
     +type: string,
-    +origin: ActionOrigin,
-    +data: any,
+    +origin?: ActionOrigin,
+    +sendToServer?: boolean,
+    +data?: any,
 }
 
 export type ReduxInitAction = {
@@ -27,7 +28,7 @@ export type PlayerLeftAction = {
     +type: 'PLAYER_LEFT',
     +origin: 'server',
     +data: {
-        +id: PlayerId,
+        +playerId: PlayerId,
     }
 };
 
@@ -35,8 +36,39 @@ export type MoveAction = {
     +type: 'MOVE',
     +origin: ActionOrigin,
     +data: {
-        +id: PlayerId,
+        +playerId: PlayerId,
         +direction: Direction,
+    }
+};
+
+// when the current client fires a shot
+export type SelfShotFireAction = {
+    +type: 'SELF_SHOT_FIRED',
+    +origin: 'client',
+};
+
+// when the server
+export type ShotFireAction = {
+    +type: 'SHOT_FIRED',
+    +origin: ActionOrigin,
+    +data: {
+        +playerId: PlayerId,
+    }
+};
+
+export type ShotCoolAction = {
+    +type: 'SHOT_COOLED',
+    +origin: ActionOrigin,
+    +data: {
+        +playerId: PlayerId,
+    }
+};
+
+export type WeaponReloadAction = {
+    +type: 'WEAPON_RELOADED',
+    +origin: ActionOrigin,
+    +data: {
+        +playerId: PlayerId,
     }
 };
 
@@ -48,4 +80,33 @@ export type GameStateChangedAction = {
     }
 };
 
-export type Action = ReduxInitAction | PlayerJoinAction | PlayerLeftAction | MoveAction | GameStateChangedAction;
+export type SpawnAction = {
+    +type: 'SPAWN',
+    +origin: 'server',
+    +data: {
+        +playerId: PlayerId,
+        +x: number,
+        +y: number,
+    }
+};
+
+export type HitAction = {
+    +type: 'HIT',
+    +origin: 'server',
+    +data: {
+        +hits: [PlayerId],
+        +shooter: PlayerId,
+    }
+};
+
+export type PingLatencyAction = {
+    +type: 'PING_LATENCY',
+    +origin: 'client',
+    +data: {
+        +latency: number,
+    }
+};
+
+export type Action = ReduxInitAction | PlayerJoinAction | PlayerLeftAction | MoveAction | ShotFireAction |
+    ShotCoolAction | GameStateChangedAction | GameStateChangedAction | SpawnAction | WeaponReloadAction | HitAction |
+    PingLatencyAction;
