@@ -5,23 +5,26 @@ import { connect } from 'react-redux';
 import type { Connector } from 'react-redux';
 import type { State, Direction, PlayerId } from '../types/game';
 import type { Dispatch } from '../types/framework';
-import { move } from '../actions';
+import { selfMove, selfShotFire } from '../actions';
 
 type Props = {
     children?: any,
     currentPlayerId: PlayerId,
-    onMove: ({ direction: Direction }) => void,
+    onMove: ({ direction: Direction, playerId: PlayerId }) => void,
+    onShoot: () => void,
 };
 
 const left = 37;
 const up = 38;
 const right = 39;
 const down = 40;
+const space = 32;
 
 const mapStateToProps = (state: State) => ({ currentPlayerId: state.currentPlayerId });
 
 const mapDispatchToProps = (dispatch: Dispatch) => ({
-    onMove: ({ direction, id }) => dispatch(move({ direction, id }))
+    onMove: ({ direction }) => dispatch(selfMove({ direction })),
+    onShoot: () => dispatch(selfShotFire())
 });
 
 const connector: Connector<{}, Props> = connect(mapStateToProps, mapDispatchToProps);
@@ -29,33 +32,40 @@ const connector: Connector<{}, Props> = connect(mapStateToProps, mapDispatchToPr
 class KeyboardHandler extends PureComponent<Props> {
 
     componentDidMount(){
-        window.document.addEventListener('keyup', this.handleKey);
+        window.document.addEventListener('keydown', this.handleKey);
     }
 
     componentWillUnmount(){
-        window.document.removeEventListener('keyup', this.handleKey);
+        window.document.removeEventListener('keydown', this.handleKey);
     }
 
     handleKey = (event: KeyboardEvent) => {
-        const { onMove, currentPlayerId } = this.props;
+        const { onMove, onShoot, currentPlayerId } = this.props;
         switch (event.keyCode) {
             case left:
-                onMove({ direction: 'left', id: currentPlayerId });
+                event.preventDefault();
+                onMove({ direction: 'left', playerId: currentPlayerId });
                 break;
             case up:
-                onMove({ direction: 'up', id: currentPlayerId });
+                event.preventDefault();
+                onMove({ direction: 'up', playerId: currentPlayerId });
                 break;
             case right:
-                onMove({ direction: 'right', id: currentPlayerId });
+                event.preventDefault();
+                onMove({ direction: 'right', playerId: currentPlayerId });
                 break;
             case down:
-                onMove({ direction: 'down', id: currentPlayerId });
+                event.preventDefault();
+                onMove({ direction: 'down', playerId: currentPlayerId });
+                break;
+            case space:
+                event.preventDefault();
+                onShoot();
                 break;
         }
     };
 
     render() {
-        console.log('this.props.currentPlayerId', this.props.currentPlayerId);
         return this.props.children;
     }
 }

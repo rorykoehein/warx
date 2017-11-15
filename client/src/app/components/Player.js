@@ -7,6 +7,7 @@ import type { Direction } from '../types/game';
 type Props = {
     x: number,
     y: number,
+    size: number,
     direction: Direction,
 };
 
@@ -17,11 +18,12 @@ const getRotation = (d) =>
 
 class Player extends PureComponent<Props> {
     render() {
-        const { x, y, direction } = this.props;
+        const { x, y, direction, size } = this.props;
+        // todo styles should be in the style layer
         const style = {
             transform: `translate(${x}px, ${y}px) rotate(${getRotation(direction)}deg)`
         };
-        return <PlayerSprite style={style} />;
+        return <PlayerSprite size={size} style={style} />;
     }
 }
 

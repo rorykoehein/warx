@@ -10,13 +10,39 @@ export type Player = {
     +x: number,
     +y: number,
     +direction: Direction,
+    +alive: boolean,
+    +weaponLoaded: boolean,
 }
+
+export type Shot = {
+    +playerId: PlayerId,
+    +x: number,
+    +y: number,
+    +direction: Direction,
+}
+
+export type Shots = {
+    +[playerId: PlayerId]: Shot
+};
 
 export type Players = {
     +[id: PlayerId]: Player
 };
 
+export type Rules = {
+    reloadTime: number, // time to reload the weapon after shooting
+    coolTime: number, // time the shot stays visible
+    moveTime: number,
+    moveDistance: number, // px
+    worldWidth: number,
+    worldHeight: number,
+    playerSize: number, //
+};
+
 export type State = {
     +players: Players,
-    +currentPlayerId?: PlayerId,
+    +rules: Rules,
+    +shots: Shots,
+    +currentPlayerId: PlayerId,
+    +latency: number,
 };

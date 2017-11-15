@@ -1,8 +1,11 @@
 import type { State } from './types/game';
 
 const initialState: State = {
-    players: { },
+    players: {},
     currentPlayerId: null,
+    rules: {},
+    shots: [],
+    latency: null,
 };
 
 export default initialState;
