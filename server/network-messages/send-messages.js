@@ -15,5 +15,6 @@ export const broadcast = (id, eventName, data) => {
 };
 
 export const all = (eventName, data) => {
+    console.log('all eventName', eventName, 'data', data);
     io.emit(eventName, data);
 };

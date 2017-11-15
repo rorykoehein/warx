@@ -23,10 +23,12 @@ export const spawnConnects = (action$, store: Store) =>
 export const hits = (action$, store: Store) =>
     action$
         .ofType('HIT')
-        .delay(() => store.getState().rules.respawnTime)
-        .flatMap(({ data: { hits }}) =>
+        .do(action => console.log('spawn respawnTime', store.getState().rules.respawnTime))
+        // .delay(() => store.getState().rules.respawnTime)
+        .flatMap(({ data: { hits }}) => console.log('spawn hits', hits) ||
             hits.map(playerId => {
                 const { rules: { worldWidth, worldHeight, moveDistance }} = store.getState();
+                console.log('spawn ', { playerId, worldWidth, worldHeight, moveDistance });
                 return spawn({ playerId, worldWidth, worldHeight, moveDistance });
             })
         );

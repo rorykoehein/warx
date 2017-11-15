@@ -56,9 +56,7 @@ export const pings = (action$, store: Store) =>
 export const networkActions = (action$, store: Store) =>
     action$
         .filter(({ sendToClient }) => sendToClient)
-        // .bufferTime(16) todo buffertime to send multiple actions within one tick (16ms)
         .do(payload => {
-            console.log('hello', payload);
             const { type, data, toAll } = payload;
             toAll ? all('action', { type, data }) : broadcast(data.playerId, 'action', { type, data });
         })

@@ -4,6 +4,7 @@ import { combineEpics } from 'redux-observable';
 import type { State, PlayerId } from './types/game.js'
 import type { Store } from './types/framework.js'
 import { sendAction } from './socket';
+import sounds from './sounds';
 import { weaponReload, move, shotCool, shotFire, shotFireToServer, moveToServer } from './actions';
 
 /**
@@ -120,4 +121,5 @@ export const rootEpic = combineEpics(
     selfMoves,
     shots,
     reloads,
+    sounds,
 );
