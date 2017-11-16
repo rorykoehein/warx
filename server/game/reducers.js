@@ -48,15 +48,20 @@ const reducer = (state = initialState, action) => {
 
         case 'HIT': {
             const { players, ...rest } = state;
-            const { data: { playerId } } = action;
-            const player = players[playerId];
+            const { data: { hits } } = action;
+
+            const deadPlayers = hits.reduce((acc, playerId) => ({
+                ...acc,
+                [playerId]: {
+                    ...players[playerId],
+                    alive: false,
+                }
+            }), {});
+
             return {
                 players: {
                     ...players,
-                    [`${playerId}`]: {
-                        ...player,
-                        alive: false, // todo: don't set alive until after spawn
-                    }
+                    ...deadPlayers,
                 },
                 ...rest,
             };

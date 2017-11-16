@@ -4,6 +4,7 @@ import { combineEpics } from 'redux-observable';
 import type { State, PlayerId } from './types/game.js'
 import type { Store } from './types/framework.js'
 import { sendAction } from './socket';
+import sounds from './sounds';
 import { weaponReload, move, shotCool, shotFire, shotFireToServer, moveToServer } from './actions';
 
 /**
@@ -26,7 +27,7 @@ const connected = (action$, store: Store) => {
     return action$
         .ofType('CONNECTED')
         .switchMap(() =>
-            Observable.interval(5000)
+            Observable.interval(10000) // todo add ping time to config/rules
                 .takeUntil(action$.ofType('DISCONNECTED'))
                 .map(() => ({ type: 'PING', origin: 'client', data: { sendTime: new Date() } }))
                 .do(action => sendAction(action))
@@ -120,4 +121,5 @@ export const rootEpic = combineEpics(
     selfMoves,
     shots,
     reloads,
+    sounds,
 );

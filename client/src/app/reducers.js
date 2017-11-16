@@ -35,6 +35,7 @@ const reducer = (state: State = initialState, action: Action): State => {
             };
         }
 
+        // todo respawned player is not rendered
         case 'SPAWN': {
             const { data: { playerId, x, y } } = action;
             const player = players[playerId];

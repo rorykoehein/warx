@@ -7,9 +7,9 @@ export default combineEpics(
     pings,
     disconnects,
     spawnConnects,
+    hits,
     shots,
     requestedShots,
     moves,
-    hits,
     networkActions,
 );
