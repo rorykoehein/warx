@@ -5,7 +5,7 @@ import type { State, PlayerId } from './types/game.js'
 import type { Store } from './types/framework.js'
 import { sendAction } from './socket';
 import sounds from './sounds';
-import { weaponReload, move, shotCool, shotFire, shotFireToServer, moveToServer } from './actions';
+import { weaponReload, selfMove, shotCool, shotFire, selfShotFire, shotFireToServer, moveToServer } from './actions';
 
 /**
  * search products epic
@@ -113,10 +113,32 @@ const reloads = (action$, store: Store) => {
         .map(({ data: { playerId } }) => weaponReload({ playerId }));
 };
 
+const keyCodeActionMap = {
+    ArrowLeft: () => selfMove({ direction: 'left' }),
+    ArrowUp: () => selfMove({ direction: 'up' }),
+    ArrowRight: () => selfMove({ direction: 'right' }),
+    ArrowDown: () => selfMove({ direction: 'down' }),
+    ' ': () => selfShotFire(),
+};
+
+// listen to KEY_DOWN, fire the move event start the interval which fire the move event until the KEY_UP event is heard
+const keyMoves = (action$) => {
+    return action$
+        .ofType('KEY_DOWN')
+        .filter(({ data: { key } }) => keyCodeActionMap[key])
+        .switchMap(({ data: { key: downKey } }) => {
+        // todo: move this to server? or replicate on server?
+            return Observable.interval(60)
+                .map(() => keyCodeActionMap[downKey]())
+                .takeUntil(action$.ofType('KEY_UP').filter(({ data: { key: upKey } }) => downKey === upKey))
+        })
+};
+
 export const rootEpic = combineEpics(
     connected,
     pings,
     sendToServer,
+    keyMoves,
     selfShots,
     selfMoves,
     shots,

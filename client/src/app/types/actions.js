@@ -107,6 +107,22 @@ export type PingLatencyAction = {
     }
 };
 
+export type KeyDownAction = {
+    +type: 'KEY_DOWN',
+    +origin: 'client',
+    +data: {
+        +key: string,
+    }
+};
+
+export type KeyUpAction = {
+    +type: 'KEY_UP',
+    +origin: 'client',
+    +data: {
+        +key: string,
+    }
+};
+
 export type Action = ReduxInitAction | PlayerJoinAction | PlayerLeftAction | MoveAction | ShotFireAction |
     ShotCoolAction | GameStateChangedAction | GameStateChangedAction | SpawnAction | WeaponReloadAction | HitAction |
-    PingLatencyAction;
+    PingLatencyAction | KeyDownAction | KeyUpAction;

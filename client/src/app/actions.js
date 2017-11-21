@@ -1,7 +1,8 @@
 // @flow
 
 import type { Direction, PlayerId } from './types/game';
-import type { MoveAction, SelfShotFireAction, ShotFireAction, ShotCoolAction, ActionOrigin, ActionInterface } from './types/actions';
+import type { MoveAction, SelfShotFireAction, ShotFireAction, ShotCoolAction, ActionOrigin, ActionInterface,
+    KeyDownAction, KeyUpAction } from './types/actions';
 
 export const move = ({ direction, playerId } : { direction: Direction, playerId: PlayerId }): MoveAction => {
     return {
@@ -77,6 +78,26 @@ export const weaponReload = ({ playerId } : { playerId: PlayerId }): ActionInter
         origin: 'client',
         data: {
             playerId,
+        }
+    };
+};
+
+export const keyDown = ({ key }: { key: string }): KeyDownAction => {
+    return {
+        type: 'KEY_DOWN',
+        origin: 'client',
+        data: {
+            key
+        }
+    };
+};
+
+export const keyUp = ({ key }: { key: string }): KeyUpAction => {
+    return {
+        type: 'KEY_UP',
+        origin: 'client',
+        data: {
+            key
         }
     };
 };
