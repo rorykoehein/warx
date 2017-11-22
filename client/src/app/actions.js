@@ -2,7 +2,7 @@
 
 import type { Direction, PlayerId } from './types/game';
 import type { MoveAction, SelfShotFireAction, ShotFireAction, ShotCoolAction, ActionOrigin, ActionInterface,
-    KeyDownAction, KeyUpAction } from './types/actions';
+    KeyDownAction, KeyUpAction, AddMessageAction, RemoveMessageAction } from './types/actions';
 
 export const move = ({ direction, playerId } : { direction: Direction, playerId: PlayerId }): MoveAction => {
     return {
@@ -98,6 +98,26 @@ export const keyUp = ({ key }: { key: string }): KeyUpAction => {
         origin: 'client',
         data: {
             key
+        }
+    };
+};
+
+export const addMessage = ({ message }: { message: string }): AddMessageAction => {
+    return {
+        type: 'MESSAGE_ADDED',
+        origin: 'client',
+        data: {
+            message
+        }
+    };
+};
+
+export const cleanupMessage = ({ messageId }: { messageId: number }): RemoveMessageAction => {
+    return {
+        type: 'MESSAGE_CLEANUP',
+        origin: 'client',
+        data: {
+            messageId
         }
     };
 };

@@ -5,7 +5,8 @@ import type { State, PlayerId } from './types/game.js'
 import type { Store } from './types/framework.js'
 import { sendAction } from './socket';
 import sounds from './sounds';
-import { weaponReload, selfMove, shotCool, shotFire, selfShotFire, shotFireToServer, moveToServer } from './actions';
+import { weaponReload, selfMove, shotCool, shotFire, selfShotFire, shotFireToServer, moveToServer,
+    addMessage, cleanupMessage } from './actions';
 
 /**
  * search products epic
@@ -134,6 +135,30 @@ const keyMoves = (action$) => {
         })
 };
 
+const actionMessageMap = {
+    PLAYER_LEFT: () => 'Player left', // todo: at this moment the player who left is removed from the state
+    PLAYER_JOINED: ({ data: { player } }) => `${player.name} joined the game`,
+    HIT: ({ data: { shooter, hits } }, store) => {
+        const players = store.getState().players;
+        const killedPlayers = hits.map(id => players[id].name).join(', ');
+        const killer = players[shooter];
+        return `${killer.name} killed ${killedPlayers}`;
+    }
+};
+
+const messages = (action$, store) => {
+    return action$
+        .filter(({ type }) => actionMessageMap[type])
+        .map(action => addMessage({ message: actionMessageMap[action.type](action, store) }))
+};
+
+const messagesCleanup = (action$) => {
+    return action$
+        .ofType('MESSAGE_ADDED')
+        .delayWhen(() => Observable.timer(10000)) // todo add to game config
+        .map(({ data: { messageId }}) => cleanupMessage({ messageId }));
+};
+
 export const rootEpic = combineEpics(
     connected,
     pings,
@@ -144,4 +169,6 @@ export const rootEpic = combineEpics(
     shots,
     reloads,
     sounds,
+    messages,
+    messagesCleanup,
 );

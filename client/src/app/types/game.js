@@ -39,10 +39,15 @@ export type Rules = {
     playerSize: number, //
 };
 
+export type MessagesType = {
+    +[number]: string,
+}
+
 export type State = {
     +players: Players,
     +rules: Rules,
     +shots: Shots,
     +currentPlayerId: PlayerId,
     +latency: number,
+    +messages: MessagesType,
 };

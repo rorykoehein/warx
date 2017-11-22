@@ -6,6 +6,7 @@ const initialState: State = {
     rules: {},
     shots: [],
     latency: null,
+    messages: {},
 };
 
 export default initialState;

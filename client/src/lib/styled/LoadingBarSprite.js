@@ -4,8 +4,9 @@ import styles from './styles';
 
 export default styled.div`
     position: relative;
-    width: ${({ width = 16 }) => `${width}rem`};
-    height: ${({ height = .8 }) => `${height}rem`};
+    display: inline-block;
+    width: ${({ width = 32 }) => `${width}rem`};
+    height: ${({ height = 1.6 }) => `${height}rem`};
     background: ${({ color = 'white' }) => transparentize(0.5, color)};
     border-radius: ${({ height = 1 }) => `${height}rem`};
 

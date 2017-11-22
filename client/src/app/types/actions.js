@@ -123,6 +123,22 @@ export type KeyUpAction = {
     }
 };
 
+export type AddMessageAction = {
+    +type: 'MESSAGE_ADDED',
+    +origin: 'client',
+    +data: {
+        +message: string,
+    }
+};
+
+export type RemoveMessageAction = {
+    +type: 'MESSAGE_CLEANUP',
+    +origin: 'client',
+    +data: {
+        +messageId: number
+    }
+};
+
 export type Action = ReduxInitAction | PlayerJoinAction | PlayerLeftAction | MoveAction | ShotFireAction |
     ShotCoolAction | GameStateChangedAction | GameStateChangedAction | SpawnAction | WeaponReloadAction | HitAction |
-    PingLatencyAction | KeyDownAction | KeyUpAction;
+    PingLatencyAction | KeyDownAction | KeyUpAction | AddMessageAction | RemoveMessageAction;

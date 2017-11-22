@@ -7,4 +7,5 @@ export default styled.div`
     top: ${styles.hudMargin};
     right: ${styles.hudMargin};
     bottom: ${styles.hudMargin};
+    opacity: .75; 
 `;

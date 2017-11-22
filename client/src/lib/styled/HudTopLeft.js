@@ -3,11 +3,10 @@ import styles from './styles';
 
 export default styled.div`
     position: absolute;
-    right: 0;
+    left: 0;
     top: 0;
     color: white;
-    width: 33.33%;
+    width: 33%;
     height: 20%;
     overflow: hidden;
-    text-align: right;
 `;

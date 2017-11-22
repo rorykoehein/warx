@@ -3,9 +3,11 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'react-redux';
 import HudContainer from '../../lib/styled/HudContainer';
-import HudBottom from '../../lib/styled/HudBottom';
+import HudBottomCenter from '../../lib/styled/HudBottomCenter';
 import HudTopRight from '../../lib/styled/HudTopRight';
+import HudTopLeft from '../../lib/styled/HudTopLeft';
 import WeaponLoader from './WeaponLoader';
+import Messages from './Messages';
 
 import type { Connector } from 'react-redux';
 import type { State } from '../types/game';
@@ -22,12 +24,15 @@ class Hud extends PureComponent<Props> {
     render() {
         return (
             <HudContainer>
-                <HudTopRight>
+                <HudTopLeft>
                     {this.props.latency}
+                </HudTopLeft>
+                <HudTopRight>
+                    <Messages />
                 </HudTopRight>
-                <HudBottom>
+                <HudBottomCenter>
                     <WeaponLoader />
-                </HudBottom>
+                </HudBottomCenter>
             </HudContainer>
         )
     }
