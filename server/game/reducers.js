@@ -27,10 +27,27 @@ const reducer = (state = initialState, action) => {
             };
         }
 
+        case 'SELF_JOIN': { // todo: rename to join request
+            const { players, ...rest } = state;
+            const { data: { playerId, playerName } } = action;
+            const player = players[playerId];
+            return {
+                players: {
+                    ...players,
+                    [`${playerId}`]: {
+                        ...player,
+                        name: playerName,
+                        fuck: 'shit',
+                    }
+                },
+                ...rest,
+            };
+        }
+
         case 'SPAWN': {
             // todo call spawn after connecting and after hits
             const { players, ...rest } = state;
-            const { data: { playerId, x, y } } = action;
+            const { data: { playerId, x, y, playerName } } = action;
             const player = players[playerId];
             return {
                 players: {
@@ -39,6 +56,7 @@ const reducer = (state = initialState, action) => {
                         ...player,
                         x,
                         y,
+                        playerName, // todo: why have player name is spawn
                         alive: true, // todo: don't set alive until after spawn
                     }
                 },

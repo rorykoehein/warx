@@ -13,12 +13,29 @@ const isHit = (shooter, opponent) => {
         || (direction === "up" && opponentX === x && opponentY < y));
 };
 
-export const spawnConnects = (action$, store: Store) =>
+export const spawnJoins = (action$, store: Store) =>
     action$
-        .ofType('CONNECT')
-        .map(({ data: { playerId } }) => {
+        .ofType('SELF_JOINED')
+        .map(({ data: { playerId, playerName } }) => {
             const { rules: { worldWidth, worldHeight, moveDistance }} = store.getState();
-            return spawn({ playerId, worldWidth, worldHeight, moveDistance });
+            return spawn({ playerId, worldWidth, worldHeight, moveDistance, playerName });
+        });
+
+export const broadcastJoins = (action$, store: Store) =>
+    action$
+        .ofType('SELF_JOINED')
+        .map(({ data: { playerId, playerName } }) => {
+            const player = store.getState().players[playerId];
+
+            return {
+                type: 'PLAYER_JOINED',
+                origin: 'server', // todo fugly
+                sendToClient: true, // todo fugly
+                toAll: true, // todo fugly
+                data: {
+                    player: { ...player, name: playerName, } // todo: this is ugly, dp SELF_JOINED -> state update -> broadcast
+                },
+            };
         });
 
 export const hits = (action$, store: Store) =>

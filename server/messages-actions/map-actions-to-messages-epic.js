@@ -30,17 +30,6 @@ export const connects = (action$, store: Store) =>
                     },
                 },
             });
-
-            // let the other cients know a new player has joined
-            broadcast(playerId, 'action', {
-                type: 'PLAYER_JOINED',
-                origin: 'server',
-                data: {
-                    player: players[playerId],
-                },
-            });
-
-            all('test', { test: 'wat' })
         })
         .ignoreElements();
 

@@ -1,8 +1,10 @@
 // @flow
 
 import type { Direction, PlayerId } from './types/game';
-import type { MoveAction, SelfShotFireAction, ShotFireAction, ShotCoolAction, ActionOrigin, ActionInterface,
-    KeyDownAction, KeyUpAction, AddMessageAction, RemoveMessageAction } from './types/actions';
+import type {
+    MoveAction, SelfShotFireAction, ShotFireAction, ShotCoolAction, ActionOrigin, ActionInterface,
+    KeyDownAction, KeyUpAction, AddMessageAction, RemoveMessageAction, SelfJoinAction
+} from './types/actions';
 
 export const move = ({ direction, playerId } : { direction: Direction, playerId: PlayerId }): MoveAction => {
     return {
@@ -118,6 +120,17 @@ export const cleanupMessage = ({ messageId }: { messageId: number }): RemoveMess
         origin: 'client',
         data: {
             messageId
+        }
+    };
+};
+
+export const selfJoin = ({ playerName }: { playerName: string }): SelfJoinAction => {
+    return {
+        type: 'SELF_JOINED',
+        origin: 'client',
+        sendToServer: true, // todo replace by epic?
+        data: {
+            playerName
         }
     };
 };
