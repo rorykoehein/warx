@@ -7,6 +7,7 @@ const initialState: State = {
     shots: [],
     latency: null,
     messages: {},
+    isSignedIn: false,
 };
 
 export default initialState;

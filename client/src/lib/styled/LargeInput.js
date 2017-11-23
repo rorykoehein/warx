@@ -3,12 +3,16 @@ import styles from './styles';
 
 export default styled.input`
     position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 20rem;
-    height: 4rem;
+    width: 54rem;
     font-size: 3.2rem;
-    padding: .4rem;
-    margin-left: -10rem;
-    margin-top: -2rem;
+    padding: 1.2rem;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    outline: 0;
+    color: white;
+    background: black;
+    border: 0;
+    border-radius: .4rem;
+    font-family: 'VT323', monospace;
 `;

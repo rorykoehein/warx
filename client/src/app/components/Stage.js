@@ -6,15 +6,18 @@ import KeyBoardHandler from './KeyboardHandler';
 import World from './World';
 import Hud from './Hud';
 import SignIn from './SignIn';
+import StageSprite from '../../lib/styled/StageSprite';
 
 export default class Stage extends PureComponent<{}> {
     render() {
         return (
-            <KeyBoardHandler>
-                <SignIn />
-                <World />
-                <Hud />
-            </KeyBoardHandler>
+            <StageSprite>
+                <KeyBoardHandler>
+                    <SignIn />
+                    <World />
+                    <Hud />
+                </KeyBoardHandler>
+            </StageSprite>
         )
     }
 }

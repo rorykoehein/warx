@@ -28,6 +28,7 @@ const reducer = (state: State = initialState, action: Action): State => {
             const { data: { player } } = action;
             return {
                 ...state,
+                isSignedIn: state.isSignedIn || player.id === currentPlayerId,
                 players: {
                     ...players,
                     [player.id]: player,

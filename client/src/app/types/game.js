@@ -50,4 +50,5 @@ export type State = {
     +currentPlayerId: PlayerId,
     +latency: number,
     +messages: MessagesType,
+    +isSignedIn: boolean,
 };
