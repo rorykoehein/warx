@@ -40,7 +40,7 @@ export type Rules = {
 };
 
 export type MessagesType = {
-    +[number]: string,
+    +[id: string]: string,
 }
 
 export type State = {

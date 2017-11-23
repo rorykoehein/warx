@@ -104,22 +104,23 @@ export const keyUp = ({ key }: { key: string }): KeyUpAction => {
     };
 };
 
-export const addMessage = ({ message }: { message: string }): AddMessageAction => {
+export const addMessage = ({ message, id }: { message: string, id: number }): AddMessageAction => {
     return {
         type: 'MESSAGE_ADDED',
         origin: 'client',
         data: {
-            message
+            message,
+            id,
         }
     };
 };
 
-export const cleanupMessage = ({ messageId }: { messageId: number }): RemoveMessageAction => {
+export const cleanupMessage = ({ id }: { id: number }): RemoveMessageAction => {
     return {
         type: 'MESSAGE_CLEANUP',
         origin: 'client',
         data: {
-            messageId
+            id
         }
     };
 };

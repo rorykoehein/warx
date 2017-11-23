@@ -136,6 +136,7 @@ export type AddMessageAction = {
     +origin: 'client',
     +data: {
         +message: string,
+        +id: number,
     }
 };
 
@@ -143,7 +144,7 @@ export type RemoveMessageAction = {
     +type: 'MESSAGE_CLEANUP',
     +origin: 'client',
     +data: {
-        +messageId: number
+        +id: number,
     }
 };
 

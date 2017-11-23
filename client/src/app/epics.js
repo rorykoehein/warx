@@ -146,17 +146,22 @@ const actionMessageMap = {
     }
 };
 
+let nextMessageId = 0;
+
 const messages = (action$, store) => {
     return action$
         .filter(({ type }) => actionMessageMap[type])
-        .map(action => addMessage({ message: actionMessageMap[action.type](action, store) }))
+        .map(action => addMessage({
+            message: actionMessageMap[action.type](action, store),
+            id: nextMessageId++,
+        }));
 };
 
 const messagesCleanup = (action$) => {
     return action$
         .ofType('MESSAGE_ADDED')
-        .delayWhen(() => Observable.timer(10000)) // todo add to game config
-        .map(({ data: { messageId }}) => cleanupMessage({ messageId }));
+        .delayWhen(() => Observable.timer(7000)) // todo add to game config
+        .map(({ data: { id }}) => cleanupMessage({ id }));
 };
 
 export const rootEpic = combineEpics(

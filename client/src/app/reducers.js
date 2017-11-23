@@ -146,24 +146,23 @@ const reducer = (state: State = initialState, action: Action): State => {
         }
 
         case 'MESSAGE_ADDED': {
-            const { data: { message = '' } } = action;
+            const { data: { message = '', id } } = action;
             const { messages = {} } = state;
-            const nextId = Object.keys(messages).length;
             return {
                 ...state,
                 messages: {
                     ...messages,
-                    [nextId]: message,
+                    [`${id}`]: message,
                 },
             };
         }
 
         case 'MESSAGE_CLEANUP': {
-            const { data: { messageId } } = action;
-            const { [messageId]: removeMessage, ...messages } = state.messages;
+            const { data: { id } } = action;
+            const { [`${id}`]: removeMessage, ...messages } = state.messages;
             return {
                 ...state,
-                messages,
+                messages: messages,
             };
         }
 

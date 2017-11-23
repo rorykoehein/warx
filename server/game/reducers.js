@@ -37,7 +37,6 @@ const reducer = (state = initialState, action) => {
                     [`${playerId}`]: {
                         ...player,
                         name: playerName,
-                        fuck: 'shit',
                     }
                 },
                 ...rest,
@@ -56,7 +55,7 @@ const reducer = (state = initialState, action) => {
                         ...player,
                         x,
                         y,
-                        playerName, // todo: why have player name is spawn
+                        name: playerName, // todo: why have player name is spawn
                         alive: true, // todo: don't set alive until after spawn
                     }
                 },
