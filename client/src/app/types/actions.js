@@ -16,6 +16,14 @@ export type ReduxInitAction = {
     +origin: 'client',
 };
 
+export type SelfJoinAction = {
+    +type: 'SELF_JOINED',
+    +origin: 'client',
+    +data: {
+        +playerName: string
+    }
+};
+
 export type PlayerJoinAction = {
     +type: 'PLAYER_JOINED',
     +origin: 'server',
@@ -128,6 +136,7 @@ export type AddMessageAction = {
     +origin: 'client',
     +data: {
         +message: string,
+        +id: number,
     }
 };
 
@@ -135,10 +144,11 @@ export type RemoveMessageAction = {
     +type: 'MESSAGE_CLEANUP',
     +origin: 'client',
     +data: {
-        +messageId: number
+        +id: number,
     }
 };
 
-export type Action = ReduxInitAction | PlayerJoinAction | PlayerLeftAction | MoveAction | ShotFireAction |
-    ShotCoolAction | GameStateChangedAction | GameStateChangedAction | SpawnAction | WeaponReloadAction | HitAction |
-    PingLatencyAction | KeyDownAction | KeyUpAction | AddMessageAction | RemoveMessageAction;
+export type Action = ReduxInitAction | SelfJoinAction | PlayerJoinAction | PlayerLeftAction | MoveAction |
+    ShotFireAction | ShotCoolAction | GameStateChangedAction | GameStateChangedAction | SpawnAction |
+    WeaponReloadAction | HitAction | PingLatencyAction | KeyDownAction | KeyUpAction | AddMessageAction |
+    RemoveMessageAction;

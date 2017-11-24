@@ -3,7 +3,7 @@ const getRandomPosition = (size, step) => {
     return Math.floor(Math.random() * (size - min) / step) * step + min;
 };
 
-export const spawn = ({ playerId, worldWidth, worldHeight, moveDistance }) => ({
+export const spawn = ({ playerId, worldWidth, worldHeight, moveDistance, playerName }) => ({
     type: 'SPAWN',
     origin: 'server',
     sendToClient: true,
@@ -12,5 +12,6 @@ export const spawn = ({ playerId, worldWidth, worldHeight, moveDistance }) => ({
         playerId,
         x: getRandomPosition(worldWidth, moveDistance),
         y: getRandomPosition(worldHeight, moveDistance),
+        playerName,
     }
 });

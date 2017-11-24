@@ -1,8 +1,10 @@
 // @flow
 
 import type { Direction, PlayerId } from './types/game';
-import type { MoveAction, SelfShotFireAction, ShotFireAction, ShotCoolAction, ActionOrigin, ActionInterface,
-    KeyDownAction, KeyUpAction, AddMessageAction, RemoveMessageAction } from './types/actions';
+import type {
+    MoveAction, SelfShotFireAction, ShotFireAction, ShotCoolAction, ActionOrigin, ActionInterface,
+    KeyDownAction, KeyUpAction, AddMessageAction, RemoveMessageAction, SelfJoinAction
+} from './types/actions';
 
 export const move = ({ direction, playerId } : { direction: Direction, playerId: PlayerId }): MoveAction => {
     return {
@@ -102,22 +104,34 @@ export const keyUp = ({ key }: { key: string }): KeyUpAction => {
     };
 };
 
-export const addMessage = ({ message }: { message: string }): AddMessageAction => {
+export const addMessage = ({ message, id }: { message: string, id: number }): AddMessageAction => {
     return {
         type: 'MESSAGE_ADDED',
         origin: 'client',
         data: {
-            message
+            message,
+            id,
         }
     };
 };
 
-export const cleanupMessage = ({ messageId }: { messageId: number }): RemoveMessageAction => {
+export const cleanupMessage = ({ id }: { id: number }): RemoveMessageAction => {
     return {
         type: 'MESSAGE_CLEANUP',
         origin: 'client',
         data: {
-            messageId
+            id
+        }
+    };
+};
+
+export const selfJoin = ({ playerName }: { playerName: string }): SelfJoinAction => {
+    return {
+        type: 'SELF_JOINED',
+        origin: 'client',
+        sendToServer: true, // todo replace by epic?
+        data: {
+            playerName
         }
     };
 };

@@ -40,7 +40,7 @@ export type Rules = {
 };
 
 export type MessagesType = {
-    +[number]: string,
+    +[id: string]: string,
 }
 
 export type State = {
@@ -50,4 +50,5 @@ export type State = {
     +currentPlayerId: PlayerId,
     +latency: number,
     +messages: MessagesType,
+    +isSignedIn: boolean,
 };
