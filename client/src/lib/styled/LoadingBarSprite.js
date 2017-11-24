@@ -5,6 +5,7 @@ import styles from './styles';
 export default styled.div`
     position: relative;
     display: inline-block;
+    max-width: 100%;
     width: ${({ width = 32 }) => `${width}rem`};
     height: ${({ height = 1.6 }) => `${height}rem`};
     background: ${({ color = 'white' }) => transparentize(0.5, color)};
