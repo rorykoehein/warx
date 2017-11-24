@@ -7,5 +7,6 @@ export default styled.div`
     left: 33.33%;
     width: 33.33%;
     text-align: center;
-    height: 20%;
+    max-height: 4rem;
+    padding: 1rem;
 `;

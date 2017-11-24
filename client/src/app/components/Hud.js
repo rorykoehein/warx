@@ -22,10 +22,11 @@ const connector: Connector<{}, Props> = connect((state : State) => ({
 
 class Hud extends PureComponent<Props> {
     render() {
+        const { latency } = this.props;
         return (
             <HudContainer>
                 <HudTopLeft>
-                    {this.props.latency}
+                    {latency !== null && <span>ping: {this.props.latency}</span>}
                 </HudTopLeft>
                 <HudTopRight>
                     <Messages />

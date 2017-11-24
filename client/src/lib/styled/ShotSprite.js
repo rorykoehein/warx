@@ -1,13 +1,13 @@
 import styled from 'styled-components';
+import { transparentize } from 'polished';
 import styles from './styles';
 
 export default styled.div`
     position: absolute;
-    background: ${styles.shotRed};
-    width: ${({ size = .5 }) => `${size/5}rem`};
-    height: 9999rem;
-    transform-origin: 0 0;
-    margin-left: ${({ size = .5 }) => `${size}rem`}; // fix the positioning of the shot
-    margin-top: ${({ size = .5 }) => `${size/2}rem`}; // fix the positioning of the shot
-    box-shadow: 0 0 1em 0.2em ${styles.shotRed};
+    background: ${transparentize(0.25, styles.shotRed)};
+    width: ${({ size = .5 }) => `${size}rem`};
+    height: 200%;
+    transform-origin: ${({ size = .5 }) => `${size/2}rem ${size/2}rem`};
+    transition: ${({ duration = 100 }) => `transform ${duration}ms   ease`};
+    box-shadow: ${({ size = .5 }) => `0 0 0 ${size/2}rem ${transparentize(0.75, styles.shotRed)}`};
 `;

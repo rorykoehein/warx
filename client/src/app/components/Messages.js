@@ -27,7 +27,7 @@ class Messages extends PureComponent<Props> {
             <MessagesContainer>
                 {messages && Object.keys(messages)
                     .sort((a, b) => Number(b) - Number(a))
-                    .map(key => <Message key={key}>{messages[Number(key)]}</Message>)}
+                    .map(key => <Message key={key}>{messages[key]}</Message>)}
             </MessagesContainer>
         )
     }

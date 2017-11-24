@@ -4,17 +4,14 @@ import React, { PureComponent } from 'react';
 import ReactDOM from 'react-dom';
 import { connect } from 'react-redux';
 import type { Connector } from 'react-redux';
-import type { State, Players, Shots } from '../types/game';
+import type { State } from '../types/game';
 import WorldSprite from '../../lib/styled/WorldSprite';
-import Shot from './Shot';
-import Player from './Player';
+import Players from './Players';
+import Shots from './Shots';
 
 type Props = {
-    players?: Players,
-    shots?: Shots,
     worldWidth: number,
     worldHeight: number,
-    playerSize: number,
 };
 
 type WorldState = {
@@ -26,11 +23,8 @@ type WorldState = {
 
 const connector: Connector<{}, Props> = connect(
     (state: State) => ({
-        players: state.players,
-        shots: state.shots,
         worldWidth: state.rules.worldWidth,
         worldHeight: state.rules.worldHeight,
-        playerSize: state.rules.playerSize,
     })
 );
 
@@ -39,7 +33,6 @@ class World extends PureComponent<Props, WorldState> {
     static defaultProps = {
         worldWidth: 100,
         worldHeight: 50,
-        playerSize: .6,
     };
 
     state = {
@@ -70,31 +63,15 @@ class World extends PureComponent<Props, WorldState> {
     };
 
     render() {
-        const { players, shots, worldWidth, worldHeight, playerSize } = this.props;
-        const { size: { width, height } } = this.state;
-        const size = (width > height ? width / 1000 : height / 1000) * playerSize;
+        const { worldWidth, worldHeight } = this.props;
+        const { size: { width } } = this.state;
         const ratio = worldWidth / worldHeight;
+        const step = width/worldWidth;
         // todo: only 100x50 ratio works, with a ratio of 100*100 the player moves horizontally faster than vertically
         return (
             <WorldSprite ref={ref => this.world = ref} ratio={ratio}>
-                {players && Object.keys(players).map(key => players[key].alive &&
-                    <Player
-                        key={key}
-                        x={width/worldWidth * players[key].x}
-                        y={height/worldHeight * players[key].y}
-                        size={size}
-                        direction={players[key].direction}
-                    />
-                )}
-                {shots && Object.keys(shots).map(key =>
-                    <Shot
-                        key={key}
-                        x={width/worldWidth * shots[key].x}
-                        y={height/worldHeight * shots[key].y}
-                        size={size}
-                        direction={shots[key].direction}
-                    />
-                )}
+                <Players step={step} />
+                <Shots step={step} />
             </WorldSprite>
         )
     }
