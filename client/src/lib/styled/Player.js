@@ -19,7 +19,7 @@ const getRotation = (d) =>
         d === 'right' ? 90 :
             d === 'down' ? 180 : 270;
 
-const time = 1000;
+const time = 500;
 const maxOpacity = '1';
 const opacityStyles = { entering: '0', entered: maxOpacity, exiting: '0', exited: '0', none: maxOpacity, };
 

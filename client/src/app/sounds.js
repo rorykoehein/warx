@@ -1,23 +1,34 @@
 import 'rxjs';
-import shoot from '../lib/sound/shoot.wav';
-import hit from '../lib/sound/hit.wav';
-
-// https://freesound.org/people/Kastenfrosch/sounds/162472/
-// https://freesound.org/people/Kastenfrosch/sounds/162466/
-// https://freesound.org/people/Kastenfrosch/sounds/162461/
-// https://freesound.org/people/Kastenfrosch/sounds/162466/
+import spawn from '../lib/sound/spawn.mp3';
+import laser from '../lib/sound/laser.mp3';
+import explode from '../lib/sound/explode.mp3';
 
 const actionSoundMap = {
-    SHOT_FIRED: new Audio(shoot),
-    HIT: new Audio(hit),
+    SHOT_FIRED: {
+        delay: 0,
+        audio: new Audio(laser),
+        volume: 1
+    },
+    EXPLOSION_ADDED: {
+        delay: 200,
+        audio: new Audio(explode),
+        volume: 1,
+    },
+    SPAWN: {
+        delay: 600,
+        audio: new Audio(spawn),
+        volume: .3,
+    },
 };
 
 const sounds = (action$) => {
     return action$
         .do(({ type }) => {
-            const sound = actionSoundMap[type];
-            if(sound) {
-                sound.play();
+            const config = actionSoundMap[type];
+            if(config) {
+                const { delay, audio, volume } = config;
+                audio.volume = volume;
+                setTimeout(() => audio.play(), delay);
             }
         })
         .ignoreElements();
