@@ -6,7 +6,7 @@ import type { Store } from './types/framework.js'
 import { sendAction } from './socket';
 import sounds from './sounds';
 import { weaponReload, selfMove, shotCool, shotFire, selfShotFire, shotFireToServer, moveToServer,
-    addMessage, cleanupMessage } from './actions';
+    addMessage, cleanupMessage, addExplosion, removeExplosion } from './actions';
 
 
 
@@ -162,8 +162,27 @@ const messages = (action$, store) => {
 const messagesCleanup = (action$) => {
     return action$
         .ofType('MESSAGE_ADDED')
-        .delayWhen(() => Observable.timer(7000)) // todo add to game config
+        .delayWhen(() => Observable.timer(7000))
         .map(({ data: { id }}) => cleanupMessage({ id }));
+};
+
+const explosions = (action$, store: Store) => {
+    return action$
+        .ofType('HIT')
+        .flatMap(({ data: { hits } }) => {
+            const players = store.getState().players;
+            return hits.map(playerId => {
+                const player = players[playerId];
+                return addExplosion({ id: playerId, x: player.x, y: player.y });
+            });
+        });
+};
+
+const explosionsCleanup = (action$) => {
+    return action$
+        .ofType('EXPLOSION_ADDED')
+        .delayWhen(() => Observable.timer(32))
+        .map(({ data: { id }}) => removeExplosion({ id }));
 };
 
 export const rootEpic = combineEpics(
@@ -178,4 +197,6 @@ export const rootEpic = combineEpics(
     sounds,
     messages,
     messagesCleanup,
+    explosions,
+    explosionsCleanup,
 );

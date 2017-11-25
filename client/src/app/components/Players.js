@@ -4,7 +4,7 @@ import React, { PureComponent } from 'react';
 import { connect } from 'react-redux';
 import type { Connector } from 'react-redux';
 import type { State, Players as PlayersType, PlayerId } from '../types/game';
-import PlayersContainer from '../../lib/styled/ShotsContainer';
+import PlayersContainer from '../../lib/styled/PlayersContainer';
 import Player from '../../lib/styled/Player';
 
 type Props = {

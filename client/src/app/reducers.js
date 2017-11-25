@@ -145,6 +145,28 @@ const reducer = (state: State = initialState, action: Action): State => {
             };
         }
 
+        case 'EXPLOSION_ADDED': {
+            const { data: { id, x, y } } = action;
+            const { explosions } = state;
+            return {
+                ...state,
+                explosions: {
+                    ...explosions,
+                    [id] : { x, y }
+                },
+            };
+        }
+
+        case 'EXPLOSION_REMOVED': {
+            const { data: { id } } = action;
+            const { explosions } = state;
+            const { [`${id}`]: removeExplosion, ...restExplosions } = explosions;
+            return {
+                ...state,
+                explosions: restExplosions,
+            };
+        }
+
         case 'MESSAGE_ADDED': {
             const { data: { message = '', id } } = action;
             const { messages = {} } = state;
