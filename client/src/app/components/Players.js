@@ -33,8 +33,8 @@ class Players extends PureComponent<Props> {
                 {players && Object.keys(players).map(key => players[key].alive &&
                     <Player
                         key={key}
-                        x={step * players[key].x - size}
-                        y={step * players[key].y - size}
+                        x={Math.round(step * players[key].x)}
+                        y={Math.round(step * players[key].y)}
                         size={size}
                         direction={players[key].direction}
                     />
