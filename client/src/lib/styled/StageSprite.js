@@ -1,4 +1,5 @@
 import styled, { injectGlobal } from 'styled-components';
+import dirty from '../graphics/dirty_old_shirt.png';
 
 injectGlobal`
   @font-face {
@@ -10,7 +11,7 @@ injectGlobal`
     margin: 0;
     font-family: 'VT323', monospace;
     padding: 0;
-    background: black;
+    background: url(${dirty}) black;
   }
   
   html, body {
