@@ -7,6 +7,7 @@ import type { Connector } from 'react-redux';
 import type { State } from '../types/game';
 import WorldSprite from '../../lib/styled/WorldSprite';
 import Players from './Players';
+import Explosions from './Explosions';
 import Shots from './Shots';
 
 type Props = {
@@ -72,6 +73,7 @@ class World extends PureComponent<Props, WorldState> {
             <WorldSprite ref={ref => this.world = ref} ratio={ratio}>
                 <Players step={step} />
                 <Shots step={step} />
+                <Explosions step={step} />
             </WorldSprite>
         )
     }

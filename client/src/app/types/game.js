@@ -43,6 +43,13 @@ export type MessagesType = {
     +[id: string]: string,
 }
 
+export type ExplosionsType = {
+    +[id: string]: {
+        +x: number,
+        +y: number,
+    },
+}
+
 export type State = {
     +players: Players,
     +rules: Rules,
@@ -50,5 +57,6 @@ export type State = {
     +currentPlayerId: PlayerId,
     +latency: number,
     +messages: MessagesType,
+    +explosions: ExplosionsType,
     +isSignedIn: boolean,
 };

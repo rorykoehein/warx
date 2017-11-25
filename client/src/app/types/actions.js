@@ -147,8 +147,25 @@ export type RemoveMessageAction = {
         +id: number,
     }
 };
+export type AddExplosionAction = {
+    +type: 'EXPLOSION_ADDED',
+    +origin: 'client',
+    +data: {
+        +id: number,
+        +x: number,
+        +y: number,
+    }
+};
+
+export type RemoveExplosionAction = {
+    +type: 'EXPLOSION_REMOVED',
+    +origin: 'client',
+    +data: {
+        +id: number,
+    }
+};
 
 export type Action = ReduxInitAction | SelfJoinAction | PlayerJoinAction | PlayerLeftAction | MoveAction |
     ShotFireAction | ShotCoolAction | GameStateChangedAction | GameStateChangedAction | SpawnAction |
     WeaponReloadAction | HitAction | PingLatencyAction | KeyDownAction | KeyUpAction | AddMessageAction |
-    RemoveMessageAction;
+    RemoveMessageAction | AddExplosionAction | RemoveExplosionAction;

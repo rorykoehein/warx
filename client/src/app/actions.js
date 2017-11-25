@@ -3,7 +3,8 @@
 import type { Direction, PlayerId } from './types/game';
 import type {
     MoveAction, SelfShotFireAction, ShotFireAction, ShotCoolAction, ActionOrigin, ActionInterface,
-    KeyDownAction, KeyUpAction, AddMessageAction, RemoveMessageAction, SelfJoinAction
+    KeyDownAction, KeyUpAction, AddMessageAction, RemoveMessageAction, SelfJoinAction, AddExplosionAction,
+    RemoveExplosionAction
 } from './types/actions';
 
 export const move = ({ direction, playerId } : { direction: Direction, playerId: PlayerId }): MoveAction => {
@@ -118,6 +119,28 @@ export const addMessage = ({ message, id }: { message: string, id: number }): Ad
 export const cleanupMessage = ({ id }: { id: number }): RemoveMessageAction => {
     return {
         type: 'MESSAGE_CLEANUP',
+        origin: 'client',
+        data: {
+            id
+        }
+    };
+};
+
+export const addExplosion = ({ id, x, y }: { id: number, x: number, y: number }): AddExplosionAction => {
+    return {
+        type: 'EXPLOSION_ADDED',
+        origin: 'client',
+        data: {
+            id,
+            x,
+            y,
+        }
+    };
+};
+
+export const removeExplosion = ({ id }: { id: number }): RemoveExplosionAction => {
+    return {
+        type: 'EXPLOSION_REMOVED',
         origin: 'client',
         data: {
             id
