@@ -34,8 +34,8 @@ class Shots extends PureComponent<Props> {
                 {shots && Object.keys(shots).map(key =>
                     <Shot
                         key={key}
-                        x={step * shots[key].x}
-                        y={step * shots[key].y}
+                        x={Math.round(step * shots[key].x)}
+                        y={Math.round(step * shots[key].y)}
                         size={size}
                         direction={shots[key].direction}
                     />
