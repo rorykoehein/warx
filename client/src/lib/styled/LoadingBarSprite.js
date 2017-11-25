@@ -8,8 +8,8 @@ export default styled.div`
     max-width: 100%;
     width: ${({ width = 32 }) => `${width}rem`};
     height: ${({ height = 1.6 }) => `${height}rem`};
-    background: ${({ color = 'white' }) => transparentize(0.5, color)};
-    border-radius: ${({ height = 1 }) => `${height}rem`};
+    background: ${({ color = 'white' }) => transparentize(.5, color)};
+    border: .2rem solid #fff;
 
     &::after {
       content: "";
@@ -21,6 +21,5 @@ export default styled.div`
       width: ${({ percentage = 0 }) => `${percentage}%`};
       transition: ${({ loadTime = .1 }) => `width cubic-bezier(0.550, 0.055, 0.675, 0.190)`};
       transition-duration: ${({ loadTime = .1 }) => `${loadTime}s`}; 
-      border-radius: ${({ height = 1 }) => `${height}rem`};
     }
 `;

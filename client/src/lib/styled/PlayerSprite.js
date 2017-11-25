@@ -1,11 +1,13 @@
 import styled from 'styled-components';
 import styles from './styles';
+import ship from '../graphics/ship.svg';
 
 export default styled.div`
     position: absolute;
-    width: ${({ size = .5 }) => `${size}rem`};
-    height: ${({ size = .5 }) => `${size}rem`};
-    background: white;
-    transition: transform .05s ease;
+    width: ${({ size = 5 }) => `${size}px`};
+    height: ${({ size = 5 }) => `${size}px`};
     z-index: 1;
+    background-color: ${({ isCurrent }) => isCurrent ? 'white' : 'red'};
+    mask: url(${ship}) no-repeat 0 0;
+    mask-size: cover;
 `;

@@ -28,7 +28,7 @@ class Shots extends PureComponent<Props> {
 
     render() {
         const { shots, playerSize, step } = this.props;
-        const size = Math.round(step * playerSize / 10);
+        const size = Math.round(step * playerSize);
         return (
             <ShotsContainer>
                 {shots && Object.keys(shots).map(key =>

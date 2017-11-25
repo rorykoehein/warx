@@ -12,7 +12,6 @@ export default styled.input`
     outline: 0;
     color: white;
     background: black;
-    border: 0;
-    border-radius: .4rem;
+    border: .2rem solid #999;
     font-family: 'VT323', monospace;
 `;
