@@ -9,14 +9,14 @@ type Props = {
     size: number,
 };
 
-const time = 400;
+const time = 500;
 const opacityStyles = { entering: '1', entered: '1', exiting: '0', exited: '0', none: '1', };
 
 const transformStyles = {
-    entering: `scale(0.1)`,
-    entered: `scale(10)`,
-    exiting: `scale(10)`,
-    exited: `scale(10)`,
+    entering: `scale(0)`,
+    entered: `scale(15)`,
+    exiting: `scale(15)`,
+    exited: `scale(15)`,
     none: ``,
 };
 
