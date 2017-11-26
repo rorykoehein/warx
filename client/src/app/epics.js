@@ -173,7 +173,7 @@ const explosions = (action$, store: Store) => {
             const players = store.getState().players;
             return hits.map(playerId => {
                 const player = players[playerId];
-                return addExplosion({ id: playerId, x: player.x, y: player.y });
+                return addExplosion({ id: playerId, x: player.x, y: player.y, size: 10 });
             });
         });
 };
@@ -183,6 +183,17 @@ const explosionsCleanup = (action$) => {
         .ofType('EXPLOSION_ADDED')
         .delayWhen(() => Observable.timer(32))
         .map(({ data: { id }}) => removeExplosion({ id }));
+};
+
+const explosionsHits = (action$, store: Store) => {
+    return action$
+        .ofType('EXPLOSION_ADDED')
+        .do(({ data: { x, y } }) => {
+            const players = store.getState().players;
+            console.log(x, y, players);
+            // debugger;
+        })
+        .ignoreElements()
 };
 
 export const rootEpic = combineEpics(
@@ -199,4 +210,5 @@ export const rootEpic = combineEpics(
     messagesCleanup,
     explosions,
     explosionsCleanup,
+    explosionsHits
 );

@@ -31,10 +31,10 @@ const transformStyles = {
     none: ``,
 };
 
-const getStyles = ({ x, y, direction, state, hasEntered }) => ({
+const getStyles = ({ x, y, direction, state, hasEntered, size }) => ({
     transition: hasEntered ? 'transform .1s ease, opacity 1s ease' : 'transform 1s ease, opacity 1s ease',
     opacity: opacityStyles[state],
-    transform: `translate(${x}px, ${y}px) rotate(${getRotation(direction)}deg) ${transformStyles[state]}`,
+    transform: `translate(${x - size/2}px, ${y - size/2}px) rotate(${getRotation(direction)}deg) ${transformStyles[state]}`,
 });
 
 class Player extends PureComponent<Props> {
@@ -53,7 +53,7 @@ class Player extends PureComponent<Props> {
                         <PlayerSprite
                             size={size}
                             isCurrent={isCurrent}
-                            style={getStyles({x, y, direction, state, hasEntered})}
+                            style={getStyles({ x, y, direction, state, hasEntered, size })}
                         />
                     );
                 }}

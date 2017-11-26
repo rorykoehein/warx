@@ -14,9 +14,9 @@ const opacityStyles = { entering: '1', entered: '1', exiting: '0', exited: '0', 
 
 const transformStyles = {
     entering: `scale(0)`,
-    entered: `scale(15)`,
-    exiting: `scale(15)`,
-    exited: `scale(15)`,
+    entered: `scale(1)`,
+    exiting: `scale(1)`,
+    exited: `scale(1)`,
     none: ``,
 };
 
@@ -24,11 +24,12 @@ const getStyles = ({ x, y, direction, size, state }) => ({
     position: 'absolute',
     transition: `transform ${time/4}ms ease, opacity ${time}ms ease-out`,
     opacity: opacityStyles[state],
+    transformOrigin: `center center`,
     borderRadius: '50%',
     background: 'white',
     width: `${size}px`,
     height: `${size}px`,
-    transform: `translate(${x}px, ${y}px) ${transformStyles[state]}`,
+    transform: `translate(${x - size/2}px, ${y - size/2}px) ${transformStyles[state]}`,
 });
 
 class Explosion extends PureComponent<Props> {

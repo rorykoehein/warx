@@ -126,17 +126,17 @@ export const cleanupMessage = ({ id }: { id: number }): RemoveMessageAction => {
     };
 };
 
-export const addExplosion = ({ id, x, y }: { id: number, x: number, y: number }): AddExplosionAction => {
-    return {
+export const addExplosion = ({ id, x, y, size }: { id: number, x: number, y: number, size: number })
+    : AddExplosionAction => ({
         type: 'EXPLOSION_ADDED',
         origin: 'client',
         data: {
             id,
             x,
             y,
+            size,
         }
-    };
-};
+    });
 
 export const removeExplosion = ({ id }: { id: number }): RemoveExplosionAction => {
     return {
