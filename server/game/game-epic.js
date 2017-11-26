@@ -1,7 +1,7 @@
 import 'rxjs';
 import { Observable } from 'rxjs/Observable';
 import { spawn, addExplosion, hit } from './actions';
-import type { Store } from '../../client/src/app/types/framework';
+import type { Store } from '../../client/src/types/framework';
 
 const getRules = store => store.getState().rules;
 

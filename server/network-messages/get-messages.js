@@ -1,4 +1,5 @@
 import Rx from 'rxjs';
+import { packKey, unpackKey, unpack } from '../../client/src/pack-messages';
 
 // map socket.io messages to an observable
 export default (io) => {
@@ -7,8 +8,10 @@ export default (io) => {
             const id = socket.id;
             observer.next({ id, time: Date.now(), event: 'connect' });
 
-            socket.on('action', (payload) => {
-                observer.next({ id, time: Date.now(), event: 'action', payload });
+            socket.on(packKey('action'), (payload) => {
+                console.log('unpack(payload)', unpack(payload));
+
+                observer.next({ id, time: Date.now(), event: 'action', payload: unpack(payload) });
             });
 
             socket.on('disconnect', () => {

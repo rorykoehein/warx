@@ -1,5 +1,5 @@
-import { PlayerId } from '../../client/src/app/types/game';
-import { AddExplosionAction, RemoveExplosionAction } from '../../client/src/app/types/actions'; // todo move
+import { PlayerId } from '../../client/src/types/game';
+import { AddExplosionAction, RemoveExplosionAction } from '../../client/src/types/actions'; // todo move
 
 const getRandomPosition = (size, step) => {
     const min = 0;
