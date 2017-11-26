@@ -1,4 +1,4 @@
-import type { State } from './types/game';
+import type { State } from '../types/game';
 
 const initialState: State = {
     players: {},

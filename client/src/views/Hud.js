@@ -2,10 +2,10 @@
 
 import React, { PureComponent } from 'react';
 import { connect } from 'react-redux';
-import HudContainer from '../../lib/styled/HudContainer';
-import HudBottomCenter from '../../lib/styled/HudBottomCenter';
-import HudTopRight from '../../lib/styled/HudTopRight';
-import HudTopLeft from '../../lib/styled/HudTopLeft';
+import HudContainer from '../sprites/HudContainer';
+import HudBottomCenter from '../sprites/HudBottomCenter';
+import HudTopRight from '../sprites/HudTopRight';
+import HudTopLeft from '../sprites/HudTopLeft';
 import WeaponLoader from './WeaponLoader';
 import Messages from './Messages';
 

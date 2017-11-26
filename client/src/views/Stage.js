@@ -6,7 +6,7 @@ import KeyBoardHandler from './KeyboardHandler';
 import World from './World';
 import Hud from './Hud';
 import SignIn from './SignIn';
-import StageSprite from '../../lib/styled/StageSprite';
+import StageSprite from '../sprites/StageSprite';
 
 export default class Stage extends PureComponent<{}> {
     render() {

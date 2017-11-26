@@ -1,11 +1,10 @@
 // @flow
 
-import type { Direction, PlayerId } from './types/game';
+import type { Direction, PlayerId } from '../types/game';
 import type {
     MoveAction, SelfShotFireAction, ShotFireAction, ShotCoolAction, ActionOrigin, ActionInterface,
-    KeyDownAction, KeyUpAction, AddMessageAction, RemoveMessageAction, SelfJoinAction, AddExplosionAction,
-    RemoveExplosionAction
-} from './types/actions';
+    KeyDownAction, KeyUpAction, AddMessageAction, RemoveMessageAction, SelfJoinAction, RemoveExplosionAction
+} from '../types/actions';
 
 export const move = ({ direction, playerId } : { direction: Direction, playerId: PlayerId }): MoveAction => {
     return {

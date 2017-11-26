@@ -1,11 +1,11 @@
 // @flow
 
 import React, { PureComponent } from 'react';
-import LargeInput from '../../lib/styled/LargeInput';
-import Overlay from '../../lib/styled/Overlay';
-import OverlayContainer from '../../lib/styled/OverlayContainer';
 import { connect } from 'react-redux';
-import { selfJoin } from '../actions';
+import LargeInput from '../sprites/LargeInput';
+import Overlay from '../sprites/Overlay';
+import OverlayContainer from '../sprites/OverlayContainer';
+import { selfJoin } from '../state/actions';
 
 import type { Connector } from 'react-redux';
 import type { Dispatch } from '../types/framework';

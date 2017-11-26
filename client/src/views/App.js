@@ -3,7 +3,7 @@
 import React, { PureComponent } from 'react';
 import { Provider } from 'react-redux';
 import Stage from './Stage';
-import store from '../store';
+import store from '../state/store';
 
 type Props = {};
 

@@ -1,7 +1,7 @@
 import 'rxjs';
-import spawn from '../lib/sound/spawn.mp3';
-import laser from '../lib/sound/laser.mp3';
-import explode from '../lib/sound/explode.mp3';
+import spawn from '../sounds/spawn.mp3';
+import laser from '../sounds/laser.mp3';
+import explode from '../sounds/explode.mp3';
 
 const actionSoundMap = {
     SHOT_FIRED: {

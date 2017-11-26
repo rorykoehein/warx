@@ -1,14 +1,11 @@
 import 'rxjs';
 import { Observable } from 'rxjs/Observable';
 import { combineEpics } from 'redux-observable';
-import type { State, PlayerId } from './types/game.js'
-import type { Store } from './types/framework.js'
-import { sendAction } from './socket';
+import type { Store } from '../types/framework.js';
+import { sendAction } from '../socket';
 import sounds from './sounds';
 import { weaponReload, selfMove, shotCool, shotFire, selfShotFire, shotFireToServer, moveToServer,
     addMessage, cleanupMessage, removeExplosion } from './actions';
-
-
 
 /**
  * search products epic

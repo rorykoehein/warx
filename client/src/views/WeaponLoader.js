@@ -4,8 +4,8 @@ import React, { PureComponent } from 'react';
 import { connect } from 'react-redux';
 import type { Connector } from 'react-redux';
 import type { State } from '../types/game';
-import styles from '../../lib/styled/styles'; // todo nah
-import LoadingBarSprite from '../../lib/styled/LoadingBarSprite';
+import styles from '../sprites/styles'; // todo nah
+import LoadingBarSprite from '../sprites/LoadingBarSprite';
 
 type Props = {
     reloadTime: number,

@@ -4,8 +4,8 @@ import React, { PureComponent } from 'react';
 import { connect } from 'react-redux';
 import type { Connector } from 'react-redux';
 import type { State, Shots as ShotsType } from '../types/game';
-import ShotsContainer from '../../lib/styled/ShotsContainer';
-import Shot from '../../lib/styled/Shot';
+import ShotsContainer from '../sprites/ShotsContainer';
+import Shot from '../sprites/Shot';
 
 type Props = {
     shots?: ShotsType,

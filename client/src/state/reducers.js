@@ -1,7 +1,7 @@
 // @flow
 
-import type { Player, State } from './types/game';
-import type { Action } from './types/actions';
+import type { Player, State } from '../types/game';
+import type { Action } from '../types/actions';
 import initialState from './initial-state';
 
 const move = (player: Player, direction, step): Player => ({

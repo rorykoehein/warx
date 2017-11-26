@@ -3,7 +3,7 @@
 import React, { PureComponent } from 'react';
 import { Transition } from 'react-transition-group';
 import PlayerSprite from './PlayerSprite';
-import type { Direction } from '../../app/types/game';
+import type { Direction } from '../types/game';
 import styles from './styles';
 
 type Props = {

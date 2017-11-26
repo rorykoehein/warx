@@ -5,7 +5,7 @@ import ReactDOM from 'react-dom';
 import { connect } from 'react-redux';
 import type { Connector } from 'react-redux';
 import type { State } from '../types/game';
-import WorldSprite from '../../lib/styled/WorldSprite';
+import WorldSprite from '../sprites/WorldSprite';
 import Players from './Players';
 import Explosions from './Explosions';
 import Shots from './Shots';

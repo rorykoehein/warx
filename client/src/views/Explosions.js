@@ -4,8 +4,8 @@ import React, { PureComponent } from 'react';
 import { connect } from 'react-redux';
 import type { Connector } from 'react-redux';
 import type {State, PlayerId, ExplosionsType} from '../types/game';
-import ExplosionsContainer from '../../lib/styled/ExplosionsContainer';
-import Explosion from '../../lib/styled/Explosion';
+import ExplosionsContainer from '../sprites/ExplosionsContainer';
+import Explosion from '../sprites/Explosion';
 
 type Props = {
     explosions?: ExplosionsType,

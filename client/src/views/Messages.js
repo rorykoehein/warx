@@ -2,8 +2,8 @@
 
 import React, { PureComponent } from 'react';
 import { connect } from 'react-redux';
-import MessagesContainer from '../../lib/styled/MessagesContainer';
-import Message from '../../lib/styled/Message';
+import MessagesContainer from '../sprites/MessagesContainer';
+import Message from '../sprites/Message';
 
 import type { Connector } from 'react-redux';
 import type { State, MessagesType } from '../types/game';
