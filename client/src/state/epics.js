@@ -27,7 +27,7 @@ const connected = (action$, store: Store) => {
     return action$
         .ofType('CONNECTED')
         .switchMap(() =>
-            Observable.interval(10000) // todo add ping time to config/rules
+            Observable.interval(30000) // todo add ping time to config/rules
                 .takeUntil(action$.ofType('DISCONNECTED'))
                 .map(() => ({ type: 'PING', origin: 'client', data: { sendTime: new Date() } }))
                 .do(action => sendAction(action))
@@ -173,7 +173,7 @@ export const explosionsCleanup = (action$, store: Store) => {
 
 export const rootEpic = combineEpics(
     connected,
-    // pings,
+    pings,
     sendToServer,
     keyMoves,
     selfShots,

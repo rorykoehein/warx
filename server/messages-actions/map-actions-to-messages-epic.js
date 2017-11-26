@@ -1,4 +1,4 @@
-import type { Store } from '../../client/src/app/types/framework';
+import type { Store } from '../../client/src/types/framework';
 // possibly inject these functions from network-messages on setup, but for now this is decoupled enough
 import { send, broadcast, all } from "../network-messages/send-messages";
 
@@ -8,6 +8,14 @@ export const connects = (action$, store: Store) =>
         .do(payload => {
             const { data: { playerId } } = payload;
             const { players, rules } = store.getState();
+
+            console.log('CONNECTOR playerId', playerId, {
+                type: 'CONNECTED',
+                origin: 'server',
+                data: {
+                    playerId,
+                },
+            });
 
             // send the current game state to the client when he logs in
             send(playerId, 'action', {

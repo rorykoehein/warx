@@ -1,4 +1,4 @@
-import type { Player, Direction } from '../../client/src/app/types/game';
+import type { Player, Direction } from '../../client/src/types/game';
 
 const movePlayer = (player: Player, direction: Direction, step: number): Player => ({
     ...player,
