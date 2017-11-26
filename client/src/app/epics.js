@@ -6,7 +6,7 @@ import type { Store } from './types/framework.js'
 import { sendAction } from './socket';
 import sounds from './sounds';
 import { weaponReload, selfMove, shotCool, shotFire, selfShotFire, shotFireToServer, moveToServer,
-    addMessage, cleanupMessage, addExplosion, removeExplosion } from './actions';
+    addMessage, cleanupMessage, removeExplosion } from './actions';
 
 
 
@@ -166,39 +166,17 @@ const messagesCleanup = (action$) => {
         .map(({ data: { id }}) => cleanupMessage({ id }));
 };
 
-const explosions = (action$, store: Store) => {
-    return action$
-        .ofType('HIT')
-        .flatMap(({ data: { hits } }) => {
-            const players = store.getState().players;
-            return hits.map(playerId => {
-                const player = players[playerId];
-                return addExplosion({ id: playerId, x: player.x, y: player.y, size: 10 });
-            });
-        });
-};
-
-const explosionsCleanup = (action$) => {
+export const explosionsCleanup = (action$, store: Store) => {
     return action$
         .ofType('EXPLOSION_ADDED')
-        .delayWhen(() => Observable.timer(32))
+        .delay(32)
         .map(({ data: { id }}) => removeExplosion({ id }));
 };
 
-const explosionsHits = (action$, store: Store) => {
-    return action$
-        .ofType('EXPLOSION_ADDED')
-        .do(({ data: { x, y } }) => {
-            const players = store.getState().players;
-            console.log(x, y, players);
-            // debugger;
-        })
-        .ignoreElements()
-};
 
 export const rootEpic = combineEpics(
     connected,
-    pings,
+    // pings,
     sendToServer,
     keyMoves,
     selfShots,
@@ -208,7 +186,5 @@ export const rootEpic = combineEpics(
     sounds,
     messages,
     messagesCleanup,
-    explosions,
     explosionsCleanup,
-    explosionsHits
 );

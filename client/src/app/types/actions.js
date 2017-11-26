@@ -147,6 +147,7 @@ export type RemoveMessageAction = {
         +id: number,
     }
 };
+
 export type AddExplosionAction = {
     +type: 'EXPLOSION_ADDED',
     +origin: 'client',
@@ -155,6 +156,7 @@ export type AddExplosionAction = {
         +x: number,
         +y: number,
         +size: number,
+        +causedBy: PlayerId,
     }
 };
 

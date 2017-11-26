@@ -21,17 +21,30 @@ const getRotation = d =>
 const time = 250;
 const maxOpacity = .75;
 const opacityStyles = { entering: maxOpacity, entered: maxOpacity, exiting: '0', exited: '0', none: maxOpacity, };
-const transitions = { entering: ``, entered: ``, exiting: `opacity ${time}ms ease-out`, exited: ``, none: ``, };
+const transitions = {
+    entering: ``,
+    entered: ``,
+    exiting: `opacity ${time}ms ease-out, transform ${time}ms ease-out`,
+    exited: ``,
+    none: ``,
+};
+const transformStyles = (size) => ({
+    entering: `scaleX(1)`,
+    entered: `scaleX(1)`,
+    exiting: `scaleX(${size})`,
+    exited: `scaleX(${size})`,
+    none: ``,
+});
 
 const getStyles = ({ x, y, size, duration, direction, state }) => ({
     position: 'absolute',
     background: transparentize(0.25, styles.shotRed),
-    width: `${size}px`,
+    width: `1px`,
     height: '200%',
-    transformOrigin: `${size/2}px ${size/2}px`,
+    transformOrigin: `center 0px 0px`,
     transition: transitions[state],
     opacity: opacityStyles[state],
-    transform: `translate(${x}px, ${y}px) rotate(${getRotation(direction)}deg)`, //  ${transformStyles[state]}
+    transform: `translate(${x}px, ${y}px) rotate(${getRotation(direction)}deg) ${transformStyles(size)[state]}`, //
 });
 
 class Shot extends PureComponent<Props> {
