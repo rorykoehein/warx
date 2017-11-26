@@ -146,13 +146,13 @@ const reducer = (state: State = initialState, action: Action): State => {
         }
 
         case 'EXPLOSION_ADDED': {
-            const { data: { id, x, y } } = action;
+            const { data: { id, x, y, size } } = action;
             const { explosions } = state;
             return {
                 ...state,
                 explosions: {
                     ...explosions,
-                    [id] : { x, y }
+                    [id] : { x, y, size }
                 },
             };
         }

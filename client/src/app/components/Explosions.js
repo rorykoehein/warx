@@ -32,7 +32,7 @@ class Explosions extends PureComponent<Props> {
                         key={key}
                         x={Math.round(step * explosions[key].x)}
                         y={Math.round(step * explosions[key].y)}
-                        size={size}
+                        size={step * explosions[key].size}
                     />
                 )}
             </ExplosionsContainer>

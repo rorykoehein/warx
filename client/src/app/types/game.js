@@ -47,6 +47,7 @@ export type ExplosionsType = {
     +[id: string]: {
         +x: number,
         +y: number,
+        +size: number,
     },
 }
 
