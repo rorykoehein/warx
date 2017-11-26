@@ -7,4 +7,6 @@ export default {
     respawnTime: 1500,
     worldWidth: 100, // ratio to worldHeight
     worldHeight: 50, // ratio to worldWidth
+    explosionSize: 20,
+    explosionTime: 32 // ms, must be a couple of frames
 };

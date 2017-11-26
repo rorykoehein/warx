@@ -1,8 +1,9 @@
 import 'rxjs';
 import { Observable } from 'rxjs/Observable';
-import { spawn } from './actions';
+import { spawn, addExplosion, hit } from './actions';
 import type { Store } from '../../client/src/app/types/framework';
 
+const getRules = store => store.getState().rules;
 
 const isHit = (shooter, opponent) => {
     const { direction, x, y } = shooter;
@@ -61,19 +62,7 @@ export const shots = (action$, store: Store) =>
             return { hits, playerId };
         })
         .filter(({ hits, playerId }) => hits.length > 0)
-        .map(({ hits, playerId }) => {
-            // todo: HIT is not helpful for clients? maybe send the complete new state of the client?
-            return {
-                type: 'HIT',
-                origin: 'server', // todo fugly
-                sendToClient: true, // todo fugly
-                toAll: true, // todo fugly
-                data: {
-                    shooter: playerId,
-                    hits
-                },
-            };
-        });
+        .map(({ hits, playerId }) => hit({ hits, shooter: playerId }));
 
 export const requestedShots = (action$, store: Store) =>
     action$
@@ -133,3 +122,39 @@ export const moves = (action$, store: Store) =>
                 };
             })
         );
+
+
+export const hitsExplosions = (action$, store: Store) => {
+    return action$
+        .ofType('HIT')
+        .flatMap(({ data: { shooter, hits } }) => {
+            const players = store.getState().players;
+            return hits.map(playerId => {
+                const player = players[playerId];
+                const size = getRules(store).explosionSize;
+                return addExplosion({ id: playerId, x: player.x, y: player.y, size, causedBy: shooter });
+            });
+        });
+};
+
+const pointCircleCollision = (point, circle, radius) => {
+    if (radius === 0) return false;
+    const dx = circle[0] - point[0];
+    const dy = circle[1] - point[1];
+    return dx * dx + dy * dy <= radius * radius
+};
+
+export const explosionsHits = (action$, store: Store) => {
+    return action$
+        .ofType('EXPLOSION_ADDED')
+        .delay(100)
+        .map(({ data: { x, y, size, causedBy } }) => {
+            const players = store.getState().players;
+            const collisions = Object.keys(players).filter(id => {
+                const { alive, x: playerX, y: playerY } = players[id];
+                return alive && pointCircleCollision([playerX, playerY], [x, y], size/2);
+            });
+            return hit({ hits: collisions, shooter: causedBy });
+        })
+        .filter(({ data: { hits } }) => hits.length > 0);
+};

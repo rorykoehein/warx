@@ -126,28 +126,6 @@ export const cleanupMessage = ({ id }: { id: number }): RemoveMessageAction => {
     };
 };
 
-export const addExplosion = ({ id, x, y, size }: { id: number, x: number, y: number, size: number })
-    : AddExplosionAction => ({
-        type: 'EXPLOSION_ADDED',
-        origin: 'client',
-        data: {
-            id,
-            x,
-            y,
-            size,
-        }
-    });
-
-export const removeExplosion = ({ id }: { id: number }): RemoveExplosionAction => {
-    return {
-        type: 'EXPLOSION_REMOVED',
-        origin: 'client',
-        data: {
-            id
-        }
-    };
-};
-
 export const selfJoin = ({ playerName }: { playerName: string }): SelfJoinAction => {
     return {
         type: 'SELF_JOINED',
@@ -155,6 +133,19 @@ export const selfJoin = ({ playerName }: { playerName: string }): SelfJoinAction
         sendToServer: true, // todo replace by epic?
         data: {
             playerName
+        }
+    };
+};
+
+
+export const removeExplosion = ({ id }: { id: number }): RemoveExplosionAction => {
+    return {
+        type: 'EXPLOSION_REMOVED',
+        origin: 'client',
+        sendToClient: true,
+        toAll: true,
+        data: {
+            id
         }
     };
 };
