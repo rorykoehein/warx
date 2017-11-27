@@ -127,7 +127,7 @@ const keyMoves = (action$) => {
         .ofType('KEY_DOWN')
         .filter(({ data: { key } }) => keyCodeActionMap[key])
         .switchMap(({ data: { key: downKey } }) => {
-        // todo: move this to server? or replicate on server?
+            // todo: move this to server? or replicate on server?
             return Observable.interval(60)
                 .map(() => keyCodeActionMap[downKey]())
                 .takeUntil(action$.ofType('KEY_UP').filter(({ data: { key: upKey } }) => downKey === upKey))
