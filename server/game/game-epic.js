@@ -78,52 +78,6 @@ export const requestedShots = (action$, store: Store) =>
             }))
         );
 
-export const moves = (action$, store: Store) =>
-    action$
-        .ofType('MOVE_REQUESTED')
-        .groupBy(payload => payload.data.playerId)
-        .flatMap(group => group
-            .throttleTime(store.getState().rules.moveTime)
-            .map(({ data: { playerId, direction } }) => {
-                console.log('move req');
-                const { rules, players } = store.getState();
-                const { moveDistance, worldWidth, worldHeight } = rules;
-                const player = players[playerId]; // todo use selector function for getting players?
-                const { x, y } = player;
-                const canMove =
-                    (direction === 'left' && x - moveDistance >= 0) ||
-                    (direction === 'right' && x + moveDistance < worldWidth) ||
-                    (direction === 'up' && y - moveDistance >= 0) ||
-                    (direction === 'down' && y + moveDistance < worldHeight);
-
-                if(!canMove) {
-                    // todo only send move to the spefic client
-                    return {
-                        type: 'MOVE_REJECTED',
-                        origin: 'server', // todo fugly
-                        // sendToClient: true, // todo fugly
-                        // toAll: false, // todo fugly
-                        data: {
-                            playerId,
-                            direction
-                        },
-                    };
-                }
-
-                return {
-                    type: 'MOVE',
-                    origin: 'server', // todo fugly
-                    sendToClient: true, // todo fugly
-                    toAll: true, // todo fugly
-                    data: {
-                        playerId,
-                        direction
-                    },
-                };
-            })
-        );
-
-
 export const hitsExplosions = (action$, store: Store) => {
     return action$
         .ofType('HIT')

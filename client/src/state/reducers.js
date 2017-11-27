@@ -77,6 +77,40 @@ const reducer = (state: State = initialState, action: Action): State => {
             };
         }
 
+        case 'MOVE_SYNC': {
+            const { data: { playerId, x, y } } = action;
+            const player = players[playerId];
+            if(!player) return state;
+            return {
+                ...state,
+                players: {
+                    ...players,
+                    [playerId]: {
+                        ...player,
+                        x,
+                        y,
+                    },
+                },
+            };
+        }
+
+        case 'MOVE_STOPPED': {
+            const { data: { playerId, x, y, } } = action;
+            const player = players[playerId];
+            if(!player) return state;
+            return {
+                ...state,
+                players: {
+                    ...players,
+                    [playerId]: {
+                        ...player,
+                        x,
+                        y,
+                    }
+                },
+            };
+        }
+
         case 'SHOT_FIRED': {
             const { data: { playerId } } = action;
             const { shots } = state;
