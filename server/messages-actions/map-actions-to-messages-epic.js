@@ -9,6 +9,7 @@ export const connects = (action$, store: Store) =>
             const { data: { playerId } } = payload;
             const { players, rules } = store.getState();
 
+            // todo: replace playerIds by numberic ids to save network space, communicate this number id once on join
             console.log('CONNECTOR playerId', playerId, {
                 type: 'CONNECTED',
                 origin: 'server',
