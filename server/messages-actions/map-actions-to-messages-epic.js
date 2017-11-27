@@ -47,7 +47,7 @@ export const pings = (action$, store: Store) =>
         .ofType('PING')
         .do(payload => {
             const { data: { playerId } } = payload;
-            send(playerId, 'action', { type: 'PONG' })
+            send(playerId, 'action', { type: 'PONG', data: {} })
         })
         .ignoreElements();
 

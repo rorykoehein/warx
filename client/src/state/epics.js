@@ -4,8 +4,9 @@ import { combineEpics } from 'redux-observable';
 import type { Store } from '../types/framework.js';
 import { sendAction } from '../socket';
 import sounds from './sounds';
-import { weaponReload, selfMove, shotCool, shotFire, selfShotFire, shotFireToServer, moveToServer,
-    addMessage, cleanupMessage, removeExplosion } from './actions';
+import { weaponReload, shotCool, shotFire, shotFireToServer, addMessage, cleanupMessage,
+    removeExplosion } from './actions';
+import { selfStartMoves, selfStopMoves, keyDownMoves, keyUpMoves, moveStarts } from './movement';
 
 /**
  * search products epic
@@ -55,29 +56,6 @@ const pings = (action$, store: Store) =>
                 })
         );
 
-const selfMoves = (action$, store: Store) => {
-    // todo this time needs to come from the server
-    return action$
-        .ofType('SELF_MOVED')
-        .throttle(() => Observable.interval(store.getState().rules.moveTime))
-        // todo: right now we wait for the server to reply to move, because the server tells if we can move
-        // todo: client should also have this canMove logic, and server's MOVE_REJECTED should be a failsafe
-        // .map(({ data: { direction } }) => {
-        //     // convert the action to something the store understands
-        //     const state = store.getState();
-        //     const currentPlayerId = state.currentPlayerId;
-        //     return move({
-        //         playerId: currentPlayerId,
-        //         direction
-        //     })
-        // })
-        .do(({ data: { direction }}) => {
-            // tell the server about this client initiated action
-            sendAction(moveToServer({ direction }));
-        })
-        .ignoreElements();
-};
-
 const selfShots = (action$, store: Store) => {
     // todo this time needs to come from the server
     return action$
@@ -113,26 +91,6 @@ const reloads = (action$, store: Store) => {
         .map(({ data: { playerId } }) => weaponReload({ playerId }));
 };
 
-const keyCodeActionMap = {
-    ArrowLeft: () => selfMove({ direction: 'left' }),
-    ArrowUp: () => selfMove({ direction: 'up' }),
-    ArrowRight: () => selfMove({ direction: 'right' }),
-    ArrowDown: () => selfMove({ direction: 'down' }),
-    ' ': () => selfShotFire(),
-};
-
-// listen to KEY_DOWN, fire the move event start the interval which fire the move event until the KEY_UP event is heard
-const keyMoves = (action$) => {
-    return action$
-        .ofType('KEY_DOWN')
-        .filter(({ data: { key } }) => keyCodeActionMap[key])
-        .switchMap(({ data: { key: downKey } }) => {
-            // todo: move this to server? or replicate on server?
-            return Observable.interval(60)
-                .map(() => keyCodeActionMap[downKey]())
-                .takeUntil(action$.ofType('KEY_UP').filter(({ data: { key: upKey } }) => downKey === upKey))
-        })
-};
 
 const actionMessageMap = {
     PLAYER_LEFT: () => 'Player left', // todo: at this moment the player who left is removed from the state
@@ -175,13 +133,17 @@ export const rootEpic = combineEpics(
     connected,
     pings,
     sendToServer,
-    keyMoves,
     selfShots,
-    selfMoves,
     shots,
     reloads,
     sounds,
     messages,
     messagesCleanup,
     explosionsCleanup,
+
+    keyDownMoves,
+    keyUpMoves,
+    selfStartMoves,
+    selfStopMoves,
+    moveStarts,
 );

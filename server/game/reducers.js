@@ -1,7 +1,7 @@
 // @flow
 
 import rules from './default-rules';
-import movePlayer from './move-player';
+import { movePlayer } from './movement';
 
 const initialState = {
     players: {},

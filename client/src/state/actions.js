@@ -18,9 +18,19 @@ export const move = ({ direction, playerId } : { direction: Direction, playerId:
 };
 
 // to be used from the UI
-export const selfMove = ({ direction } : { direction: Direction }): ActionInterface => {
+export const selfMoveStart = ({ direction } : { direction: Direction }): ActionInterface => {
     return {
-        type: 'SELF_MOVED',
+        type: 'SELF_MOVE_STARTED',
+        origin: 'client',
+        data: {
+            direction
+        }
+    };
+};
+
+export const selfMoveStop = ({ direction } : { direction: Direction }): ActionInterface => {
+    return {
+        type: 'SELF_MOVE_STOPPED',
         origin: 'client',
         data: {
             direction
@@ -55,9 +65,19 @@ export const shotFireToServer = (): ActionInterface => {
 };
 
 // to send to server
-export const moveToServer = ({ direction }: { direction: Direction }): ActionInterface => {
+export const moveStartToServer = ({ direction }: { direction: Direction }): ActionInterface => {
     return {
-        type: 'MOVE_REQUESTED',
+        type: 'MOVE_START_REQUESTED',
+        data: {
+            direction
+        }
+    };
+};
+
+// to send to server
+export const moveStopToServer = ({ direction }: { direction: Direction }): ActionInterface => {
+    return {
+        type: 'MOVE_STOP_REQUESTED',
         data: {
             direction
         }
