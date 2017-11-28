@@ -6,13 +6,14 @@ import type {
     KeyDownAction, KeyUpAction, AddMessageAction, RemoveMessageAction, SelfJoinAction, RemoveExplosionAction
 } from '../types/actions';
 
-export const move = ({ direction, playerId } : { direction: Direction, playerId: PlayerId }): MoveAction => {
+export const move = ({ direction, playerId, time } : { direction: Direction, playerId: PlayerId, time: number }): MoveAction => {
     return {
         type: 'MOVE',
         origin: 'client',
         data: {
             direction,
             playerId,
+            time,
         }
     };
 };

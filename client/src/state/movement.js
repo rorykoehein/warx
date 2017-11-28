@@ -1,27 +1,9 @@
 import 'rxjs';
-import { Observable } from 'rxjs/Observable';
+import loop from '../loop';
 import type { Store } from '../types/framework';
-import type { Player, Direction } from '../types/game';
 import { sendAction } from '../socket';
 import { selfMoveStart, selfMoveStop, selfShotFire, moveStartToServer, moveStopToServer, move } from './actions';
-
-const moveInterval = Observable.interval(32);
-
-export const movePlayer = (player: Player, direction: Direction, step: number): Player => ({
-    ...player,
-    direction,
-    x: direction === 'left' ? player.x - step : direction === 'right' ? player.x + step : player.x,
-    y: direction === 'up' ? player.y - step : direction === 'down' ? player.y + step : player.y,
-});
-
-const canMove = (player: Player, direction: Direction, rules): Boolean => {
-    const { moveDistance, worldWidth, worldHeight } = rules;
-    const { x, y } = player;
-    return (direction === 'left' && x - moveDistance >= 0) ||
-        (direction === 'right' && x + moveDistance < worldWidth) ||
-        (direction === 'up' && y - moveDistance >= 0) ||
-        (direction === 'down' && y + moveDistance < worldHeight);
-};
+import { canMove } from "./move-helpers";
 
 export const keyDownActionMap = {
     ArrowLeft: () => selfMoveStart({ direction: 'left' }),
@@ -61,18 +43,20 @@ export const selfStopMoves = (action$) => action$
 export const moveStarts = (action$, store: Store) => action$
     .ofType('MOVE_STARTED')
     .switchMap(({ data: { direction, playerId } }) => {
-        return moveInterval
-            .filter(() => {
+        return loop
+            .map(() => Number(Date.now()))
+            .filter(time => {
                 const { rules, players } = store.getState();
                 const player = players[playerId]; // todo use selector function for getting players?
-                return canMove(player, direction, rules);
+                return player && canMove(player, direction, rules, time);
             })
-            .map(() => move({ direction, playerId }))
+            .map(time => move({ direction, playerId, time }))
             .takeUntil(
-                action$.filter(({ type, data: { direction: stopDirection, playerId: stopPlayerId } }) =>
-                    type === 'MOVE_STOPPED' &&
-                    stopDirection === direction && playerId === stopPlayerId
-                )
+                action$
+                    .ofType('MOVE_STOPPED')
+                    .filter(({ type, data: { direction: stopDirection, playerId: stopPlayerId } }) =>
+                        stopDirection === direction && playerId === stopPlayerId
+                    )
             );
 
     });

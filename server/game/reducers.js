@@ -1,7 +1,7 @@
 // @flow
 
 import rules from './default-rules';
-import { movePlayer } from './movement';
+import { movePlayer } from '../../client/src/state/move-helpers';
 
 const initialState = {
     players: {},
@@ -96,14 +96,14 @@ const reducer = (state = initialState, action) => {
 
         case 'MOVE': {
             const { players, ...rest } = state;
-            const { data: { direction, playerId } } = action;
+            const { data: { direction, playerId, time } } = action;
             const player = players[playerId];
             if(!player) return state;
             return {
                 ...rest,
                 players: {
                     ...players,
-                    [playerId]: movePlayer(player, direction, rules.moveDistance),
+                    [playerId]: movePlayer(player, direction, rules.moveDistance, time),
                 },
             };
         }
