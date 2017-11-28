@@ -1,11 +1,11 @@
-import styled from 'styled-components';
-import styles from './styles';
+import React from 'react';
 
-export default styled.div`
-    position: absolute;
-    left: ${styles.hudMargin};
-    top: ${styles.hudMargin};
-    right: ${styles.hudMargin};
-    bottom: ${styles.hudMargin};
-    opacity: .75; 
-`;
+const style = {
+    opacity: '.75',
+};
+
+export default class X extends React.PureComponent {
+    render() {
+        return <div style={style}>{this.props.children}</div>
+    }
+}

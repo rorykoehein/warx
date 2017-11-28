@@ -29,6 +29,8 @@ export type Players = {
     +[id: PlayerId]: Player
 };
 
+export type PlayerList = Array<Player>;
+
 export type Rules = {
     reloadTime: number, // time to reload the weapon after shooting
     coolTime: number, // time the shot stays visible
@@ -43,12 +45,20 @@ export type MessagesType = {
     +[id: string]: string,
 }
 
+export type MessageList = Array<{
+    +id: string,
+    +text: string,
+}>;
+
+export type Explosion = {
+    +x: number,
+    +y: number,
+    +size: number,
+    +id: string,
+};
+
 export type ExplosionsType = {
-    +[id: string]: {
-        +x: number,
-        +y: number,
-        +size: number,
-    },
+    +[id: string]: Explosion
 }
 
 export type State = {

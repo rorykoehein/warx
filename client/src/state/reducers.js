@@ -180,7 +180,7 @@ const reducer = (state: State = initialState, action: Action): State => {
                 ...state,
                 explosions: {
                     ...explosions,
-                    [id] : { x, y, size }
+                    [id] : { id, x, y, size }
                 },
             };
         }

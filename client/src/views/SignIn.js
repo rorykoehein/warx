@@ -14,6 +14,7 @@ import type { State as AppState } from '../types/game';
 type State = {
     value: string,
 };
+
 type Props = {
     onSubmit: (value: string) => void,
     isSignedIn: boolean,

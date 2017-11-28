@@ -4,30 +4,29 @@ import React, { PureComponent } from 'react';
 import { connect } from 'react-redux';
 import MessagesContainer from '../sprites/MessagesContainer';
 import Message from '../sprites/Message';
+import { getMessagesByLatest } from '../state/selectors';
 
 import type { Connector } from 'react-redux';
-import type { State, MessagesType } from '../types/game';
+import type { State, MessageList } from '../types/game';
 
 type Props = {
-    messages: MessagesType,
+    messages: MessageList,
 };
 
 const connector: Connector<{}, Props> = connect((state : State) => ({
-    messages: state.messages,
+    messages: getMessagesByLatest(state),
 }));
 
 class Messages extends PureComponent<Props> {
     static defaultProps = {
-        messages: {},
+        messages: [],
     };
 
     render() {
         const { messages } = this.props;
         return (
             <MessagesContainer>
-                {messages && Object.keys(messages)
-                    .sort((a, b) => Number(b) - Number(a))
-                    .map(key => <Message key={key}>{messages[key]}</Message>)}
+                {messages.map(message => <Message key={message.id}>{message.text}</Message>)}
             </MessagesContainer>
         )
     }

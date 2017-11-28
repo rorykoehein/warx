@@ -3,36 +3,35 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'react-redux';
 import type { Connector } from 'react-redux';
-import type {State, PlayerId, ExplosionsType} from '../types/game';
+import { getExplosionsList } from '../state/selectors';
+import type { State, Explosion as ExplosionType } from '../types/game';
 import ExplosionsContainer from '../sprites/ExplosionsContainer';
 import Explosion from '../sprites/Explosion';
 
 type Props = {
-    explosions?: ExplosionsType,
+    explosions: Array<ExplosionType>,
     playerSize: number,
     step: number,
 };
 
 const connector: Connector<{}, Props> = connect(
     (state: State) => ({
-        explosions: state.explosions,
+        explosions: getExplosionsList(state),
         playerSize: state.rules.playerSize,
     })
 );
 
 class Explosions extends PureComponent<Props> {
-
     render() {
-        const { explosions, step, playerSize } = this.props;
-        const size = Math.round(step * playerSize);
+        const { explosions, step } = this.props;
         return (
             <ExplosionsContainer>
-                {explosions && Object.keys(explosions).map(key =>
+                {explosions.map(explosion =>
                     <Explosion
-                        key={key}
-                        x={Math.round(step * explosions[key].x)}
-                        y={Math.round(step * explosions[key].y)}
-                        size={step * explosions[key].size}
+                        key={explosion.id}
+                        x={Math.round(step * explosion.x)}
+                        y={Math.round(step * explosion.y)}
+                        size={step * explosion.size}
                     />
                 )}
             </ExplosionsContainer>
