@@ -9,4 +9,5 @@ export default styled.div`
     width: 33%;
     height: 20%;
     overflow: hidden;
+    padding: ${styles.hudMargin};
 `;

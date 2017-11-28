@@ -4,6 +4,7 @@ import React, { PureComponent } from 'react';
 import { connect } from 'react-redux';
 import type { Connector } from 'react-redux';
 import type { State } from '../types/game';
+import { getRules, getCurrentPlayer } from '../state/selectors';
 import styles from '../sprites/styles'; // todo nah
 import LoadingBarSprite from '../sprites/LoadingBarSprite';
 
@@ -17,9 +18,9 @@ type HudState = {
 };
 
 const connector: Connector<{}, Props> = connect(
-    ({ currentPlayerId, players, rules } : State) => ({
-        weaponLoaded: Boolean(players[currentPlayerId] && players[currentPlayerId].weaponLoaded),
-        reloadTime: rules.reloadTime,
+    (state : State) => ({
+        weaponLoaded: getCurrentPlayer(state) && getCurrentPlayer(state).weaponLoaded,
+        reloadTime: getRules(state).reloadTime,
     })
 );
 

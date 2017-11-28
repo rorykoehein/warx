@@ -3,7 +3,7 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'react-redux';
 import type { Connector } from 'react-redux';
-import { getExplosionsList } from '../state/selectors';
+import { getExplosionsList, getRules } from '../state/selectors';
 import type { State, Explosion as ExplosionType } from '../types/game';
 import ExplosionsContainer from '../sprites/ExplosionsContainer';
 import Explosion from '../sprites/Explosion';
@@ -17,7 +17,7 @@ type Props = {
 const connector: Connector<{}, Props> = connect(
     (state: State) => ({
         explosions: getExplosionsList(state),
-        playerSize: state.rules.playerSize,
+        playerSize: getRules(state).playerSize,
     })
 );
 

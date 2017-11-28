@@ -2,6 +2,7 @@
 
 import React, { PureComponent } from 'react';
 import { connect } from 'react-redux';
+import { getLatency } from '../state/selectors';
 
 import type { Connector } from 'react-redux';
 import type { State } from '../types/game';
@@ -11,7 +12,7 @@ type Props = {
 };
 
 const connector: Connector<{}, Props> = connect((state : State) => ({
-    latency: state.latency,
+    latency: getLatency(state),
 }));
 
 class Ping extends PureComponent<Props> {
