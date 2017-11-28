@@ -7,7 +7,7 @@ export default styled.div`
     width: ${({ size = 5 }) => `${size}px`};
     height: ${({ size = 5 }) => `${size}px`};
     z-index: 1;
-    background-color: ${({ isCurrent }) => isCurrent ? 'white' : 'red'};
+    background-color: ${({ isCurrent }) => isCurrent ? styles.meColor : styles.enemyColor};
     mask: url(${ship}) no-repeat 0 0;
     mask-size: cover;
 `;
