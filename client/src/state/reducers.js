@@ -1,15 +1,9 @@
 // @flow
 
-import type { Player, State } from '../types/game';
+import type { Player, State, Direction } from '../types/game';
 import type { Action } from '../types/actions';
+import { movePlayer } from '../state/move-helpers';
 import initialState from './initial-state';
-
-const move = (player: Player, direction, step): Player => ({
-    ...player,
-    direction,
-    x: direction === 'left' ? player.x - step : direction === 'right' ? player.x + step : player.x,
-    y: direction === 'up' ? player.y - step : direction === 'down' ? player.y + step : player.y,
-});
 
 const reducer = (state: State = initialState, action: Action): State => {
     const { players, currentPlayerId, rules } = state;
@@ -65,14 +59,14 @@ const reducer = (state: State = initialState, action: Action): State => {
         }
 
         case 'MOVE': {
-            const { data: { direction, playerId } } = action;
+            const { data: { direction, playerId, time } } = action;
             const player = players[playerId];
             if(!player) return state;
             return {
                 ...state,
                 players: {
                     ...players,
-                    [playerId]: move(player, direction, rules.moveDistance),
+                    [playerId]: movePlayer(player, direction, rules.moveDistance, time),
                 },
             };
         }

@@ -1,55 +1,28 @@
 import 'rxjs';
-import { Observable } from 'rxjs/Observable';
+import loop from '../../client/src/loop';
 import type { Store } from '../../client/src/types/framework';
-import type { Player, Direction } from '../../client/src/types/game';
-
-const moveInterval = Observable.interval(32);
-
-export const movePlayer = (player: Player, direction: Direction, step: number): Player => ({
-    ...player,
-    direction,
-    x: direction === 'left' ? player.x - step : direction === 'right' ? player.x + step : player.x,
-    y: direction === 'up' ? player.y - step : direction === 'down' ? player.y + step : player.y,
-});
-
-const canMove = (player: Player, direction: Direction, rules): Boolean => {
-    const { moveDistance, worldWidth, worldHeight } = rules;
-    const { x, y } = player;
-    return (direction === 'left' && x - moveDistance >= 0) ||
-        (direction === 'right' && x + moveDistance < worldWidth) ||
-        (direction === 'up' && y - moveDistance >= 0) ||
-        (direction === 'down' && y + moveDistance < worldHeight);
-};
+import { canMove } from '../../client/src/state/move-helpers';
 
 export const moves = (action$, store: Store) => action$
     .ofType('MOVE_STARTED')
     .switchMap(({ data: { direction, playerId } }) => {
-        let m = 0;
-        return moveInterval
-            .map(() => {
+        return loop
+            .map(() => Number(Date.now()))
+            .filter(time => {
                 const { rules, players } = store.getState();
                 const player = players[playerId]; // todo use selector function for getting players?
-                m++;
-                console.log('mmmmm', m);
-                return canMove(player, direction, rules) ? {
+                return player && canMove(player, direction, rules, time);
+            })
+            .map(() => {
+                return {
                     type: 'MOVE',
                     origin: 'server', // todo fugly
                     sendToClient: false, // todo fugly
                     toAll: false, // todo fugly
                     data: {
                         playerId,
-                        direction
-                    },
-                } : {
-                    type: 'MOVE_STOPPED',
-                    origin: 'server', // todo fugly
-                    sendToClient: true, // todo fugly
-                    toAll: true, // todo fugly
-                    data: {
-                        playerId,
                         direction,
-                        x: player.x,
-                        y: player.y,
+                        time: Number(new Date()),
                     },
                 };
             })
@@ -96,17 +69,18 @@ export const moveStops = (action$, store: Store) => action$
         };
     });
 
-
+// todo: or just loop every 1000ms and send all the player x/y which have moved since the last iteration using lastMove
 export const moveSyncs = (action$, store: Store) => action$
     .ofType('MOVE')
     .groupBy(payload => payload.data.playerId)
     .flatMap(group => group
-        .throttleTime(500)
-        .map(({ data: { playerId }}) => {
-            const player = store.getState().players[playerId];
+        .throttleTime(1000)
+        .map(({ data: { playerId }}) => store.getState().players[playerId])
+        .delay(32) // todo: delay with the ping time? send old state to all clients?
+        .map(player => {
             return {
                 data: {
-                    playerId,
+                    playerId: player.id,
                     x: player.x,
                     y: player.y,
                 },
