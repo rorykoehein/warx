@@ -48,6 +48,8 @@ export const moveStarts = (action$, store: Store) => action$
             .filter(time => {
                 const { rules, players } = store.getState();
                 const player = players[playerId]; // todo use selector function for getting players?
+                // todo: the client only rejects moves, but doesn't correct it's own x/y if it's too little, maybe
+                // calculate here if the x/y is still correct from start time until this moment and correct the move
                 return player && canMove(player, direction, rules, time);
             })
             .map(time => move({ direction, playerId, time }))
