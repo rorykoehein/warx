@@ -6,6 +6,7 @@ import LargeInput from '../sprites/LargeInput';
 import Overlay from '../sprites/Overlay';
 import OverlayContainer from '../sprites/OverlayContainer';
 import { selfJoin } from '../state/actions';
+import { isSignedIn } from '../state/selectors';
 
 import type { Connector } from 'react-redux';
 import type { Dispatch } from '../types/framework';
@@ -21,7 +22,9 @@ type Props = {
 };
 
 const connector: Connector<{}, Props> = connect(
-    (state: AppState) => ({ isSignedIn: state.isSignedIn }),
+    (state: AppState) => ({
+        isSignedIn: isSignedIn(state)
+    }),
     (dispatch: Dispatch) => ({
         onSubmit: (playerName) => dispatch(selfJoin({ playerName })),
     })

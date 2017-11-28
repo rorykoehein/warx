@@ -3,25 +3,26 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'react-redux';
 import type { Connector } from 'react-redux';
-import type { State, Shots as ShotsType } from '../types/game';
+
+import { getRules, getShotsList } from '../state/selectors';
 import ShotsContainer from '../sprites/ShotsContainer';
 import Shot from '../sprites/Shot';
+import type { State, Shot as ShotType } from '../types/game';
 
 type Props = {
-    shots?: ShotsType,
+    shots: Array<ShotType>,
     playerSize: number,
     step: number,
 };
 
 const connector: Connector<{}, Props> = connect(
     (state: State) => ({
-        shots: state.shots,
-        playerSize: state.rules.playerSize,
+        shots: getShotsList(state),
+        playerSize: getRules(state).playerSize,
     })
 );
 
 class Shots extends PureComponent<Props> {
-
     static defaultProps = {
         playerSize: .6,
     };
@@ -31,13 +32,13 @@ class Shots extends PureComponent<Props> {
         const size = Math.round(step * playerSize);
         return (
             <ShotsContainer>
-                {shots && Object.keys(shots).map(key =>
+                {shots.map(shot =>
                     <Shot
-                        key={key}
-                        x={Math.round(step * shots[key].x)}
-                        y={Math.round(step * shots[key].y)}
+                        key={shot.playerId}
+                        x={Math.round(step * shot.x)}
+                        y={Math.round(step * shot.y)}
                         size={size}
-                        direction={shots[key].direction}
+                        direction={shot.direction}
                     />
                 )}
             </ShotsContainer>

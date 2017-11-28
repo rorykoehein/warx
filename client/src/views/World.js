@@ -5,6 +5,7 @@ import ReactDOM from 'react-dom';
 import { connect } from 'react-redux';
 import type { Connector } from 'react-redux';
 import type { State } from '../types/game';
+import { getRules } from '../state/selectors';
 import WorldSprite from '../sprites/WorldSprite';
 import Players from './Players';
 import Explosions from './Explosions';
@@ -24,8 +25,8 @@ type WorldState = {
 
 const connector: Connector<{}, Props> = connect(
     (state: State) => ({
-        worldWidth: state.rules.worldWidth,
-        worldHeight: state.rules.worldHeight,
+        worldWidth: getRules(state).worldWidth,
+        worldHeight: getRules(state).worldHeight,
     })
 );
 

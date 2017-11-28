@@ -10,4 +10,5 @@ export default styled.div`
     height: 20%;
     overflow: hidden;
     text-align: right;
+    padding: ${styles.hudMargin};
 `;
