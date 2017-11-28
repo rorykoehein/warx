@@ -32,6 +32,7 @@ const transformStyles = {
 };
 
 const getStyles = ({ x, y, direction, state, hasEntered, size }) => ({
+    willChange: 'transform',
     transition: hasEntered ? 'transform .1s ease, opacity 1s ease' : 'transform 1s ease, opacity 1s ease',
     opacity: opacityStyles[state],
     transform: `translate(${x - size/2}px, ${y - size/2}px) rotate(${getRotation(direction)}deg) ${transformStyles[state]}`,

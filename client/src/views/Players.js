@@ -3,12 +3,13 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'react-redux';
 import type { Connector } from 'react-redux';
-import type { State, Players as PlayersType, PlayerId } from '../types/game';
+import type { State, PlayerList, PlayerId } from '../types/game';
 import PlayersContainer from '../sprites/PlayersContainer';
 import Player from '../sprites/Player';
+import { getAlivePlayers, getCurrentPlayerId, getRules } from '../state/selectors';
 
 type Props = {
-    players?: PlayersType,
+    players: PlayerList,
     playerSize: number,
     step: number,
     currentPlayerId: PlayerId,
@@ -16,9 +17,9 @@ type Props = {
 
 const connector: Connector<{}, Props> = connect(
     (state: State) => ({
-        players: state.players,
-        playerSize: state.rules.playerSize,
-        currentPlayerId: state.currentPlayerId,
+        players: getAlivePlayers(state),
+        playerSize: getRules(state).playerSize,
+        currentPlayerId: getCurrentPlayerId(state),
     })
 );
 
@@ -33,14 +34,14 @@ class Players extends PureComponent<Props> {
         const size = Math.round(step * playerSize);
         return (
             <PlayersContainer>
-                {players && Object.keys(players).map(key => players[key].alive &&
+                {players.map(player =>
                     <Player
-                        key={key}
-                        isCurrent={currentPlayerId === key}
-                        x={Math.round(step * players[key].x)}
-                        y={Math.round(step * players[key].y)}
+                        key={player.id}
+                        isCurrent={currentPlayerId === player.id}
+                        x={Math.round(step * player.x)}
+                        y={Math.round(step * player.y)}
                         size={size}
-                        direction={players[key].direction}
+                        direction={player.direction}
                     />
                 )}
             </PlayersContainer>

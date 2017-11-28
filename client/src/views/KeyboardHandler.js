@@ -15,13 +15,9 @@ type Props = {
     keyUp: SyntheticKeyboardEvent<window.document> => KeyUpAction,
 };
 
-const empty = {};
-
-const mapStateToProps = () => empty;
+const mapStateToProps = () => ({});
 
 const mapDispatchToProps = (dispatch: Dispatch) => ({
-    // onMove: ({ direction }) => dispatch(selfMove({ direction })),
-    // onShoot: () => dispatch(selfShotFire())
     keyDown: ({ key, repeat }) => repeat ? null : dispatch(keyDown({ key })),
     keyUp: ({ key }) => dispatch(keyUp({ key })),
 });

@@ -22,6 +22,7 @@ const transformStyles = {
 
 const getStyles = ({ x, y, direction, size, state }) => ({
     position: 'absolute',
+    willChange: 'transform',
     transition: `transform ${time/4}ms ease, opacity ${time}ms ease-out`,
     opacity: opacityStyles[state],
     transformOrigin: `center center`,

@@ -38,6 +38,7 @@ const transformStyles = (size) => ({
 
 const getStyles = ({ x, y, size, duration, direction, state }) => ({
     position: 'absolute',
+    willChange: 'transform',
     background: transparentize(0.25, styles.shotRed),
     width: `1px`,
     height: '200%',
