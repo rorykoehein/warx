@@ -7,12 +7,15 @@ function reverseKeysAndValues(object){
     let reverse = {};
     Object.keys(object).forEach(key => {
         const value = object[key];
-        if(reverse.hasOwnProperty(key)) {
-            throw new Error('duplicate value while performing swap ' + object[key]);
-        }
         if(isJSONObject(value)) {
+            if(reverse[key]) {
+                throw new Error('duplicate value while performing swap ' + object[key]);
+            }
             reverse[key] = reverseKeysAndValues(value);
         } else {
+            if(reverse[object[key]]) {
+                throw new Error('duplicate value while performing swap ' + object[key]);
+            }
             reverse[object[key]] = key;
         }
     });
@@ -31,9 +34,12 @@ const keyMap = {
 
 const valueMap = {
     type: {
-        SHOT_REQUESTED: 's',
-        MOVE_REQUESTED: 'm',
-        MOVE: 'o',
+        MOVE_START_REQUESTED: 'a',
+        MOVE_STOP_REQUESTED: 'o',
+        MOVE_STOPPED: 's',
+        MOVE_STARTED: 'r',
+        MOVE_SYNC: 'm',
+        MOVE: 'v',
         PING: '0',
         PONG: '1',
     },
