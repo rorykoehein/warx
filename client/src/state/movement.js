@@ -3,7 +3,9 @@ import loop from '../shared/loop';
 import type { Store } from '../types/framework';
 import { sendAction } from '../socket';
 import { selfMoveStart, selfMoveStop, selfShotFire, moveStartToServer, moveStopToServer, move } from './actions';
-import { canMove } from "./move-helpers";
+import { canMove, calculateMovement } from "./move-helpers";
+import { getRules } from "./selectors";
+import { getPlayerById } from "./selectors";
 
 export const keyDownActionMap = {
     ArrowLeft: () => selfMoveStart({ direction: 'left' }),
@@ -43,16 +45,30 @@ export const selfStopMoves = (action$) => action$
 export const moveStarts = (action$, store: Store) => action$
     .ofType('MOVE_STARTED')
     .switchMap(({ data: { direction, playerId } }) => {
+        const startTime = Number(Date.now());
+        const player = getPlayerById(store.getState(), playerId);
+        const { x: startX, y: startY } = player;
         return loop
-            .map(() => Number(Date.now()))
-            .filter(time => {
+            .filter(() => {
                 const { rules, players } = store.getState();
                 const player = players[playerId]; // todo use selector function for getting players?
-                // todo: the client only rejects moves, but doesn't correct it's own x/y if it's too little, maybe
-                // calculate here if the x/y is still correct from start time until this moment and correct the move
-                return player && canMove(player, direction, rules, time);
+                return player && canMove(player, direction, rules);
             })
-            .map(time => move({ direction, playerId, time }))
+            .map(() => {
+                const endTime = Number(Date.now());
+                const rules = getRules(store.getState());
+                const { x, y } = calculateMovement(startX, startY, startTime, endTime, rules, direction);
+                return {
+                    type: 'MOVE_TO',
+                    origin: 'client',
+                    data: {
+                        direction,
+                        playerId,
+                        x,
+                        y,
+                    }
+                };
+            })
             .takeUntil(
                 action$
                     .ofType('MOVE_STOPPED')

@@ -1,29 +1,35 @@
 import 'rxjs';
+import { Observable } from 'rxjs/Observable';
 import loop from '../../client/src/shared/loop';
 import type { Store } from '../../client/src/types/framework';
-import { canMove } from '../../client/src/state/move-helpers';
+import { canMove, calculateMovement } from '../../client/src/state/move-helpers';
 
 export const moves = (action$, store: Store) => action$
     .ofType('MOVE_STARTED')
     .switchMap(({ data: { direction, playerId } }) => {
+        const startTime = Number(Date.now());
+        const player = store.getState().players[playerId];
+        const { x: startX, y: startY } = player;
         return loop
-            .map(() => Number(Date.now()))
             .filter(time => {
                 const { rules, players } = store.getState();
                 const player = players[playerId]; // todo use selector function for getting players?
                 return player && canMove(player, direction, rules, time);
             })
             .map(() => {
+                const endTime = Number(Date.now());
+                const rules = store.getState().rules;
+                const { x, y } = calculateMovement(startX, startY, startTime, endTime, rules, direction);
                 return {
-                    type: 'MOVE',
-                    origin: 'server', // todo fugly
+                    type: 'MOVE_TO',
                     sendToClient: false, // todo fugly
                     toAll: false, // todo fugly
                     data: {
-                        playerId,
                         direction,
-                        time: Number(new Date()),
-                    },
+                        playerId,
+                        x,
+                        y,
+                    }
                 };
             })
             .takeUntil(action$
@@ -71,13 +77,14 @@ export const moveStops = (action$, store: Store) => action$
 
 // todo: or just loop every 1000ms and send all the player x/y which have moved since the last iteration using lastMove
 export const moveSyncs = (action$, store: Store) => action$
-    .ofType('MOVE')
+    .ofType('MOVE_TO')
     .groupBy(payload => payload.data.playerId)
     .flatMap(group => group
         .throttleTime(1000)
         .map(({ data: { playerId }}) => store.getState().players[playerId])
-        .delay(32) // todo: delay with the ping time? send old state to all clients?
+        .delayWhen(({ latency = 50 }) => Observable.timer(latency/2)) // todo: delay with the ping time? send old state to all clients?
         .map(player => {
+            console.log('latency/2', player.latency/2);
             return {
                 data: {
                     playerId: player.id,

@@ -58,15 +58,20 @@ const reducer = (state: State = initialState, action: Action): State => {
             };
         }
 
-        case 'MOVE': {
-            const { data: { direction, playerId, time } } = action;
+        case 'MOVE_TO': {
+            const { data: { direction, playerId, x, y } } = action;
             const player = players[playerId];
             if(!player) return state;
             return {
                 ...state,
                 players: {
                     ...players,
-                    [playerId]: movePlayer(player, direction, rules.moveDistance, time),
+                    [playerId]: {
+                        ...player,
+                        direction,
+                        x,
+                        y,
+                    },
                 },
             };
         }

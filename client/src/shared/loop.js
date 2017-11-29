@@ -1,5 +1,5 @@
 import 'rxjs';
 import { Observable } from 'rxjs/Observable';
 
-const loop = Observable.interval(16);
+const loop = Observable.interval(32);
 export default loop;

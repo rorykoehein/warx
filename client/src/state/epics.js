@@ -28,7 +28,7 @@ const connected = (action$, store: Store) => {
     return action$
         .ofType('CONNECTED')
         .switchMap(() =>
-            Observable.interval(30000) // todo add ping time to config/rules
+            Observable.timer(0, 30000) // todo add ping time to config/rules
                 .takeUntil(action$.ofType('DISCONNECTED'))
                 .map(() => ({ type: 'PING', origin: 'client', data: { sendTime: new Date() } }))
                 .do(action => sendAction(action))
@@ -54,7 +54,7 @@ const pings = (action$, store: Store) =>
                     type: 'PING_CORRUPT', // TODO
                     origin: 'client',
                 })
-        );
+        ).do(action => sendAction(action));
 
 const selfShots = (action$, store: Store) => {
     // todo this time needs to come from the server

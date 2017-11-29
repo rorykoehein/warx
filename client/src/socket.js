@@ -3,7 +3,7 @@ import store from './state/store';
 import { pack, unpack, packKey } from './shared/pack-messages';
 
 const address = process.env.NODE_ENV === 'development' ? 'http://localhost:5000' : null;
-const socket = io(address);
+const socket = io(address, /*{ transports: ['polling']}*/);
 
 socket.on(packKey('action'), (action) => {
     // listen to server actions and map them to redux actions
