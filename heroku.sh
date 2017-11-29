@@ -6,4 +6,4 @@ cp ./Procfile ./dist/
 cd ./dist/
 git add .
 git commit -m "auto deploy"
-git push heroku master
+git push -f heroku master

@@ -3,6 +3,7 @@
 echo "BUILD SERVER"
 
 yarn
+yarn build-shared
 yarn build-server
 cp ./package.json ./dist/
 cp ./yarn.lock ./dist/
@@ -17,4 +18,4 @@ cd ..
 
 echo "COPY CLIENT TO SERVER DIST"
 
-rsync -a -v ./client/build/ ./dist/public/
+rsync -a -v ./client/build/ ./dist/server/public/

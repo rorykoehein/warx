@@ -1,5 +1,5 @@
 import 'rxjs';
-import loop from '../loop';
+import loop from '../shared/loop';
 import type { Store } from '../types/framework';
 import { sendAction } from '../socket';
 import { selfMoveStart, selfMoveStop, selfShotFire, moveStartToServer, moveStopToServer, move } from './actions';

@@ -1,5 +1,5 @@
 import io from './socket';
-import { pack, packKey } from '../../client/src/pack-messages';
+import { pack, packKey } from '../../client/src/shared/pack-messages';
 import { getSocketId } from "./socket-id-maps";
 
 export const send = (id, eventName, data) => {

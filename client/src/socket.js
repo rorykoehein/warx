@@ -1,6 +1,6 @@
 import io from 'socket.io-client';
 import store from './state/store';
-import { pack, unpack, packKey } from './pack-messages';
+import { pack, unpack, packKey } from './shared/pack-messages';
 
 const address = process.env.NODE_ENV === 'development' ? 'http://localhost:5000' : null;
 const socket = io(address);

@@ -16,8 +16,9 @@
     "socket.io": "^2.0.4"
   },
   "scripts": {
-    "start": "node ./www",
+    "start": "node ./server/www",
     "dev": "babel-node ./server/www",
-    "build-server": "babel ./server/ -d ./dist"
+    "build-server": "babel ./server/ -d ./dist/server",
+    "build-shared": "babel ./client/src/types -d ./dist/client/src/types && babel ./client/src/shared -d ./dist/client/src/shared && babel ./client/src/state -d ./dist/client/src/state"
   }
 }

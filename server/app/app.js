@@ -10,4 +10,4 @@ export default app;
 setupMessages(app);
 
 // serve static assets from ./public
-app.use(express.static(path.join(__dirname, '../public')));
+app.use(express.static(path.join(__dirname, '../../public')));

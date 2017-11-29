@@ -1,5 +1,5 @@
 import 'rxjs';
-import loop from '../../client/src/loop';
+import loop from '../../client/src/shared/loop';
 import type { Store } from '../../client/src/types/framework';
 import { canMove } from '../../client/src/state/move-helpers';
 
