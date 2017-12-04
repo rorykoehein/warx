@@ -42,39 +42,48 @@ export const selfStopMoves = (action$) => action$
     .do(({ data: { direction }}) => sendAction(moveStopToServer({ direction })))
     .ignoreElements();
 
-export const moveStarts = (action$, store: Store) => action$
-    .ofType('MOVE_STARTED')
-    .switchMap(({ data: { direction, playerId } }) => {
-        const startTime = Number(Date.now());
-        const player = getPlayerById(store.getState(), playerId);
-        const { x: startX, y: startY } = player;
-        return loop
-            .filter(() => {
-                const { rules, players } = store.getState();
-                const player = players[playerId]; // todo use selector function for getting players?
-                return player && canMove(player, direction, rules);
-            })
-            .map(() => {
-                const endTime = Number(Date.now());
-                const rules = getRules(store.getState());
-                const { x, y } = calculateMovement(startX, startY, startTime, endTime, rules, direction);
-                return {
-                    type: 'MOVE_TO',
-                    origin: 'client',
-                    data: {
-                        direction,
-                        playerId,
-                        x,
-                        y,
-                    }
-                };
-            })
-            .takeUntil(
-                action$
-                    .ofType('MOVE_STOPPED')
-                    .filter(({ type, data: { direction: stopDirection, playerId: stopPlayerId } }) =>
-                        stopDirection === direction && playerId === stopPlayerId
-                    )
-            );
+// todo:
+// 1. render every 16ms, render 75ms in the past
+// 2. get move_sync from server every 50ms
+// 3. use linear interpolation to position the object along the path (could possibly use css transitions for this)
+//
+// see https://www.slideshare.net/MarioGonzalez15/realtime-html5-multiplayergameswithnodejs-7868336/22-ulliSo_we_set_up_a
 
-    });
+// export const moveStarts = (action$, store: Store) => action$
+//     .ofType('MOVE_STARTED')
+//     .switchMap(({ data: { x: startX, y: startY, direction, playerId } }) => {
+//         const startTime = Number(Date.now());
+//         let i = 0;
+//         return loop
+//             .filter(() => {
+//                 const { rules, players } = store.getState();
+//                 const player = players[playerId]; // todo use selector function for getting players?
+//                 return player && canMove(player, direction, rules);
+//             })
+//             .map(() => {
+//                 const endTime = Number(Date.now());
+//                 const rules = getRules(store.getState());
+//                 const { x, y } = calculateMovement(startX, startY, startTime, endTime, rules, direction);
+//                 i++;
+//                 console.log('i', i);
+//                 return {
+//                     type: 'MOVE_TO',
+//                     origin: 'client',
+//                     data: {
+//                         direction,
+//                         playerId,
+//                         x,
+//                         y,
+//                         step: i,
+//                     }
+//                 };
+//             })
+//             .takeUntil(
+//                 action$
+//                     .ofType('MOVE_STOPPED')
+//                     .filter(({ type, data: { direction: stopDirection, playerId: stopPlayerId } }) =>
+//                         stopDirection === direction && playerId === stopPlayerId
+//                     )
+//             );
+//
+//     });

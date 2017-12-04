@@ -145,5 +145,5 @@ export const rootEpic = combineEpics(
     keyUpMoves,
     selfStartMoves,
     selfStopMoves,
-    moveStarts,
+    // moveStarts,
 );

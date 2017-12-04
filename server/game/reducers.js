@@ -102,6 +102,7 @@ const reducer = (state = initialState, action) => {
             return {
                 ...rest,
                 players: {
+                    ...players,
                     [playerId]: {
                         ...player,
                         direction,
@@ -120,6 +121,7 @@ const reducer = (state = initialState, action) => {
             return {
                 ...rest,
                 players: {
+                    ...players,
                     [playerId]: {
                         ...player,
                         latency

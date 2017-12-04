@@ -77,7 +77,7 @@ const reducer = (state: State = initialState, action: Action): State => {
         }
 
         case 'MOVE_SYNC': {
-            const { data: { playerId, x, y } } = action;
+            const { data: { playerId, x, y, direction } } = action;
             const player = players[playerId];
             if(!player) return state;
             return {
@@ -88,6 +88,7 @@ const reducer = (state: State = initialState, action: Action): State => {
                         ...player,
                         x,
                         y,
+                        direction,
                     },
                 },
             };

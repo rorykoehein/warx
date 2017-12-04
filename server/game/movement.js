@@ -10,6 +10,7 @@ export const moves = (action$, store: Store) => action$
         const startTime = Number(Date.now());
         const player = store.getState().players[playerId];
         const { x: startX, y: startY } = player;
+        let i = 0;
         return loop
             .filter(time => {
                 const { rules, players } = store.getState();
@@ -20,6 +21,7 @@ export const moves = (action$, store: Store) => action$
                 const endTime = Number(Date.now());
                 const rules = store.getState().rules;
                 const { x, y } = calculateMovement(startX, startY, startTime, endTime, rules, direction);
+                i++;
                 return {
                     type: 'MOVE_TO',
                     sendToClient: false, // todo fugly
@@ -29,6 +31,7 @@ export const moves = (action$, store: Store) => action$
                         playerId,
                         x,
                         y,
+                        step: i
                     }
                 };
             })
@@ -43,6 +46,8 @@ export const moves = (action$, store: Store) => action$
 export const moveStarts = (action$, store: Store) => action$
     .ofType('MOVE_START_REQUESTED')
     .map(({ data: { direction, playerId }}) => {
+        const { players } = store.getState();
+        const player = players[playerId]; // todo use selector function for getting players?
         return {
             type: 'MOVE_STARTED',
             origin: 'server', // todo fugly
@@ -50,7 +55,9 @@ export const moveStarts = (action$, store: Store) => action$
             toAll: true, // todo fugly
             data: {
                 playerId,
-                direction
+                direction,
+                x: player.x,
+                y: player.y,
             },
         };
     });
@@ -80,16 +87,23 @@ export const moveSyncs = (action$, store: Store) => action$
     .ofType('MOVE_TO')
     .groupBy(payload => payload.data.playerId)
     .flatMap(group => group
-        .throttleTime(1000)
-        .map(({ data: { playerId }}) => store.getState().players[playerId])
-        .delayWhen(({ latency = 50 }) => Observable.timer(latency/2)) // todo: delay with the ping time? send old state to all clients?
-        .map(player => {
-            console.log('latency/2', player.latency/2);
+        .throttleTime(50)
+        // .map(({ data: { playerId }}) => store.getState().players[playerId])
+        // .delayWhen(({ latency = 50 }) => Observable.timer(latency/2)) // todo: delay with the ping time? send old state to all clients?
+        .map(payload => {
+            const { direction,
+                playerId,
+                x,
+                y,
+                step } = payload.data;
+            // console.log('latency/2', player.latency/2);
             return {
                 data: {
-                    playerId: player.id,
-                    x: player.x,
-                    y: player.y,
+                    direction,
+                    playerId,
+                    x,
+                    y,
+                    step,
                 },
                 type: 'MOVE_SYNC',
                 origin: 'server',
