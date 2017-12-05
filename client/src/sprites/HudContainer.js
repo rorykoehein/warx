@@ -1,7 +1,7 @@
 import React from 'react';
 
 const style = {
-    opacity: '.75',
+    opacity: '1',
 };
 
 export default class X extends React.PureComponent {

@@ -1,5 +1,3 @@
-import { darken } from 'polished';
-
 export default {
     playerSize: '1rem',
     hudMargin: '1rem',
@@ -7,4 +5,7 @@ export default {
     meColor: '#fff',
     enemyColor: '#ce0606',
     overlayIndex: 1000,
+    colorPrimary: '#111',
+    colorSecondary: '#fff',
+    colorTertiary: '#FAD134',
 }

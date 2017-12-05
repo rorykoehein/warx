@@ -1,6 +1,5 @@
 import React from 'react';
-import styled from 'styled-components';
-import ep from '../graphics/ep_naturalblack.png';
+import styles from './styles';
 
 export default class WorldSprite extends React.PureComponent {
     static defaultProps = {
@@ -19,10 +18,11 @@ export default class WorldSprite extends React.PureComponent {
             top: '50%',
             transform: 'translate(-50%, -50%)',
             boxSizing: 'content-box',
-            border: '.2rem solid #999',
-            background: `url(${ep})`,
+            border: `.1rem solid ${styles.colorTertiary}`,
             overflow: 'hidden',
+            background: styles.colorPrimary
         };
+
         return (
             <div style={style}>
                 {this.props.children}
