@@ -1,5 +1,4 @@
-import type { Player, Direction, Rules } from '../types/game';
-
+import type { Player, Direction, Rules } from '../../client/src/types/game';
 
 export const calculateMovement = (
     startX: number, startY: number, startTime: number, endTime: number, rules: Rules, direction: Direction

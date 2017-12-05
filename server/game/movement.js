@@ -1,7 +1,7 @@
 import 'rxjs';
 import loop from '../../client/src/shared/loop';
 import type { Store } from '../../client/src/types/framework';
-import { canMove, calculateMovement } from '../../client/src/state/move-helpers';
+import { canMove, calculateMovement } from './move-helpers';
 
 export const moves = (action$, store: Store) => action$
     .ofType('MOVE_STARTED')

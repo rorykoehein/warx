@@ -6,7 +6,7 @@ import { sendAction } from '../socket';
 import sounds from './sounds';
 import { weaponReload, shotCool, shotFire, shotFireToServer, addMessage, cleanupMessage,
     removeExplosion } from './actions';
-import { selfStartMoves, selfStopMoves, keyDownMoves, keyUpMoves, moveStarts } from './movement';
+import { selfStartMoves, selfStopMoves, keyDownMoves, keyUpMoves } from './movement';
 
 /**
  * search products epic
@@ -140,10 +140,8 @@ export const rootEpic = combineEpics(
     messages,
     messagesCleanup,
     explosionsCleanup,
-
     keyDownMoves,
     keyUpMoves,
     selfStartMoves,
     selfStopMoves,
-    // moveStarts,
 );

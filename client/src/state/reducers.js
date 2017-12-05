@@ -1,12 +1,11 @@
 // @flow
 
-import type { Player, State, Direction } from '../types/game';
+import type { State } from '../types/game';
 import type { Action } from '../types/actions';
-import { movePlayer } from '../state/move-helpers';
 import initialState from './initial-state';
 
 const reducer = (state: State = initialState, action: Action): State => {
-    const { players, currentPlayerId, rules } = state;
+    const { players, currentPlayerId } = state;
     switch (action.type) {
         case 'GAME_STATE_CHANGED': {
             const { data: { state: { players, currentPlayerId, rules } } } = action;

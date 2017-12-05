@@ -1,7 +1,6 @@
 // @flow
 
 import rules from './default-rules';
-import { movePlayer } from '../../client/src/state/move-helpers';
 
 const initialState = {
     players: {},
