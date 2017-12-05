@@ -2,6 +2,7 @@ export default {
     reloadTime: 1500, // time to reload the weapon after shooting
     moveTime: 60,
     moveDistance: 1, // width = 100
+    syncTime: 50,
     playerSize: 1,
     coolTime: 100,
     respawnTime: 1500,

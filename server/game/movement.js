@@ -1,28 +1,40 @@
 import 'rxjs';
 import loop from '../../client/src/shared/loop';
 import type { Store } from '../../client/src/types/framework';
-import { canMove } from '../../client/src/state/move-helpers';
+import { canMove, calculateMovement } from './move-helpers';
 
 export const moves = (action$, store: Store) => action$
     .ofType('MOVE_STARTED')
     .switchMap(({ data: { direction, playerId } }) => {
+        const startTime = Number(Date.now());
+        const player = store.getState().players[playerId];
+        const { x: startX, y: startY } = player;
         return loop
-            .map(() => Number(Date.now()))
-            .filter(time => {
+            .map(() => {
                 const { rules, players } = store.getState();
                 const player = players[playerId]; // todo use selector function for getting players?
-                return player && canMove(player, direction, rules, time);
-            })
-            .map(() => {
-                return {
-                    type: 'MOVE',
-                    origin: 'server', // todo fugly
-                    sendToClient: false, // todo fugly
-                    toAll: false, // todo fugly
+                const endTime = Number(Date.now());
+                const { x, y } = calculateMovement(startX, startY, startTime, endTime, rules, direction);
+                return canMove(player, direction, rules) ? {
+                    type: 'MOVE_TO',
+                    sendToClient: false,
+                    toAll: false,
+                    data: {
+                        direction,
+                        playerId,
+                        x,
+                        y,
+                    }
+                } : {
+                    type: 'MOVE_STOPPED',
+                    origin: 'server',
+                    sendToClient: true,
+                    toAll: true,
                     data: {
                         playerId,
                         direction,
-                        time: Number(new Date()),
+                        x: player.x,
+                        y: player.y,
                     },
                 };
             })
@@ -37,6 +49,8 @@ export const moves = (action$, store: Store) => action$
 export const moveStarts = (action$, store: Store) => action$
     .ofType('MOVE_START_REQUESTED')
     .map(({ data: { direction, playerId }}) => {
+        const { players } = store.getState();
+        const player = players[playerId]; // todo use selector function for getting players?
         return {
             type: 'MOVE_STARTED',
             origin: 'server', // todo fugly
@@ -44,7 +58,9 @@ export const moveStarts = (action$, store: Store) => action$
             toAll: true, // todo fugly
             data: {
                 playerId,
-                direction
+                direction,
+                x: player.x,
+                y: player.y,
             },
         };
     });
@@ -71,23 +87,24 @@ export const moveStops = (action$, store: Store) => action$
 
 // todo: or just loop every 1000ms and send all the player x/y which have moved since the last iteration using lastMove
 export const moveSyncs = (action$, store: Store) => action$
-    .ofType('MOVE')
+    .ofType('MOVE_TO')
     .groupBy(payload => payload.data.playerId)
     .flatMap(group => group
-        .throttleTime(1000)
-        .map(({ data: { playerId }}) => store.getState().players[playerId])
-        .delay(32) // todo: delay with the ping time? send old state to all clients?
-        .map(player => {
+        .throttleTime(store.getState().rules.syncTime)
+        .map(payload => {
+            const { direction, playerId, x, y, step } = payload.data;
             return {
                 data: {
-                    playerId: player.id,
-                    x: player.x,
-                    y: player.y,
+                    direction,
+                    playerId,
+                    x,
+                    y,
+                    step,
                 },
                 type: 'MOVE_SYNC',
                 origin: 'server',
                 sendToClient: true,
-                toAll: true, // todo fugly
+                toAll: true,
             };
         })
     );

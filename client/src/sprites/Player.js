@@ -4,7 +4,6 @@ import React, { PureComponent } from 'react';
 import { Transition } from 'react-transition-group';
 import PlayerSprite from './PlayerSprite';
 import type { Direction } from '../types/game';
-import styles from './styles';
 
 type Props = {
     x: number,
@@ -31,9 +30,9 @@ const transformStyles = {
     none: ``,
 };
 
-const getStyles = ({ x, y, direction, state, hasEntered, size }) => ({
+const getStyles = ({ x, y, direction, state, hasEntered, size, moveTransition }) => ({
     willChange: 'transform',
-    transition: hasEntered ? 'transform .1s ease, opacity 1s ease' : 'transform 1s ease, opacity 1s ease',
+    transition: hasEntered ? 'transform 50ms linear, opacity 1s ease' : 'transform 1s ease, opacity 1s ease',
     opacity: opacityStyles[state],
     transform: `translate(${x - size/2}px, ${y - size/2}px) rotate(${getRotation(direction)}deg) ${transformStyles[state]}`,
 });

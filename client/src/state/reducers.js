@@ -1,12 +1,11 @@
 // @flow
 
-import type { Player, State, Direction } from '../types/game';
+import type { State } from '../types/game';
 import type { Action } from '../types/actions';
-import { movePlayer } from '../state/move-helpers';
 import initialState from './initial-state';
 
 const reducer = (state: State = initialState, action: Action): State => {
-    const { players, currentPlayerId, rules } = state;
+    const { players, currentPlayerId } = state;
     switch (action.type) {
         case 'GAME_STATE_CHANGED': {
             const { data: { state: { players, currentPlayerId, rules } } } = action;
@@ -58,21 +57,26 @@ const reducer = (state: State = initialState, action: Action): State => {
             };
         }
 
-        case 'MOVE': {
-            const { data: { direction, playerId, time } } = action;
+        case 'MOVE_TO': {
+            const { data: { direction, playerId, x, y } } = action;
             const player = players[playerId];
             if(!player) return state;
             return {
                 ...state,
                 players: {
                     ...players,
-                    [playerId]: movePlayer(player, direction, rules.moveDistance, time),
+                    [playerId]: {
+                        ...player,
+                        direction,
+                        x,
+                        y,
+                    },
                 },
             };
         }
 
         case 'MOVE_SYNC': {
-            const { data: { playerId, x, y } } = action;
+            const { data: { playerId, x, y, direction } } = action;
             const player = players[playerId];
             if(!player) return state;
             return {
@@ -83,6 +87,7 @@ const reducer = (state: State = initialState, action: Action): State => {
                         ...player,
                         x,
                         y,
+                        direction,
                     },
                 },
             };

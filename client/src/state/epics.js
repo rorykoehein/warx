@@ -6,7 +6,7 @@ import { sendAction } from '../socket';
 import sounds from './sounds';
 import { weaponReload, shotCool, shotFire, shotFireToServer, addMessage, cleanupMessage,
     removeExplosion } from './actions';
-import { selfStartMoves, selfStopMoves, keyDownMoves, keyUpMoves, moveStarts } from './movement';
+import { selfStartMoves, selfStopMoves, keyDownMoves, keyUpMoves } from './movement';
 
 /**
  * search products epic
@@ -28,7 +28,7 @@ const connected = (action$, store: Store) => {
     return action$
         .ofType('CONNECTED')
         .switchMap(() =>
-            Observable.interval(30000) // todo add ping time to config/rules
+            Observable.timer(0, 30000) // todo add ping time to config/rules
                 .takeUntil(action$.ofType('DISCONNECTED'))
                 .map(() => ({ type: 'PING', origin: 'client', data: { sendTime: new Date() } }))
                 .do(action => sendAction(action))
@@ -54,7 +54,7 @@ const pings = (action$, store: Store) =>
                     type: 'PING_CORRUPT', // TODO
                     origin: 'client',
                 })
-        );
+        ).do(action => sendAction(action));
 
 const selfShots = (action$, store: Store) => {
     // todo this time needs to come from the server
@@ -140,10 +140,8 @@ export const rootEpic = combineEpics(
     messages,
     messagesCleanup,
     explosionsCleanup,
-
     keyDownMoves,
     keyUpMoves,
     selfStartMoves,
     selfStopMoves,
-    moveStarts,
 );

@@ -1,7 +1,6 @@
 // @flow
 
 import rules from './default-rules';
-import { movePlayer } from '../../client/src/state/move-helpers';
 
 const initialState = {
     players: {},
@@ -94,16 +93,38 @@ const reducer = (state = initialState, action) => {
             };
         }
 
-        case 'MOVE': {
+        case 'MOVE_TO': {
             const { players, ...rest } = state;
-            const { data: { direction, playerId, time } } = action;
+            const { data: { direction, playerId, x, y } } = action;
             const player = players[playerId];
             if(!player) return state;
             return {
                 ...rest,
                 players: {
                     ...players,
-                    [playerId]: movePlayer(player, direction, rules.moveDistance, time),
+                    [playerId]: {
+                        ...player,
+                        direction,
+                        x,
+                        y,
+                    },
+                },
+            };
+        }
+
+        case 'PING_LATENCY': {
+            const { players, ...rest } = state;
+            const { data: { latency = 50, playerId } } = action;
+            const player = players[playerId];
+            if(!player) return state;
+            return {
+                ...rest,
+                players: {
+                    ...players,
+                    [playerId]: {
+                        ...player,
+                        latency
+                    },
                 },
             };
         }

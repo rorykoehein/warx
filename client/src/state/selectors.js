@@ -19,8 +19,9 @@ export const getRules = state => state.rules;
 
 // players
 export const getPlayers = state => state.players;
+export const getPlayerById = (state, id) => getPlayers(state)[id];
 export const getCurrentPlayerId = state => state.currentPlayerId;
-export const getCurrentPlayer = state => getPlayers(state)[getCurrentPlayerId(state)];
+export const getCurrentPlayer = state => getPlayerById(state, getCurrentPlayerId(state));
 
 export const getAlivePlayers = createSelector(
     getPlayers,
