@@ -70,7 +70,6 @@ class World extends PureComponent<Props, WorldState> {
         const ratio = worldWidth / worldHeight;
         const step = width/worldWidth;
         // todo: only 100x50 ratio works, with a ratio of 100*100 the player moves horizontally faster than vertically
-        console.log('render world');
         return (
             <WorldSprite ref={ref => this.world = ref} ratio={ratio}>
                 <Players step={step} />

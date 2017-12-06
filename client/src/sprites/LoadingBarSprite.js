@@ -1,5 +1,4 @@
 import styled from 'styled-components';
-import { transparentize } from 'polished';
 import styles from './styles';
 
 export default styled.div`
@@ -8,8 +7,8 @@ export default styled.div`
     max-width: 100%;
     width: ${({ width = 32 }) => `${width}rem`};
     height: ${({ height = 1.6 }) => `${height}rem`};
-    background: ${({ color = 'white' }) => transparentize(.5, color)};
-    border: .2rem solid #fff;
+    background: ${styles.colorPrimary};
+    border: .1rem solid ${styles.colorTertiary};
 
     &::after {
       content: "";
@@ -17,7 +16,7 @@ export default styled.div`
       left: 0;
       top: 0;
       height: 100%;
-      background: ${({ color = 'white' }) => color};
+      background: ${({ color = styles.colorTertiary }) => color};
       width: ${({ percentage = 0 }) => `${percentage}%`};
       transition: ${({ loadTime = .1 }) => `width cubic-bezier(0.550, 0.055, 0.675, 0.190)`};
       transition-duration: ${({ loadTime = .1 }) => `${loadTime}s`}; 

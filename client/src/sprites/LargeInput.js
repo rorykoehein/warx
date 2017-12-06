@@ -10,8 +10,8 @@ export default styled.input`
     top: 50%;
     transform: translate(-50%, -50%);
     outline: 0;
-    color: white;
-    background: black;
-    border: .2rem solid #999;
-    font-family: 'VT323', monospace;
+    color: ${styles.colorPrimary};
+    background: ${styles.colorTertiary};
+    border: 0;
+    font-family: 'Roboto Condensed', sans-serif;
 `;

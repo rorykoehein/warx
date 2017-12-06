@@ -49,7 +49,6 @@ class Hud extends PureComponent<Props, HudState> {
         // todo: this is buggy, sometimes the load bar only goes half way
         return (
             <LoadingBarSprite
-                color={styles.shotRed}
                 percentage={loading || weaponLoaded ? 100 : 0}
                 loadTime={weaponLoaded ? 0 : loading ? (reloadTime - transitionDownTime)/1000 : transitionDownTime/1000}
             />

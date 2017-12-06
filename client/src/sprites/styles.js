@@ -5,4 +5,7 @@ export default {
     meColor: '#fff',
     enemyColor: '#ce0606',
     overlayIndex: 1000,
+    colorPrimary: '#111',
+    colorSecondary: '#fff',
+    colorTertiary: '#FAD134',
 }
