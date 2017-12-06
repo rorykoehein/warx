@@ -27,13 +27,17 @@ const connector: Connector<{}, Props> = connect(mapStateToProps, mapDispatchToPr
 class KeyboardHandler extends PureComponent<Props> {
 
     componentDidMount() {
-        window.document.addEventListener('keydown', this.props.keyDown);
-        window.document.addEventListener('keyup', this.props.keyUp);
+        if(window) {
+            window.document.addEventListener('keydown', this.props.keyDown);
+            window.document.addEventListener('keyup', this.props.keyUp);
+        }
     }
 
     componentWillUnmount() {
-        window.document.removeEventListener('keydown', this.props.keyDown);
-        window.document.removeEventListener('keyup', this.props.keyUp);
+        if(window) {
+            window.document.removeEventListener('keydown', this.props.keyDown);
+            window.document.removeEventListener('keyup', this.props.keyUp);
+        }
     }
 
     render() {

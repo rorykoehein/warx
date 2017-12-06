@@ -42,12 +42,10 @@ export const broadcastJoins = (action$, store: Store) =>
 export const hits = (action$, store: Store) =>
     action$
         .ofType('HIT')
-        .do(action => console.log('spawn respawnTime', store.getState().rules.respawnTime))
         .delayWhen(() => Observable.timer(store.getState().rules.respawnTime))
-        .flatMap(({ data: { hits }}) => console.log('spawn hits', hits) ||
+        .flatMap(({ data: { hits }}) =>
             hits.map(playerId => {
                 const { rules: { worldWidth, worldHeight, moveDistance }} = store.getState();
-                console.log('spawn ', { playerId, worldWidth, worldHeight, moveDistance });
                 return spawn({ playerId, worldWidth, worldHeight, moveDistance });
             })
         );
@@ -112,3 +110,27 @@ export const explosionsHits = (action$, store: Store) => {
         })
         .filter(({ data: { hits } }) => hits.length > 0);
 };
+
+export const hitsNewPlayerState = (action$, store: Store) =>
+    action$
+        .ofType('HIT')
+        .map(({ data: { shooter, hits } }) => {
+            const players = store.getState().players;
+            const newPlayers = Object.keys(players)
+                .filter(id => id === shooter || hits.includes(id))
+                .map(id => players[id])
+                .reduce((players, player) => ({
+                    ...players,
+                    [player.id]: player
+                }), {});
+
+            return {
+                type: 'PLAYERS_UPDATED',
+                origin: 'server', // todo fugly
+                sendToClient: true, // todo fugly
+                toAll: true, // todo fugly
+                data: {
+                    players: newPlayers
+                }
+            }
+        });

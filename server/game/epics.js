@@ -1,7 +1,7 @@
 import { combineEpics } from 'redux-observable';
 import { connects, pings, disconnects, networkActions } from '../messages-actions/map-actions-to-messages-epic';
 import { spawnJoins, broadcastJoins, shots, hits, requestedShots, hitsExplosions,
-    explosionsHits, } from './game-epic';
+    explosionsHits, hitsNewPlayerState } from './game-epic';
 import { moveStarts, moveStops, moves, moveSyncs } from './movement';
 
 export default combineEpics(
@@ -20,4 +20,5 @@ export default combineEpics(
     networkActions,
     hitsExplosions,
     explosionsHits,
+    hitsNewPlayerState,
 );

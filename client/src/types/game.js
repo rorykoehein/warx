@@ -12,6 +12,8 @@ export type Player = {
     +direction: Direction,
     +alive: boolean,
     +weaponLoaded: boolean,
+    +frags: number,
+    +deaths: number,
 }
 
 export type Shot = {
@@ -70,4 +72,5 @@ export type State = {
     +messages: MessagesType,
     +explosions: ExplosionsType,
     +isSignedIn: boolean,
+    +isScoreboardVisible: boolean,
 };

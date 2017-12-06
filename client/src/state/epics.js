@@ -1,11 +1,12 @@
 import 'rxjs';
 import { Observable } from 'rxjs/Observable';
 import { combineEpics } from 'redux-observable';
+import { isScoreboardVisible } from './selectors';
 import type { Store } from '../types/framework.js';
 import { sendAction } from '../socket';
 import sounds from './sounds';
 import { weaponReload, shotCool, shotFire, shotFireToServer, addMessage, cleanupMessage,
-    removeExplosion } from './actions';
+    removeExplosion, showScores, hideScores } from './actions';
 import { selfStartMoves, selfStopMoves, keyDownMoves, keyUpMoves } from './movement';
 
 /**
@@ -128,6 +129,11 @@ export const explosionsCleanup = (action$, store: Store) => {
         .map(({ data: { id }}) => removeExplosion({ id }));
 };
 
+export const toggleScores = (action$, store: Store) =>
+    action$
+        .ofType('KEY_DOWN')
+        .filter(({ data: { key } }) => key === 'h')
+        .map(() => isScoreboardVisible(store.getState()) ? hideScores() : showScores());
 
 export const rootEpic = combineEpics(
     connected,
@@ -144,4 +150,5 @@ export const rootEpic = combineEpics(
     keyUpMoves,
     selfStartMoves,
     selfStopMoves,
+    toggleScores,
 );

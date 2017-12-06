@@ -51,6 +51,7 @@ export const pings = (action$, store: Store) =>
         })
         .ignoreElements();
 
+// todo: throttle ~50ms and join messages together
 export const networkActions = (action$, store: Store) =>
     action$
         .filter(({ sendToClient }) => sendToClient)

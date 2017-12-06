@@ -51,3 +51,10 @@ export const getMessagesByLatest = createSelector(
             }))
         || emptyList
 );
+
+// scores
+export const isScoreboardVisible = state => state.isScoreboardVisible;
+export const getPlayerScores: PlayerList = createSelector(
+    getPlayers,
+    (players: Players): PlayerList => toList(players).sort((a, b) => a.frags - b.frags ||  b.deaths - a.deaths)
+);

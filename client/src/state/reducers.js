@@ -156,14 +156,8 @@ const reducer = (state: State = initialState, action: Action): State => {
             };
         }
 
-        case 'HIT': {
-            const { data: { hits } } = action;
-            const newPlayers = Object.keys(players).reduce((acc, key) => {
-                const player = players[key];
-                acc[key] = !hits.includes(key) ? player : ({ ...player, alive: false });
-                return acc;
-            }, {});
-
+        case 'PLAYERS_UPDATED': {
+            const { data: { players: newPlayers } } = action;
             return {
                 ...state,
                 players: newPlayers
@@ -218,6 +212,20 @@ const reducer = (state: State = initialState, action: Action): State => {
             return {
                 ...state,
                 messages: messages,
+            };
+        }
+
+        case 'SCORES_SHOWN': {
+            return {
+                ...state,
+                isScoreboardVisible: true,
+            };
+        }
+
+        case 'SCORES_HIDDEN': {
+            return {
+                ...state,
+                isScoreboardVisible: false,
             };
         }
 

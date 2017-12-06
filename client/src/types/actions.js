@@ -168,7 +168,19 @@ export type RemoveExplosionAction = {
     }
 };
 
+export type ShowScoresActions = {
+    +type: 'SCORES_SHOWN',
+    +origin: 'client',
+    +data: {}
+};
+
+export type HideScoresActions = {
+    +type: 'SCORES_HIDDEN',
+    +origin: 'client',
+    +data: {}
+};
+
 export type Action = ReduxInitAction | SelfJoinAction | PlayerJoinAction | PlayerLeftAction | MoveAction |
     ShotFireAction | ShotCoolAction | GameStateChangedAction | GameStateChangedAction | SpawnAction |
     WeaponReloadAction | HitAction | PingLatencyAction | KeyDownAction | KeyUpAction | AddMessageAction |
-    RemoveMessageAction | AddExplosionAction | RemoveExplosionAction;
+    RemoveMessageAction | AddExplosionAction | RemoveExplosionAction | ShowScoresActions | HideScoresActions;

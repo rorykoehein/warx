@@ -9,6 +9,7 @@ const initialState: State = {
     latency: null,
     messages: {},
     isSignedIn: false,
+    isScoreboardVisible: false,
 };
 
 export default initialState;

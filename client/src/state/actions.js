@@ -3,7 +3,8 @@
 import type { Direction, PlayerId } from '../types/game';
 import type {
     MoveAction, SelfShotFireAction, ShotFireAction, ShotCoolAction, ActionOrigin, ActionInterface,
-    KeyDownAction, KeyUpAction, AddMessageAction, RemoveMessageAction, SelfJoinAction, RemoveExplosionAction
+    KeyDownAction, KeyUpAction, AddMessageAction, RemoveMessageAction, SelfJoinAction, RemoveExplosionAction,
+    ShowScoresActions, HideScoresActions
 } from '../types/actions';
 
 export const move = ({ direction, playerId, time } : { direction: Direction, playerId: PlayerId, time: number }): MoveAction => {
@@ -157,7 +158,6 @@ export const selfJoin = ({ playerName }: { playerName: string }): SelfJoinAction
     };
 };
 
-
 export const removeExplosion = ({ id }: { id: number }): RemoveExplosionAction => {
     return {
         type: 'EXPLOSION_REMOVED',
@@ -167,5 +167,21 @@ export const removeExplosion = ({ id }: { id: number }): RemoveExplosionAction =
         data: {
             id
         }
+    };
+};
+
+export const showScores = (): ShowScoresActions => {
+    return {
+        type: 'SCORES_SHOWN',
+        origin: 'client',
+        data: {}
+    };
+};
+
+export const hideScores = (): HideScoresActions => {
+    return {
+        type: 'SCORES_HIDDEN',
+        origin: 'client',
+        data: {}
     };
 };

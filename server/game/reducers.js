@@ -19,7 +19,9 @@ const reducer = (state = initialState, action) => {
                     [`${playerId}`]: {
                         id: playerId,
                         name: `Player ${playerId}`,
-                        alive: false, // todo: don't set alive until after spawn
+                        alive: false,
+                        frags: 0,
+                        deaths: 0,
                     }
                 },
                 ...rest,
@@ -64,20 +66,27 @@ const reducer = (state = initialState, action) => {
 
         case 'HIT': {
             const { players, ...rest } = state;
-            const { data: { hits } } = action;
+            const { data: { shooter, hits } } = action;
 
             const deadPlayers = hits.reduce((acc, playerId) => ({
                 ...acc,
                 [playerId]: {
                     ...players[playerId],
                     alive: false,
+                    deaths: players[playerId].deaths + 1,
                 }
             }), {});
+
+            const shooterPlayer = players[shooter];
 
             return {
                 players: {
                     ...players,
                     ...deadPlayers,
+                    [shooter]: {
+                        ...shooterPlayer,
+                        frags: shooterPlayer.frags + hits.length,
+                    }
                 },
                 ...rest,
             };
