@@ -1,5 +1,6 @@
 import type { State } from '../types/game';
 
+// todo: find solution for modularized initial state
 const initialState: State = {
     players: {},
     currentPlayerId: null,

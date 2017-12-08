@@ -1,8 +1,6 @@
-import { createSelector } from 'reselect'
-import { PlayerList, MessageList, MessagesType, Players, ExplosionsType, Explosion } from "../types/game";
-
-const emptyList = [];
-const toList = object => object && Object.keys(object).map(key => object[key]) || emptyList;
+import { createSelector } from 'reselect';
+import { toList, emptyList } from './helpers';
+import type { MessageList, MessagesType, ExplosionsType, Explosion } from "../types/game";
 
 // shots
 export const getShots = state => state.shots;
@@ -16,17 +14,6 @@ export const isSignedIn = state => state.isSignedIn;
 
 // rules
 export const getRules = state => state.rules;
-
-// players
-export const getPlayers = state => state.players;
-export const getPlayerById = (state, id) => getPlayers(state)[id];
-export const getCurrentPlayerId = state => state.currentPlayerId;
-export const getCurrentPlayer = state => getPlayerById(state, getCurrentPlayerId(state));
-
-export const getAlivePlayers = createSelector(
-    getPlayers,
-    (players: Players): PlayerList => toList(players).filter(player => player.alive)
-);
 
 // explosions
 export const getExplosions = state => state.explosions;
@@ -50,11 +37,4 @@ export const getMessagesByLatest = createSelector(
                 text: messages[key],
             }))
         || emptyList
-);
-
-// scores
-export const isScoreboardVisible = state => state.isScoreboardVisible;
-export const getPlayerScores: PlayerList = createSelector(
-    getPlayers,
-    (players: Players): PlayerList => toList(players).sort((a, b) => a.frags - b.frags ||  b.deaths - a.deaths)
 );

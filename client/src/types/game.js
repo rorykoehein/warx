@@ -44,7 +44,7 @@ export type Rules = {
 };
 
 export type MessagesType = {
-    +[id: string]: string,
+    +[id: string]: string,2
 }
 
 export type MessageList = Array<{

@@ -2,43 +2,9 @@
 
 import type { Direction, PlayerId } from '../types/game';
 import type {
-    MoveAction, SelfShotFireAction, ShotFireAction, ShotCoolAction, ActionOrigin, ActionInterface,
-    KeyDownAction, KeyUpAction, AddMessageAction, RemoveMessageAction, SelfJoinAction, RemoveExplosionAction,
-    ShowScoresActions, HideScoresActions
+    SelfShotFireAction, ShotFireAction, ShotCoolAction, ActionOrigin, ActionInterface,
+    KeyDownAction, KeyUpAction, AddMessageAction, RemoveMessageAction, SelfJoinAction, RemoveExplosionAction
 } from '../types/actions';
-
-export const move = ({ direction, playerId, time } : { direction: Direction, playerId: PlayerId, time: number }): MoveAction => {
-    return {
-        type: 'MOVE',
-        origin: 'client',
-        data: {
-            direction,
-            playerId,
-            time,
-        }
-    };
-};
-
-// to be used from the UI
-export const selfMoveStart = ({ direction } : { direction: Direction }): ActionInterface => {
-    return {
-        type: 'SELF_MOVE_STARTED',
-        origin: 'client',
-        data: {
-            direction
-        }
-    };
-};
-
-export const selfMoveStop = ({ direction } : { direction: Direction }): ActionInterface => {
-    return {
-        type: 'SELF_MOVE_STOPPED',
-        origin: 'client',
-        data: {
-            direction
-        }
-    };
-};
 
 // to be used from the UI
 export const selfShotFire = (): SelfShotFireAction => {
@@ -63,26 +29,6 @@ export const shotFire = (payload : { playerId: PlayerId, origin: ActionOrigin })
 export const shotFireToServer = (): ActionInterface => {
     return {
         type: 'SHOT_REQUESTED',
-    };
-};
-
-// to send to server
-export const moveStartToServer = ({ direction }: { direction: Direction }): ActionInterface => {
-    return {
-        type: 'MOVE_START_REQUESTED',
-        data: {
-            direction
-        }
-    };
-};
-
-// to send to server
-export const moveStopToServer = ({ direction }: { direction: Direction }): ActionInterface => {
-    return {
-        type: 'MOVE_STOP_REQUESTED',
-        data: {
-            direction
-        }
     };
 };
 
@@ -167,21 +113,5 @@ export const removeExplosion = ({ id }: { id: number }): RemoveExplosionAction =
         data: {
             id
         }
-    };
-};
-
-export const showScores = (): ShowScoresActions => {
-    return {
-        type: 'SCORES_SHOWN',
-        origin: 'client',
-        data: {}
-    };
-};
-
-export const hideScores = (): HideScoresActions => {
-    return {
-        type: 'SCORES_HIDDEN',
-        origin: 'client',
-        data: {}
     };
 };

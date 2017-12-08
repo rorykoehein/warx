@@ -21,7 +21,7 @@ const actionSoundMap = {
     },
 };
 
-const sounds = (action$) => {
+export const epic = (action$) => {
     return action$
         .do(({ type }) => {
             const config = actionSoundMap[type];
@@ -34,5 +34,3 @@ const sounds = (action$) => {
         .ignoreElements();
 
 };
-
-export default sounds;

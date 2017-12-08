@@ -24,31 +24,6 @@ export type SelfJoinAction = {
     }
 };
 
-export type PlayerJoinAction = {
-    +type: 'PLAYER_JOINED',
-    +origin: 'server',
-    +data: {
-        +player: Player
-    }
-};
-
-export type PlayerLeftAction = {
-    +type: 'PLAYER_LEFT',
-    +origin: 'server',
-    +data: {
-        +playerId: PlayerId,
-    }
-};
-
-export type MoveAction = {
-    +type: 'MOVE',
-    +origin: ActionOrigin,
-    +data: {
-        +playerId: PlayerId,
-        +direction: Direction,
-    }
-};
-
 // when the current client fires a shot
 export type SelfShotFireAction = {
     +type: 'SELF_SHOT_FIRED',
@@ -85,16 +60,6 @@ export type GameStateChangedAction = {
     +origin: 'server',
     +data: {
         +state: State, // todo client and server state?
-    }
-};
-
-export type SpawnAction = {
-    +type: 'SPAWN',
-    +origin: 'server',
-    +data: {
-        +playerId: PlayerId,
-        +x: number,
-        +y: number,
     }
 };
 
@@ -168,19 +133,7 @@ export type RemoveExplosionAction = {
     }
 };
 
-export type ShowScoresActions = {
-    +type: 'SCORES_SHOWN',
-    +origin: 'client',
-    +data: {}
-};
-
-export type HideScoresActions = {
-    +type: 'SCORES_HIDDEN',
-    +origin: 'client',
-    +data: {}
-};
-
-export type Action = ReduxInitAction | SelfJoinAction | PlayerJoinAction | PlayerLeftAction | MoveAction |
+export type Action = ReduxInitAction | SelfJoinAction | PlayerJoinAction | PlayerLeftAction |
     ShotFireAction | ShotCoolAction | GameStateChangedAction | GameStateChangedAction | SpawnAction |
     WeaponReloadAction | HitAction | PingLatencyAction | KeyDownAction | KeyUpAction | AddMessageAction |
-    RemoveMessageAction | AddExplosionAction | RemoveExplosionAction | ShowScoresActions | HideScoresActions;
+    RemoveMessageAction | AddExplosionAction | RemoveExplosionAction;

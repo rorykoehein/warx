@@ -1,0 +1,78 @@
+// @flow
+
+import { Observable } from 'rxjs/Observable';
+import { createSelector } from 'reselect';
+import initialState from './initial-state';
+import { getPlayers } from './players';
+import { toList } from './helpers';
+
+import type { Store } from '../types/framework';
+import type { ActionInterface } from '../types/actions';
+import type { State, PlayerList, Players } from '../types/game';
+
+// types
+export type ShowScoresAction = {
+    +type: 'SCORES_SHOWN',
+    +origin: 'client',
+    +data: {}
+};
+
+export type HideScoresAction = {
+    +type: 'SCORES_HIDDEN',
+    +origin: 'client',
+    +data: {}
+};
+
+export type ScoresActions = ShowScoresAction | HideScoresAction;
+
+// actions
+export const showScores = (): ShowScoresAction => {
+    return {
+        type: 'SCORES_SHOWN',
+        origin: 'client',
+        data: {}
+    };
+};
+
+export const hideScores = (): HideScoresAction => {
+    return {
+        type: 'SCORES_HIDDEN',
+        origin: 'client',
+        data: {}
+    };
+};
+
+// reducer
+export const reducer = (state: State = initialState, action: ScoresActions): State => {
+    switch (action.type) {
+        case 'SCORES_SHOWN': {
+            return {
+                ...state,
+                isScoreboardVisible: true,
+            };
+        }
+
+        case 'SCORES_HIDDEN': {
+            return {
+                ...state,
+                isScoreboardVisible: false,
+            };
+        }
+
+        default: return state;
+    }
+};
+
+// selectors
+export const selectIsScoreboardVisible = (state: State) => state.isScoreboardVisible;
+export const selectPlayerScores: State = createSelector(
+    getPlayers,
+    (players: Players): PlayerList => toList(players).sort((a, b) => a.frags - b.frags ||  b.deaths - a.deaths)
+);
+
+// epics
+export const epic = (action$: Observable<ActionInterface>, store: Store) =>
+    action$
+        .ofType('KEY_DOWN')
+        .filter(({ data: { key } }) => key === 'h')
+        .map(() => selectIsScoreboardVisible(store.getState()) ? hideScores() : showScores());

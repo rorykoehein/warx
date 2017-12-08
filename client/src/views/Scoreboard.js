@@ -3,7 +3,8 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'react-redux';
 import type { Connector } from 'react-redux';
-import { isScoreboardVisible, getPlayerScores, isSignedIn } from '../state/selectors';
+import { isSignedIn } from '../state/selectors';
+import { selectIsScoreboardVisible, selectPlayerScores } from '../state/scores';
 import type { State, Player } from '../types/game';
 import Overlay from '../sprites/Overlay';
 import OverlayContainer from '../sprites/OverlayContainer';
@@ -16,8 +17,8 @@ type Props = {
 
 const connector: Connector<{}, Props> = connect(
     (state: State) => ({
-        isScoreboardVisible: isScoreboardVisible(state),
-        players: getPlayerScores(state),
+        isScoreboardVisible: selectIsScoreboardVisible(state),
+        players: selectPlayerScores(state),
         isSignedIn: isSignedIn(state)
     })
 );
@@ -25,7 +26,6 @@ const connector: Connector<{}, Props> = connect(
 class Scoreboard extends PureComponent<Props> {
     render() {
         const { isSignedIn, isScoreboardVisible, players } = this.props;
-        console.log('isScoreboardVisible', isScoreboardVisible);
         return (
             <OverlayContainer>
                 {(isSignedIn && isScoreboardVisible) ? (
