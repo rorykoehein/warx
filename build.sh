@@ -18,4 +18,4 @@ cd ..
 
 echo "COPY CLIENT TO SERVER DIST"
 
-rsync -a -v ./client/build/ ./dist/server/public/
+rsync -a -v ./client/build/ ./dist/public/

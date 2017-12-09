@@ -79,8 +79,6 @@ const reducer = (state = initialState, action) => {
 
             const selfKill = hits.includes(shooter);
 
-            console.log('selfKill?', selfKill);
-
             const shooterPlayer = selfKill ? {
                 ...players[shooter],
                 alive: false,

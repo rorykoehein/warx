@@ -9,12 +9,10 @@ injectGlobal`
         // the double class name is to add more specificity
         &-enter&-enter {
             opacity: 0.01;
-            //transform: scale(5);
         }
         
         &-enter&-enter-active {
-            opacity: 1;
-            //transform: scale(1);
+            opacity: 1;            
             transition: opacity ${time}ms ease-in;        
         }
         
