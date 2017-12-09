@@ -4,8 +4,8 @@ import React, { PureComponent } from 'react';
 import { connect } from 'react-redux';
 import type { Connector } from 'react-redux';
 import type { State } from '../types/game';
-import { getRules, getCurrentPlayer } from '../state/selectors';
-import styles from '../sprites/styles'; // todo nah
+import { getRules } from '../state/game';
+import { getCurrentPlayer } from '../state/players';
 import LoadingBarSprite from '../sprites/LoadingBarSprite';
 
 type Props = {

@@ -19,14 +19,16 @@ const reducer = (state = initialState, action) => {
                     [`${playerId}`]: {
                         id: playerId,
                         name: `Player ${playerId}`,
-                        alive: false, // todo: don't set alive until after spawn
+                        alive: false,
+                        frags: 0,
+                        deaths: 0,
                     }
                 },
                 ...rest,
             };
         }
 
-        case 'SELF_JOIN': { // todo: rename to join request
+        case 'SELF_JOINED': { // todo: rename to join request
             const { players, ...rest } = state;
             const { data: { playerId, playerName } } = action;
             const player = players[playerId];
@@ -35,7 +37,7 @@ const reducer = (state = initialState, action) => {
                     ...players,
                     [`${playerId}`]: {
                         ...player,
-                        name: playerName,
+                        name: playerName.trim().substring(0, 20),
                     }
                 },
                 ...rest,
@@ -45,8 +47,9 @@ const reducer = (state = initialState, action) => {
         case 'SPAWN': {
             // todo call spawn after connecting and after hits
             const { players, ...rest } = state;
-            const { data: { playerId, x, y, playerName } } = action;
+            const { data: { playerId, x, y } } = action;
             const player = players[playerId];
+
             return {
                 players: {
                     ...players,
@@ -54,8 +57,7 @@ const reducer = (state = initialState, action) => {
                         ...player,
                         x,
                         y,
-                        name: playerName, // todo: why have player name is spawn
-                        alive: true, // todo: don't set alive until after spawn
+                        alive: true,
                     }
                 },
                 ...rest,
@@ -64,20 +66,34 @@ const reducer = (state = initialState, action) => {
 
         case 'HIT': {
             const { players, ...rest } = state;
-            const { data: { hits } } = action;
+            const { data: { shooter, hits } } = action;
 
             const deadPlayers = hits.reduce((acc, playerId) => ({
                 ...acc,
                 [playerId]: {
                     ...players[playerId],
                     alive: false,
+                    deaths: players[playerId].deaths + 1,
                 }
             }), {});
+
+            const selfKill = hits.includes(shooter);
+
+            const shooterPlayer = selfKill ? {
+                ...players[shooter],
+                alive: false,
+                deaths: players[shooter].deaths + 1,
+                frags: players[shooter].frags + hits.length - 1,
+            } : {
+                ...players[shooter],
+                frags: players[shooter].frags + hits.length,
+            };
 
             return {
                 players: {
                     ...players,
                     ...deadPlayers,
+                    [shooter]: shooterPlayer,
                 },
                 ...rest,
             };

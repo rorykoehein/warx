@@ -6,7 +6,8 @@ import type { Connector } from 'react-redux';
 import type { State, PlayerList, PlayerId } from '../types/game';
 import PlayersContainer from '../sprites/PlayersContainer';
 import Player from '../sprites/Player';
-import { getAlivePlayers, getCurrentPlayerId, getRules } from '../state/selectors';
+import { getRules } from '../state/game';
+import { getAlivePlayers, getCurrentPlayerId } from '../state/players';
 
 type Props = {
     players: PlayerList,

@@ -12,7 +12,7 @@ injectGlobal`
         }
         
         &-enter&-enter-active {
-            opacity: 1;
+            opacity: 1;            
             transition: opacity ${time}ms ease-in;        
         }
         
@@ -23,8 +23,8 @@ injectGlobal`
         
         &-exit&-exit-active {
             opacity: 0.01;
-            transform: scaleX(5) scaleY(10);
-            transition: opacity ${time}ms ease-out, transform ${time}ms ease-out;
+            transform: scale(5);
+            transition: opacity ${time}ms ease-out, transform ${time*2}ms ease-out;
         }
     }
 `;
