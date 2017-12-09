@@ -17,9 +17,9 @@ const isHit = (shooter, opponent) => {
 export const spawnJoins = (action$, store: Store) =>
     action$
         .ofType('SELF_JOINED')
-        .map(({ data: { playerId, playerName } }) => {
+        .map(({ data: { playerId } }) => {
             const { rules: { worldWidth, worldHeight, moveDistance }} = store.getState();
-            return spawn({ playerId, worldWidth, worldHeight, moveDistance, playerName });
+            return spawn({ playerId, worldWidth, worldHeight, moveDistance });
         });
 
 export const broadcastJoins = (action$, store: Store) =>
