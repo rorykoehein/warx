@@ -37,7 +37,7 @@ const reducer = (state = initialState, action) => {
                     ...players,
                     [`${playerId}`]: {
                         ...player,
-                        name: playerName,
+                        name: playerName.trim().substring(0, 20),
                     }
                 },
                 ...rest,

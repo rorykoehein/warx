@@ -9,19 +9,19 @@ const Row = styled.tr`
 `;
 
 const Cell = styled.td`
-    padding: 1rem;
-    font-size: 2.4rem;
+    padding: 1vw;
+    font-size: 2vw;
     color: white;
     text-align: ${({ isNumber }) => isNumber ? 'right': 'left'}
 `;
 
-const Score = ({ name, frags, deaths, ping }) => {
+const Score = ({ name, frags, deaths, latency }) => {
     return (
         <Row>
             <Cell>{name}</Cell>
             <Cell isNumber>{frags}</Cell>
             <Cell isNumber>{deaths}</Cell>
-            <Cell isNumber>{ping}</Cell>
+            <Cell isNumber>{latency}</Cell>
         </Row>
     );
 };

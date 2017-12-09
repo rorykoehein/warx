@@ -52,7 +52,12 @@ class SignIn extends PureComponent<Props, State> {
                 {isSignedIn ? null : (
                     <Overlay>
                         <form onSubmit={this.onSubmit}>
-                            <LargeInput onChange={this.onChange} placeholder="Enter username to start..." autoFocus />
+                            <LargeInput
+                                onChange={this.onChange}
+                                placeholder="Enter username to start..."
+                                autoFocus
+                                maxLength={20}
+                            />
                         </form>
                     </Overlay>
                 )}
