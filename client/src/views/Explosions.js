@@ -2,11 +2,12 @@
 
 import React, { PureComponent } from 'react';
 import { connect } from 'react-redux';
-import type { Connector } from 'react-redux';
-import { getExplosionsList, getRules } from '../state/selectors';
-import type { State, Explosion as ExplosionType } from '../types/game';
+import { getRules } from '../state/game';
+import { getExplosionsList } from '../state/explosions';
 import ExplosionsContainer from '../sprites/ExplosionsContainer';
 import Explosion from '../sprites/Explosion';
+import type { Connector } from 'react-redux';
+import type { State, Explosion as ExplosionType } from '../types/game';
 
 type Props = {
     explosions: Array<ExplosionType>,

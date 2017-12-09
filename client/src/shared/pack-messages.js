@@ -1,9 +1,15 @@
+// @flow
+
+type KeyMap = {
+    [string]: string
+}
+
 const isJSONObject = value => {
     const type = typeof value;
     return !(type === 'string' || type === 'number' || type === 'boolean' || Array.isArray(value) || value === null);
 };
 
-function reverseKeysAndValues(object){
+function reverseKeysAndValues(object: Object){
     let reverse = {};
     Object.keys(object).forEach(key => {
         const value = object[key];
@@ -22,7 +28,7 @@ function reverseKeysAndValues(object){
     return reverse;
 }
 
-const keyMap = {
+const keyMap: KeyMap = {
     action: 'a',
     alive: 'l',
     data: 'd',
@@ -53,7 +59,7 @@ const valueMap = {
 
 const getValue = (key, value, valueMap) => (valueMap[key] && valueMap[key][value]) || value;
 
-const reverseKeyMap = reverseKeysAndValues(keyMap);
+const reverseKeyMap: KeyMap = reverseKeysAndValues(keyMap);
 const reverseValueMap = reverseKeysAndValues(valueMap);
 
 const replaceKeyAndValue = (object, keyMap, valueMap, pack) =>
@@ -66,7 +72,7 @@ const replaceKeyAndValue = (object, keyMap, valueMap, pack) =>
         return acc;
     }, {});
 
-export const packKey = key => keyMap[key] || key;
-export const unpackKey = key => reverseKeyMap[key] || key;
-export const pack = message => replaceKeyAndValue(message, keyMap, valueMap, true);
-export const unpack = message => replaceKeyAndValue(message, reverseKeyMap, reverseValueMap, false);
+export const packKey = (key: string) => keyMap[key] || key;
+export const unpackKey = (key: string) => reverseKeyMap[key] || key;
+export const pack = (message: Object) => replaceKeyAndValue(message, keyMap, valueMap, true);
+export const unpack = (message: Object) => replaceKeyAndValue(message, reverseKeyMap, reverseValueMap, false);

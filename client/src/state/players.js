@@ -2,7 +2,6 @@
 
 import { createSelector } from 'reselect';
 import type { State, Player, PlayerId, Players, PlayerList } from '../types/game';
-import initialState from './initial-state';
 import { toList } from './helpers';
 
 // local types
@@ -43,7 +42,7 @@ type SpawnAction = {
 type Action = PlayerJoinAction | PlayerLeftAction | PlayerUpdatedAction | SpawnAction;
 
 // reducer
-export const reducer = (state: State = initialState, action: Action): State => {
+export const reducer = (state: State, action: Action): State => {
     const { players, currentPlayerId } = state;
     switch (action.type) {
         case 'PLAYER_JOINED': {
@@ -100,8 +99,8 @@ export const reducer = (state: State = initialState, action: Action): State => {
 
 // selectors
 export const getPlayers = (state: State) => state.players;
-export const getPlayerById = (state: State, id: PlayerId) => getPlayers(state)[id];
-export const getCurrentPlayerId = (state: State) => state.currentPlayerId;
+export const getPlayerById = (state: State, id: ?PlayerId) => id && getPlayers(state)[id];
+export const getCurrentPlayerId = (state: State): ?PlayerId => state.currentPlayerId;
 export const getCurrentPlayer = (state: State) => getPlayerById(state, getCurrentPlayerId(state));
 
 export const getAlivePlayers = createSelector(

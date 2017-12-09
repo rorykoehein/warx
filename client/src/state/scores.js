@@ -2,7 +2,6 @@
 
 import { Observable } from 'rxjs/Observable';
 import { createSelector } from 'reselect';
-import initialState from './initial-state';
 import { getPlayers } from './players';
 import { toList } from './helpers';
 
@@ -43,7 +42,7 @@ export const hideScores = (): HideScoresAction => {
 };
 
 // reducer
-export const reducer = (state: State = initialState, action: ScoresActions): State => {
+export const reducer = (state: State, action: ScoresActions): State => {
     switch (action.type) {
         case 'SCORES_SHOWN': {
             return {

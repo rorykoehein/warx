@@ -5,8 +5,8 @@ import { connect } from 'react-redux';
 import LargeInput from '../sprites/LargeInput';
 import Overlay from '../sprites/Overlay';
 import OverlayContainer from '../sprites/OverlayContainer';
-import { selfJoin } from '../state/actions';
-import { isSignedIn } from '../state/selectors';
+import { selfJoin } from '../state/game';
+import { isSignedIn } from '../state/game';
 
 import type { Connector } from 'react-redux';
 import type { Dispatch } from '../types/framework';

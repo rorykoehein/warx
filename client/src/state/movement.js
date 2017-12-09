@@ -4,12 +4,12 @@ import 'rxjs';
 import { Observable } from 'rxjs/Observable';
 import { combineEpics } from 'redux-observable';
 import { sendAction } from '../socket';
-import { selfShotFire } from './actions';
-import initialState from './initial-state';
+import { selfShotFire } from './shots'; // todo move out
 
 import type { ActionInterface, ActionOrigin } from '../types/actions';
 import type { State, PlayerId, Direction } from '../types/game';
 
+// types
 type MoveToAction = {
     +type: 'MOVE_TO',
     +origin: ActionOrigin,
@@ -44,50 +44,42 @@ type MoveStoppedAction = {
 
 type Action = MoveToAction | MoveSyncAction | MoveStoppedAction;
 
-
+// actions
 // to be used from the UI
-export const selfMoveStart = ({ direction } : { direction: Direction }): ActionInterface => {
-    return {
-        type: 'SELF_MOVE_STARTED',
-        origin: 'client',
-        data: {
-            direction
-        }
-    };
-};
+export const selfMoveStart = ({ direction } : { direction: Direction }): ActionInterface => ({
+    type: 'SELF_MOVE_STARTED',
+    origin: 'client',
+    data: {
+        direction
+    }
+});
 
-export const selfMoveStop = ({ direction } : { direction: Direction }): ActionInterface => {
-    return {
-        type: 'SELF_MOVE_STOPPED',
-        origin: 'client',
-        data: {
-            direction
-        }
-    };
-};
+export const selfMoveStop = ({ direction } : { direction: Direction }): ActionInterface => ({
+    type: 'SELF_MOVE_STOPPED',
+    origin: 'client',
+    data: {
+        direction
+    }
+});
 
 // to send to server
-export const moveStartToServer = ({ direction }: { direction: Direction }): ActionInterface => {
-    return {
-        type: 'MOVE_START_REQUESTED',
-        data: {
-            direction
-        }
-    };
-};
+export const moveStartToServer = ({ direction }: { direction: Direction }): ActionInterface => ({
+    type: 'MOVE_START_REQUESTED',
+    data: {
+        direction
+    }
+});
 
 // to send to server
-export const moveStopToServer = ({ direction }: { direction: Direction }): ActionInterface => {
-    return {
-        type: 'MOVE_STOP_REQUESTED',
-        data: {
-            direction
-        }
-    };
-};
+export const moveStopToServer = ({ direction }: { direction: Direction }): ActionInterface => ({
+    type: 'MOVE_STOP_REQUESTED',
+    data: {
+        direction
+    }
+});
 
 // reducer
-export const reducer = (state: State = initialState, action: Action): State => {
+export const reducer = (state: State, action: Action): State => {
     const {players} = state;
     switch (action.type) {
 

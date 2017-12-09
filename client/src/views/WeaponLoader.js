@@ -4,7 +4,7 @@ import React, { PureComponent } from 'react';
 import { connect } from 'react-redux';
 import type { Connector } from 'react-redux';
 import type { State } from '../types/game';
-import { getRules } from '../state/selectors';
+import { getRules } from '../state/game';
 import { getCurrentPlayer } from '../state/players';
 import LoadingBarSprite from '../sprites/LoadingBarSprite';
 

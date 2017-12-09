@@ -34,17 +34,17 @@ export type Players = {
 export type PlayerList = Array<Player>;
 
 export type Rules = {
-    reloadTime: number, // time to reload the weapon after shooting
-    coolTime: number, // time the shot stays visible
-    moveTime: number,
-    moveDistance: number, // px
-    worldWidth: number,
-    worldHeight: number,
-    playerSize: number, //
+    +reloadTime: number, // time to reload the weapon after shooting
+    +coolTime: number, // time the shot stays visible
+    +moveTime: number,
+    +moveDistance: number, // px
+    +worldWidth: number,
+    +worldHeight: number,
+    +playerSize: number, //
 };
 
 export type MessagesType = {
-    +[id: string]: string,2
+    +[id: string]: string,
 }
 
 export type MessageList = Array<{
@@ -60,17 +60,17 @@ export type Explosion = {
 };
 
 export type ExplosionsType = {
-    +[id: string]: Explosion
+    +[id: string]: Explosion,
 }
 
 export type State = {
+    +rules: ?Rules,
+    +latency: ?number,
+    +currentPlayerId: ?PlayerId,
+    +isSignedIn: boolean,
     +players: Players,
-    +rules: Rules,
     +shots: Shots,
-    +currentPlayerId: PlayerId,
-    +latency: number,
     +messages: MessagesType,
     +explosions: ExplosionsType,
-    +isSignedIn: boolean,
     +isScoreboardVisible: boolean,
 };
