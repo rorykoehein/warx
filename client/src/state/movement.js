@@ -3,6 +3,7 @@
 import 'rxjs';
 import { Observable } from 'rxjs/Observable';
 import { combineEpics } from 'redux-observable';
+import { isSignedIn } from "./game";
 import { sendAction } from '../socket';
 import { selfShotFire } from './shots'; // todo move out
 
@@ -150,9 +151,9 @@ const keyDownActionMap = {
     ' ': () => selfShotFire(), // todo: move to shots.js (future module)
 };
 
-const keyDownMoves = (action$) => action$
+const keyDownMoves = (action$, store) => action$
     .ofType('KEY_DOWN')
-    .filter(({ data: { key } }) => keyDownActionMap[key])
+    .filter(({ data: { key } }) => keyDownActionMap[key] && isSignedIn(store.getState()))
     .map(({ data: { key: downKey } }) => keyDownActionMap[downKey]());
 
 const keyUpActionMap = {
@@ -162,9 +163,9 @@ const keyUpActionMap = {
     ArrowDown: () => selfMoveStop({ direction: 'down' }),
 };
 
-const keyUpMoves = (action$) => action$
+const keyUpMoves = (action$, store) => action$
     .ofType('KEY_UP')
-    .filter(({ data: { key } }) => keyUpActionMap[key])
+    .filter(({ data: { key } }) => keyUpActionMap[key] && isSignedIn(store.getState()))
     .map(({ data: { key: downKey } }) => keyUpActionMap[downKey]());
 
 const selfStartMoves = (action$) => action$

@@ -77,16 +77,25 @@ const reducer = (state = initialState, action) => {
                 }
             }), {});
 
-            const shooterPlayer = players[shooter];
+            const selfKill = hits.includes(shooter);
+
+            console.log('selfKill?', selfKill);
+
+            const shooterPlayer = selfKill ? {
+                ...players[shooter],
+                alive: false,
+                deaths: players[shooter].deaths + 1,
+                frags: players[shooter].frags + hits.length - 1,
+            } : {
+                ...players[shooter],
+                frags: players[shooter].frags + hits.length,
+            };
 
             return {
                 players: {
                     ...players,
                     ...deadPlayers,
-                    [shooter]: {
-                        ...shooterPlayer,
-                        frags: shooterPlayer.frags + hits.length,
-                    }
+                    [shooter]: shooterPlayer,
                 },
                 ...rest,
             };

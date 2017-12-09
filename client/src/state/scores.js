@@ -64,9 +64,9 @@ export const reducer = (state: State, action: ScoresActions): State => {
 
 // selectors
 export const selectIsScoreboardVisible = (state: State) => state.isScoreboardVisible;
-export const selectPlayerScores: State = createSelector(
+export const selectPlayerScores = createSelector(
     getPlayers,
-    (players: Players): PlayerList => toList(players).sort((a, b) => a.frags - b.frags ||  b.deaths - a.deaths)
+    (players: Players): PlayerList => toList(players).sort((a, b) => b.frags - a.frags ||  a.deaths - b.deaths)
 );
 
 // epics

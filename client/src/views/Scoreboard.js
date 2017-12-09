@@ -8,6 +8,8 @@ import { selectIsScoreboardVisible, selectPlayerScores } from '../state/scores';
 import type { State, Player } from '../types/game';
 import Overlay from '../sprites/Overlay';
 import OverlayContainer from '../sprites/OverlayContainer';
+import Score from '../sprites/Score';
+import ScoresContainer from '../sprites/ScoresContainer';
 
 type Props = {
     isSignedIn: boolean,
@@ -30,9 +32,9 @@ class Scoreboard extends PureComponent<Props> {
             <OverlayContainer>
                 {(isSignedIn && isScoreboardVisible) ? (
                     <Overlay>
-                        {players.map(player => (
-                            <div>{player.name} {player.frags}/{player.deaths}</div>
-                        ))}
+                        <ScoresContainer>
+                            {players.map(player => <Score {...player} />)}
+                        </ScoresContainer>
                     </Overlay>
                 ) : null}
             </OverlayContainer>

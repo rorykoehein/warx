@@ -70,7 +70,10 @@ export const reducer = (state: State, action: Action): State => {
             const { data: { players: newPlayers } } = action;
             return {
                 ...state,
-                players: newPlayers
+                players: {
+                    ...players,
+                    ...newPlayers
+                }
             };
         }
 
