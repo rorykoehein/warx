@@ -7,6 +7,22 @@ const initialState = {
     rules: { ...rules },
 };
 
+const replacePlayerProps = (state, playerId, props) => {
+    const { players, ...rest } = state;
+    const player = players[playerId];
+    if(!player) return state;
+    return {
+        ...rest,
+        players: {
+            ...players,
+            [playerId]: {
+                ...player,
+                ...props,
+            },
+        },
+    };
+};
+
 // todo: server state and action types
 const reducer = (state = initialState, action) => {
     switch (action.type) {
@@ -109,40 +125,36 @@ const reducer = (state = initialState, action) => {
             };
         }
 
+        case 'MOVE_STARTED': {
+            const { data: { direction, playerId } } = action;
+            return replacePlayerProps(state, playerId, {
+                direction,
+                isMoving: true,
+            });
+        }
+
+        case 'MOVE_STOPPED': {
+            const { data: { direction, playerId } } = action;
+            return replacePlayerProps(state, playerId, {
+                direction,
+                isMoving: true,
+            });
+        }
+
         case 'MOVE_TO': {
-            const { players, ...rest } = state;
             const { data: { direction, playerId, x, y } } = action;
-            const player = players[playerId];
-            if(!player) return state;
-            return {
-                ...rest,
-                players: {
-                    ...players,
-                    [playerId]: {
-                        ...player,
-                        direction,
-                        x,
-                        y,
-                    },
-                },
-            };
+            return replacePlayerProps(state, playerId, {
+                direction,
+                x,
+                y,
+            });
         }
 
         case 'PING_LATENCY': {
-            const { players, ...rest } = state;
             const { data: { latency = 50, playerId } } = action;
-            const player = players[playerId];
-            if(!player) return state;
-            return {
-                ...rest,
-                players: {
-                    ...players,
-                    [playerId]: {
-                        ...player,
-                        latency
-                    },
-                },
-            };
+            return replacePlayerProps(state, playerId, {
+                latency
+            });
         }
 
         default:

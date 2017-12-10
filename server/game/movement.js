@@ -5,7 +5,7 @@ import { canMove, calculateMovement } from './move-helpers';
 
 export const moves = (action$, store: Store) => action$
     .ofType('MOVE_STARTED')
-    .switchMap(({ data: { direction, playerId } }) => {
+    .flatMap(({ data: { direction, playerId } }) => {
         const startTime = Number(Date.now());
         const player = store.getState().players[playerId];
         const { x: startX, y: startY } = player;
@@ -48,10 +48,20 @@ export const moves = (action$, store: Store) => action$
 
 export const moveStarts = (action$, store: Store) => action$
     .ofType('MOVE_START_REQUESTED')
-    .map(({ data: { direction, playerId }}) => {
+    .flatMap(({ data: { direction, playerId }}) => {
         const { players } = store.getState();
         const player = players[playerId]; // todo use selector function for getting players?
-        return {
+        // stop any current movement
+        return [{
+            type: 'MOVE_STOPPED',
+            origin: 'server', // todo fugly
+            sendToClient: true, // todo fugly
+            toAll: true, // todo fugly
+            data: {
+                playerId,
+                direction: player.direction,
+            },
+        }, {
             type: 'MOVE_STARTED',
             origin: 'server', // todo fugly
             sendToClient: true, // todo fugly
@@ -62,7 +72,7 @@ export const moveStarts = (action$, store: Store) => action$
                 x: player.x,
                 y: player.y,
             },
-        };
+        }];
     });
 
 

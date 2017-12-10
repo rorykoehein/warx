@@ -1,3 +1,5 @@
+// @flow
+
 import type { Player, Direction, Rules } from '../../client/src/types/game';
 
 export const calculateMovement = (
@@ -21,7 +23,7 @@ export const calculateMovement = (
     return { x: newX, y: newY }
 };
 
-export const canMove = (player: Player, direction: Direction, rules): Boolean => {
+export const canMove = (player: Player, direction: Direction, rules: Rules): boolean => {
     const { moveDistance, worldWidth, worldHeight } = rules;
     const { x, y } = player;
     return (direction === 'left' && x - moveDistance >= 0) ||
