@@ -7,13 +7,14 @@ export type Direction = 'up' | 'right' | 'down' | 'left';
 export type Player = {
     +id: PlayerId,
     +name: string,
+    +alive: boolean,
+    +frags: number,
+    +deaths: number,
     +x: number,
     +y: number,
     +direction: Direction,
-    +alive: boolean,
+    +isMoving: boolean,
     +weaponLoaded: boolean,
-    +frags: number,
-    +deaths: number,
 }
 
 export type Shot = {
