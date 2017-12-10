@@ -29,6 +29,10 @@ export type RemoveExplosionAction = {
 
 type Action = AddExplosionAction | RemoveExplosionAction;
 
+export const initialState = {
+    explosions: {}
+};
+
 // actions
 export const removeExplosion = ({ id }: { id: number }): RemoveExplosionAction => {
     return {

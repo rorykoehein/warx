@@ -5,6 +5,14 @@ import type { State, Player, PlayerId, Players, PlayerList } from '../types/game
 import { toList } from './helpers';
 
 // local types
+type SelfJoinAction = {
+    +type: 'SELF_JOINED',
+    +origin: 'client',
+    +data: {
+        +playerName: string
+    }
+};
+
 type PlayerJoinAction = {
     +type: 'PLAYER_JOINED',
     +origin: 'server',
@@ -39,7 +47,25 @@ type SpawnAction = {
     }
 };
 
-type Action = PlayerJoinAction | PlayerLeftAction | PlayerUpdatedAction | SpawnAction;
+type Action = SelfJoinAction | PlayerJoinAction | PlayerLeftAction | PlayerUpdatedAction | SpawnAction;
+
+// initial state
+export const initialState = {
+    currentPlayerId: null,
+    players: {},
+};
+
+// actions
+export const selfJoin = ({ playerName }: { playerName: string }): SelfJoinAction => {
+    return {
+        type: 'SELF_JOINED',
+        origin: 'client',
+        sendToServer: true, // todo replace by epic?
+        data: {
+            playerName
+        }
+    };
+};
 
 // reducer
 export const reducer = (state: State, action: Action): State => {

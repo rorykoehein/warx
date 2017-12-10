@@ -16,14 +16,6 @@ type GameStateChangedAction = {
     }
 };
 
-type SelfJoinAction = {
-    +type: 'SELF_JOINED',
-    +origin: 'client',
-    +data: {
-        +playerName: string
-    }
-};
-
 type PingLatencyAction = {
     +type: 'PING_LATENCY',
     +origin: 'client',
@@ -48,7 +40,13 @@ type KeyUpAction = {
     }
 };
 
-type Action = GameStateChangedAction | SelfJoinAction | PingLatencyAction | KeyDownAction | KeyUpAction;
+type Action = GameStateChangedAction | PingLatencyAction | KeyDownAction | KeyUpAction;
+
+export const initialState = {
+    rules: null,
+    latency: null,
+    isSignedIn: false,
+};
 
 // actions
 export const keyDown = ({ key }: { key: string }): KeyDownAction => {
@@ -71,27 +69,14 @@ export const keyUp = ({ key }: { key: string }): KeyUpAction => {
     };
 };
 
-export const selfJoin = ({ playerName }: { playerName: string }): SelfJoinAction => {
-    return {
-        type: 'SELF_JOINED',
-        origin: 'client',
-        sendToServer: true, // todo replace by epic?
-        data: {
-            playerName
-        }
-    };
-};
-
 // reducer
 export const reducer = (state: State, action: Action): State => {
     switch (action.type) {
         case 'GAME_STATE_CHANGED': {
-            const { data: { state: { players, currentPlayerId, rules } } } = action;
+            const { data: { state: newState } } = action;
             return {
                 ...state,
-                players,
-                currentPlayerId,
-                rules,
+                ...newState,
             };
         }
 

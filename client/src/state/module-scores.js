@@ -2,7 +2,7 @@
 
 import { Observable } from 'rxjs/Observable';
 import { createSelector } from 'reselect';
-import { getPlayers } from './players';
+import { getPlayers } from './module-players';
 import { toList } from './helpers';
 
 import type { Store } from '../types/framework';
@@ -23,6 +23,11 @@ export type HideScoresAction = {
 };
 
 export type ScoresActions = ShowScoresAction | HideScoresAction;
+
+// initial state
+export const initialState = {
+    isScoreboardVisible: false
+};
 
 // actions
 export const showScores = (): ShowScoresAction => {

@@ -1,5 +1,6 @@
 // @flow
 
+// rename to lasers
 import { Observable } from 'rxjs/Observable';
 import { combineEpics } from 'redux-observable';
 import { sendAction } from '../socket';
@@ -46,6 +47,11 @@ type ShotRequestAction = {
 };
 
 type Action = SelfShotFireAction | ShotFireAction | ShotCoolAction | WeaponReloadAction | ShotRequestAction;
+
+// initial state
+const initialState = {
+    shots: {},
+};
 
 // actions
 

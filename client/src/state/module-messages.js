@@ -27,6 +27,10 @@ type RemoveMessageAction = {
 
 type Action = AddMessageAction | RemoveMessageAction;
 
+export const initialState = {
+    messages: {},
+};
+
 // actions
 export const addMessage = ({ message, id }: { message: string, id: number }): AddMessageAction => {
     return {
