@@ -2,10 +2,11 @@
 
 import { combineEpics } from 'redux-observable';
 import { Observable } from 'rxjs/Observable';
+import defaultRules from '../shared/default-rules';
 import { sendAction } from "../socket";
 
 import type { Store } from '../types/framework';
-import type { State } from '../types/game';
+import type { State, Rules } from '../types/game';
 
 // local types
 type GameStateChangedAction = {
@@ -24,7 +25,7 @@ type PingLatencyAction = {
     }
 };
 
-type KeyDownAction = {
+export type KeyDownAction = {
     +type: 'KEY_DOWN',
     +origin: 'client',
     +data: {
@@ -32,7 +33,7 @@ type KeyDownAction = {
     }
 };
 
-type KeyUpAction = {
+export type KeyUpAction = {
     +type: 'KEY_UP',
     +origin: 'client',
     +data: {
@@ -101,7 +102,7 @@ export const getLatency = (state: State) => state.latency;
 export const isSignedIn = (state: State) => state.isSignedIn;
 
 // rules
-export const getRules = (state: State) => state.rules || {};
+export const getRules = (state: State): Rules => state.rules || defaultRules;
 
 
 // epics

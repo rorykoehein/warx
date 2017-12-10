@@ -127,10 +127,11 @@ export const reducer = (state: State, action: Action): State => {
 };
 
 // selectors
-export const getPlayers = (state: State) => state.players;
-export const getPlayerById = (state: State, id: ?PlayerId) => id && getPlayers(state)[id];
+export const getPlayers = (state: State): Players => state.players;
+export const getPlayerById = (state: State, id: ?PlayerId): ?Player =>
+    (id !== null && id !== undefined) ? getPlayers(state)[id] : null;
 export const getCurrentPlayerId = (state: State): ?PlayerId => state.currentPlayerId;
-export const getCurrentPlayer = (state: State) => getPlayerById(state, getCurrentPlayerId(state));
+export const getCurrentPlayer = (state: State): ?Player => getPlayerById(state, getCurrentPlayerId(state));
 
 export const getAlivePlayers = createSelector(
     getPlayers,

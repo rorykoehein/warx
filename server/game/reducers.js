@@ -1,6 +1,6 @@
 // @flow
 
-import rules from './default-rules';
+import rules from '../../client/src/shared/default-rules';
 
 const initialState = {
     players: {},

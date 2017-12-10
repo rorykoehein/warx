@@ -4,7 +4,7 @@ import React, { PureComponent } from 'react';
 import { connect } from 'react-redux';
 import MessagesContainer from '../sprites/MessagesContainer';
 import Message from '../sprites/Message';
-import { getMessagesByLatest } from '../state/messages';
+import { getMessagesByLatest } from '../state/module-messages';
 
 import type { Connector } from 'react-redux';
 import type { State, MessageList } from '../types/game';

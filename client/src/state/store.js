@@ -4,12 +4,13 @@ import 'rxjs';
 import { applyMiddleware, createStore } from 'redux';
 import { createLogger } from 'redux-logger';
 import { combineEpics, createEpicMiddleware } from 'redux-observable';
-import { reduceReducers } from './helpers';
-import modules from './modules';
+import { reduceReducers, toList } from './helpers';
+import * as moduleMap from './modules';
 
 import type { Store } from '../types/framework';
-import type { State } from '../types/game';
 import type { ActionInterface } from '../types/actions';
+
+const modules = toList(moduleMap);
 
 export const reducer = reduceReducers(
     ...modules
@@ -27,9 +28,10 @@ export const initialState = {
     ...modules
         .filter(module => module.initialState)
         .map(module => module.initialState)
+        .reduce((acc, next) => ({ ...acc, ...next}), {})
 };
 
-const coreReducer = (state: State = initialState, action: ActionInterface): State => state;
+const coreReducer = (state = initialState, action: ActionInterface) => state;
 
 // setup store
 const store: Store = createStore(

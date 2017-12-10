@@ -4,13 +4,13 @@ import React, { PureComponent } from 'react';
 import { connect } from 'react-redux';
 import type { Connector } from 'react-redux';
 import type { State } from '../types/game';
-import { getRules } from '../state/game';
-import { getCurrentPlayer } from '../state/players';
+import { getRules } from '../state/module-game';
+import { getCurrentPlayer } from '../state/module-players';
 import LoadingBarSprite from '../sprites/LoadingBarSprite';
 
 type Props = {
     reloadTime: number,
-    weaponLoaded: boolean,
+    weaponLoaded: ?boolean,
 };
 
 type HudState = {
@@ -18,10 +18,13 @@ type HudState = {
 };
 
 const connector: Connector<{}, Props> = connect(
-    (state : State) => ({
-        weaponLoaded: getCurrentPlayer(state) && getCurrentPlayer(state).weaponLoaded,
-        reloadTime: getRules(state).reloadTime,
-    })
+    (state : State) => {
+        const currentPlayer = getCurrentPlayer(state);
+        return {
+            weaponLoaded: currentPlayer ? currentPlayer.weaponLoaded : null,
+            reloadTime: getRules(state).reloadTime,
+        }
+    }
 );
 
 const transitionDownTime = 0;

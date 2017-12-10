@@ -5,8 +5,8 @@ import { connect } from 'react-redux';
 import type { Connector } from 'react-redux';
 import type { PlayerId } from '../types/game';
 import type { Dispatch } from '../types/framework';
-import { keyDown, keyUp } from '../state/game';
-import type { KeyDownAction, KeyUpAction } from '../types/game';
+import { keyDown, keyUp } from '../state/module-game';
+import type { KeyDownAction, KeyUpAction } from '../state/module-game';
 
 type Props = {
     children?: any,
