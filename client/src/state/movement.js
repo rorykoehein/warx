@@ -183,5 +183,4 @@ export const epic = combineEpics(
     keyUpMoves,
     selfStartMoves,
     selfStopMoves,
-    autoMove,
 );
