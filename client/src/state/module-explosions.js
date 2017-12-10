@@ -2,7 +2,7 @@
 
 import { combineEpics } from 'redux-observable';
 import { createSelector } from 'reselect';
-import { toList } from './helpers';
+import { toList } from '../shared/helpers';
 
 import type { State as FullState, ExplosionsType, Explosion, PlayerId } from '../types/game';
 

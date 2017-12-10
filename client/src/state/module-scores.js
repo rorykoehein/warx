@@ -3,10 +3,10 @@
 import { Observable } from 'rxjs/Observable';
 import { createSelector } from 'reselect';
 import { getPlayers } from './module-players';
-import { toList } from './helpers';
+import { toList } from '../shared/helpers';
 
 import type { Store } from '../types/framework';
-import type { ActionInterface } from '../types/actions';
+import type { ActionInterface } from '../types/framework';
 import type { State, PlayerList, Players } from '../types/game';
 
 // types

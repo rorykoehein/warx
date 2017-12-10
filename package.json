@@ -12,13 +12,18 @@
     "redux": "^3.7.2",
     "redux-node-logger": "^0.1.0",
     "redux-observable": "^0.17.0",
+    "reselect": "^3.0.1",
     "rxjs": "^5.5.2",
     "socket.io": "^2.0.4"
   },
   "scripts": {
     "start": "node ./server/www",
-    "dev": "babel-node ./server/www",
+    "dev": "NODE_ENV=development babel-node ./server/www",
     "build-server": "babel ./server/ -d ./dist/server",
     "build-shared": "babel ./client/src/types -d ./dist/client/src/types && babel ./client/src/shared -d ./dist/client/src/shared && babel ./client/src/state -d ./dist/client/src/state"
+  },
+  "devDependencies": {
+    "babel-preset-react-app": "^3.1.0",
+    "plop": "^1.9.0"
   }
 }

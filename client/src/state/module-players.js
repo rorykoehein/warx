@@ -2,7 +2,7 @@
 
 import { createSelector } from 'reselect';
 import type { State, Player, PlayerId, Players, PlayerList } from '../types/game';
-import { toList } from './helpers';
+import { toList } from '../shared/helpers';
 
 // local types
 type SelfJoinAction = {

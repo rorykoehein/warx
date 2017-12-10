@@ -1,10 +1,72 @@
 // @flow
 
 import 'rxjs';
-import loop from '../../client/src/shared/loop';
+import loop from '../shared/loop';
 import type { Store } from '../../client/src/types/framework';
-
 import type { Player, Direction, Rules } from '../../client/src/types/game';
+
+// local types
+
+// initial state
+import rules from '../shared/default-rules';
+
+const initialState = {
+    players: {},
+    rules: { ...rules },
+};
+
+const replacePlayerProps = (state, playerId, props) => {
+    const { players, ...rest } = state;
+    const player = players[playerId];
+    if(!player) return state;
+    return {
+        ...rest,
+        players: {
+            ...players,
+            [playerId]: {
+                ...player,
+                ...props,
+            },
+        },
+    };
+};
+
+const reducer = (state = initialState, action) => {
+    switch (action.type) {
+        case 'MOVE_STARTED': {
+            const { data: { direction, playerId } } = action;
+            return replacePlayerProps(state, playerId, {
+                direction,
+                isMoving: true,
+            });
+        }
+
+        case 'MOVE_STOPPED': {
+            const { data: { direction, playerId } } = action;
+            return replacePlayerProps(state, playerId, {
+                direction,
+                isMoving: true,
+            });
+        }
+
+        case 'MOVE_TO': {
+            const { data: { direction, playerId, x, y } } = action;
+            return replacePlayerProps(state, playerId, {
+                direction,
+                x,
+                y,
+            });
+        }
+
+        default:
+            return state;
+    }
+};
+
+export default reducer;
+
+
+// helpers
 
 export const calculateMovement = (
     startX: number, startY: number, startTime: number, endTime: number, rules: Rules, direction: Direction
@@ -35,7 +97,6 @@ export const canMove = (player: Player, direction: Direction, rules: Rules): boo
         (direction === 'up' && y - moveDistance >= 0) ||
         (direction === 'down' && y + moveDistance < worldHeight);
 };
-
 
 export const moves = (action$, store: Store) => action$
     .ofType('MOVE_STARTED')

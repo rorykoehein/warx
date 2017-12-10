@@ -7,7 +7,7 @@ import { isSignedIn } from "./module-game";
 import { sendAction } from '../socket';
 import { selfShotFire } from './module-shots'; // todo move out
 
-import type { ActionInterface, ActionOrigin } from '../types/actions';
+import type { ActionInterface, ActionOrigin } from '../types/framework';
 import type { State, PlayerId, Direction } from '../types/game';
 
 // types
