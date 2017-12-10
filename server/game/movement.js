@@ -51,6 +51,7 @@ export const moveStarts = (action$, store: Store) => action$
     .flatMap(({ data: { direction, playerId }}) => {
         const { players } = store.getState();
         const player = players[playerId]; // todo use selector function for getting players?
+        // stop any current movement
         return [{
             type: 'MOVE_STOPPED',
             origin: 'server', // todo fugly

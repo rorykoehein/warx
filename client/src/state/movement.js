@@ -79,36 +79,6 @@ export const moveStopToServer = ({ direction }: { direction: Direction }): Actio
     }
 });
 
-// start auto movement test
-let autoMoveDirection = null;
-
-const autoMove = (action$, store) => {
-    return action$
-        .ofType('KEY_DOWN')
-        .filter(({ data: { key } }) => key === '=')
-        .switchMap(() => {
-            return Observable
-                .timer(0, 5000)
-                .map(() => {
-                    const rand = Math.floor(Math.random() * 4);
-                    const directions = ['up', 'down', 'left', 'right'];
-                    return directions[rand];
-                })
-                .flatMap((newRandomDirection) => {
-                    const lastDirection = autoMoveDirection;
-                    autoMoveDirection = newRandomDirection;
-                    return [
-                        lastDirection ? selfMoveStop({ direction: lastDirection }) : { type: 'AUTO_MOVE_STARTED' },
-                        selfMoveStart({ direction: autoMoveDirection })
-                    ];
-                });
-        });
-};
-
-
-// stop auto movement test
-
-
 // reducer
 export const reducer = (state: State, action: Action): State => {
     const {players} = state;
