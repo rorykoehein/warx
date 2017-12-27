@@ -4,22 +4,18 @@ import { applyMiddleware, createStore } from 'redux';
 import createNodeLogger from 'redux-node-logger'
 import { combineEpics, createEpicMiddleware } from 'redux-observable';
 import { reduceReducers, toList } from '../shared/helpers';
-import epics from './epics';
-import reducers from './reducers';
 import * as moduleMap from './modules';
 import { ActionInterface } from './types';
 
 const modules = toList(moduleMap);
 
 export const reducer = reduceReducers(
-    reducers,
     ...modules
         .filter(module => module.reducer)
         .map(module => module.reducer)
 );
 
 export const epic = combineEpics(
-    epics,
     ...modules
         .filter(module => module.epic)
         .map(module => module.epic)

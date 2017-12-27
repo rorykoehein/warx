@@ -1,20 +1,15 @@
 // @flow
 
 import 'rxjs';
+import { combineEpics } from 'redux-observable';
+import type { State as FullState, ActionInterface } from './types';
 import loop from '../shared/loop';
 import type { Store } from '../../client/src/types/framework';
 import type { Player, Direction, Rules } from '../../client/src/types/game';
 
 // local types
 
-// initial state
-import rules from '../shared/default-rules';
-
-const initialState = {
-    players: {},
-    rules: { ...rules },
-};
-
+// helpers
 const replacePlayerProps = (state, playerId, props) => {
     const { players, ...rest } = state;
     const player = players[playerId];
@@ -30,43 +25,6 @@ const replacePlayerProps = (state, playerId, props) => {
         },
     };
 };
-
-const reducer = (state = initialState, action) => {
-    switch (action.type) {
-        case 'MOVE_STARTED': {
-            const { data: { direction, playerId } } = action;
-            return replacePlayerProps(state, playerId, {
-                direction,
-                isMoving: true,
-            });
-        }
-
-        case 'MOVE_STOPPED': {
-            const { data: { direction, playerId } } = action;
-            return replacePlayerProps(state, playerId, {
-                direction,
-                isMoving: true,
-            });
-        }
-
-        case 'MOVE_TO': {
-            const { data: { direction, playerId, x, y } } = action;
-            return replacePlayerProps(state, playerId, {
-                direction,
-                x,
-                y,
-            });
-        }
-
-        default:
-            return state;
-    }
-};
-
-export default reducer;
-
-
-// helpers
 
 export const calculateMovement = (
     startX: number, startY: number, startTime: number, endTime: number, rules: Rules, direction: Direction
@@ -98,7 +56,51 @@ export const canMove = (player: Player, direction: Direction, rules: Rules): boo
         (direction === 'down' && y + moveDistance < worldHeight);
 };
 
-export const moves = (action$, store: Store) => action$
+// actions
+// export const doThing = (): ActionType => ({
+//      type: 'THING_DONE',
+//      origin: 'client',
+//      data: {}
+// });
+
+// reducer
+export const reducer = (state: FullState, action: ActionInterface): FullState => {
+    switch (action.type) {
+        case 'MOVE_STARTED': {
+            const { data: { direction, playerId } } = action;
+            return replacePlayerProps(state, playerId, {
+                direction,
+                isMoving: true,
+            });
+        }
+
+        case 'MOVE_STOPPED': {
+            const { data: { direction, playerId } } = action;
+            return replacePlayerProps(state, playerId, {
+                direction,
+                isMoving: true,
+            });
+        }
+
+        case 'MOVE_TO': {
+            const { data: { direction, playerId, x, y } } = action;
+            return replacePlayerProps(state, playerId, {
+                direction,
+                x,
+                y,
+            });
+        }
+
+        default:
+            return state;
+    }
+};
+
+// selectors
+// const getMap = (state: ModuleState) => state.thing;
+
+// epics
+const moves = (action$, store: Store) => action$
     .ofType('MOVE_STARTED')
     .flatMap(({ data: { direction, playerId } }) => {
         const startTime = Number(Date.now());
@@ -135,13 +137,14 @@ export const moves = (action$, store: Store) => action$
             })
             .takeUntil(action$
                 .filter(({ type, data: { direction: stopDirection, playerId: stopPlayerId } }) =>
-                    type === 'MOVE_STOPPED' &&
-                    stopDirection === direction && playerId === stopPlayerId
+                    (type === 'MOVE_STOPPED' &&
+                    stopDirection === direction && playerId === stopPlayerId) ||
+                    (type === 'DISCONNECT' && playerId === stopPlayerId)
                 )
             )
     });
 
-export const moveStarts = (action$, store: Store) => action$
+const moveStarts = (action$, store: Store) => action$
     .ofType('MOVE_START_REQUESTED')
     .flatMap(({ data: { direction, playerId }}) => {
         const { players } = store.getState();
@@ -171,7 +174,7 @@ export const moveStarts = (action$, store: Store) => action$
     });
 
 
-export const moveStops = (action$, store: Store) => action$
+const moveStops = (action$, store: Store) => action$
     .ofType('MOVE_STOP_REQUESTED')
     .map(({ data: { direction, playerId }}) => {
         const { players } = store.getState();
@@ -191,7 +194,7 @@ export const moveStops = (action$, store: Store) => action$
     });
 
 // todo: or just loop every 1000ms and send all the player x/y which have moved since the last iteration using lastMove
-export const moveSyncs = (action$, store: Store) => action$
+const moveSyncs = (action$, store: Store) => action$
     .ofType('MOVE_TO')
     .groupBy(payload => payload.data.playerId)
     .flatMap(group => group
@@ -213,3 +216,10 @@ export const moveSyncs = (action$, store: Store) => action$
             };
         })
     );
+
+export const epic = combineEpics(
+    moves,
+    moveStarts,
+    moveStops,
+    moveSyncs,
+);
