@@ -6,7 +6,7 @@ import { toList } from '../shared/helpers';
 
 // local types
 type SelfJoinAction = {
-    +type: 'SELF_JOINED',
+    +type: 'JOIN_REQUESTED',
     +origin: 'client',
     +data: {
         +playerName: string
@@ -58,7 +58,7 @@ export const initialState = {
 // actions
 export const selfJoin = ({ playerName }: { playerName: string }): SelfJoinAction => {
     return {
-        type: 'SELF_JOINED',
+        type: 'JOIN_REQUESTED',
         origin: 'client',
         sendToServer: true, // todo replace by epic?
         data: {

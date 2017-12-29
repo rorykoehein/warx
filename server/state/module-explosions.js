@@ -44,7 +44,7 @@ export const hitsExplosions = (action$, store: Store) => {
             const players = store.getState().players;
             return hits.map(playerId => {
                 const player = players[playerId];
-                const size = getRules(store).explosionSize;
+                const size = getRules(store.getState()).explosionSize;
                 return addExplosion({ id: playerId, x: player.x, y: player.y, size, causedBy: shooter });
             });
         });
