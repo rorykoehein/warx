@@ -1,5 +1,5 @@
 import Rx from 'rxjs';
-import { packKey, unpack } from '../../client/src/shared/pack-messages';
+import { packKey, unpack } from '../shared/pack-messages';
 import generateId from './generate-id';
 import { setIds } from './socket-id-maps';
 

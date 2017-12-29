@@ -3,7 +3,7 @@
 import { Observable } from 'rxjs/Observable';
 import { combineEpics } from 'redux-observable';
 import { createSelector } from 'reselect';
-import { emptyList } from './helpers';
+import { emptyList } from '../shared/helpers';
 
 import type { State, MessagesType, MessageList } from '../types/game';
 
@@ -26,6 +26,11 @@ type RemoveMessageAction = {
 };
 
 type Action = AddMessageAction | RemoveMessageAction;
+
+// initial state
+export const initialState = {
+    messages: {},
+};
 
 // actions
 export const addMessage = ({ message, id }: { message: string, id: number }): AddMessageAction => {

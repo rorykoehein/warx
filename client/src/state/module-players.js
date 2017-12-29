@@ -2,9 +2,17 @@
 
 import { createSelector } from 'reselect';
 import type { State, Player, PlayerId, Players, PlayerList } from '../types/game';
-import { toList } from './helpers';
+import { toList } from '../shared/helpers';
 
 // local types
+type SelfJoinAction = {
+    +type: 'SELF_JOINED',
+    +origin: 'client',
+    +data: {
+        +playerName: string
+    }
+};
+
 type PlayerJoinAction = {
     +type: 'PLAYER_JOINED',
     +origin: 'server',
@@ -39,7 +47,25 @@ type SpawnAction = {
     }
 };
 
-type Action = PlayerJoinAction | PlayerLeftAction | PlayerUpdatedAction | SpawnAction;
+type Action = SelfJoinAction | PlayerJoinAction | PlayerLeftAction | PlayerUpdatedAction | SpawnAction;
+
+// initial state
+export const initialState = {
+    currentPlayerId: null,
+    players: {},
+};
+
+// actions
+export const selfJoin = ({ playerName }: { playerName: string }): SelfJoinAction => {
+    return {
+        type: 'SELF_JOINED',
+        origin: 'client',
+        sendToServer: true, // todo replace by epic?
+        data: {
+            playerName
+        }
+    };
+};
 
 // reducer
 export const reducer = (state: State, action: Action): State => {
@@ -101,10 +127,11 @@ export const reducer = (state: State, action: Action): State => {
 };
 
 // selectors
-export const getPlayers = (state: State) => state.players;
-export const getPlayerById = (state: State, id: ?PlayerId) => id && getPlayers(state)[id];
+export const getPlayers = (state: State): Players => state.players;
+export const getPlayerById = (state: State, id: ?PlayerId): ?Player =>
+    (id !== null && id !== undefined) ? getPlayers(state)[id] : null;
 export const getCurrentPlayerId = (state: State): ?PlayerId => state.currentPlayerId;
-export const getCurrentPlayer = (state: State) => getPlayerById(state, getCurrentPlayerId(state));
+export const getCurrentPlayer = (state: State): ?Player => getPlayerById(state, getCurrentPlayerId(state));
 
 export const getAlivePlayers = createSelector(
     getPlayers,

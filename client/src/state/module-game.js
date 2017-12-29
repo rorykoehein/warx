@@ -2,10 +2,11 @@
 
 import { combineEpics } from 'redux-observable';
 import { Observable } from 'rxjs/Observable';
+import defaultRules from '../shared/default-rules';
 import { sendAction } from "../socket";
 
 import type { Store } from '../types/framework';
-import type { State } from '../types/game';
+import type { State, Rules } from '../types/game';
 
 // local types
 type GameStateChangedAction = {
@@ -13,14 +14,6 @@ type GameStateChangedAction = {
     +origin: 'server',
     +data: {
         +state: State, // todo client and server state?
-    }
-};
-
-type SelfJoinAction = {
-    +type: 'SELF_JOINED',
-    +origin: 'client',
-    +data: {
-        +playerName: string
     }
 };
 
@@ -32,7 +25,7 @@ type PingLatencyAction = {
     }
 };
 
-type KeyDownAction = {
+export type KeyDownAction = {
     +type: 'KEY_DOWN',
     +origin: 'client',
     +data: {
@@ -40,7 +33,7 @@ type KeyDownAction = {
     }
 };
 
-type KeyUpAction = {
+export type KeyUpAction = {
     +type: 'KEY_UP',
     +origin: 'client',
     +data: {
@@ -48,7 +41,13 @@ type KeyUpAction = {
     }
 };
 
-type Action = GameStateChangedAction | SelfJoinAction | PingLatencyAction | KeyDownAction | KeyUpAction;
+type Action = GameStateChangedAction | PingLatencyAction | KeyDownAction | KeyUpAction;
+
+export const initialState = {
+    rules: null,
+    latency: null,
+    isSignedIn: false,
+};
 
 // actions
 export const keyDown = ({ key }: { key: string }): KeyDownAction => {
@@ -71,27 +70,14 @@ export const keyUp = ({ key }: { key: string }): KeyUpAction => {
     };
 };
 
-export const selfJoin = ({ playerName }: { playerName: string }): SelfJoinAction => {
-    return {
-        type: 'SELF_JOINED',
-        origin: 'client',
-        sendToServer: true, // todo replace by epic?
-        data: {
-            playerName
-        }
-    };
-};
-
 // reducer
 export const reducer = (state: State, action: Action): State => {
     switch (action.type) {
         case 'GAME_STATE_CHANGED': {
-            const { data: { state: { players, currentPlayerId, rules } } } = action;
+            const { data: { state: newState } } = action;
             return {
                 ...state,
-                players,
-                currentPlayerId,
-                rules,
+                ...newState,
             };
         }
 
@@ -116,7 +102,7 @@ export const getLatency = (state: State) => state.latency;
 export const isSignedIn = (state: State) => state.isSignedIn;
 
 // rules
-export const getRules = (state: State) => state.rules || {};
+export const getRules = (state: State): Rules => state.rules || defaultRules;
 
 
 // epics

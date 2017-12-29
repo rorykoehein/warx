@@ -1,30 +1,34 @@
 // @flow
 
-import rules from './default-rules';
+import 'rxjs';
+import { combineEpics } from 'redux-observable';
+import rules from '../shared/default-rules';
+import type { Store } from '../../client/src/types/framework';
+import { getRandomPosition, replacePlayerProps } from "./helpers";
 
-const initialState = {
+// this module describes the core behaviors of the game: players connect, join,
+// spawn, latency, etc.
+
+export const initialState = {
     players: {},
     rules: { ...rules },
 };
 
-const replacePlayerProps = (state, playerId, props) => {
-    const { players, ...rest } = state;
-    const player = players[playerId];
-    if(!player) return state;
-    return {
-        ...rest,
-        players: {
-            ...players,
-            [playerId]: {
-                ...player,
-                ...props,
-            },
-        },
-    };
-};
+export const spawn = ({ playerId, worldWidth, worldHeight, moveDistance, playerName }) => ({
+    type: 'SPAWN',
+    origin: 'server',
+    sendToClient: true,
+    toAll: true,
+    data: {
+        playerId,
+        x: getRandomPosition(worldWidth, moveDistance),
+        y: getRandomPosition(worldHeight, moveDistance),
+        playerName,
+    }
+});
 
 // todo: server state and action types
-const reducer = (state = initialState, action) => {
+export const reducer = (state, action) => {
     switch (action.type) {
         case 'CONNECT': {
             const { players, ...rest } = state;
@@ -80,41 +84,6 @@ const reducer = (state = initialState, action) => {
             };
         }
 
-        case 'HIT': {
-            const { players, ...rest } = state;
-            const { data: { shooter, hits } } = action;
-
-            const deadPlayers = hits.reduce((acc, playerId) => ({
-                ...acc,
-                [playerId]: {
-                    ...players[playerId],
-                    alive: false,
-                    deaths: players[playerId].deaths + 1,
-                }
-            }), {});
-
-            const selfKill = hits.includes(shooter);
-
-            const shooterPlayer = selfKill ? {
-                ...players[shooter],
-                alive: false,
-                deaths: players[shooter].deaths + 1,
-                frags: players[shooter].frags + hits.length - 1,
-            } : {
-                ...players[shooter],
-                frags: players[shooter].frags + hits.length,
-            };
-
-            return {
-                players: {
-                    ...players,
-                    ...deadPlayers,
-                    [shooter]: shooterPlayer,
-                },
-                ...rest,
-            };
-        }
-
         case 'DISCONNECT': {
             const { players, ...restState } = state;
             const { data: { playerId } } = action;
@@ -123,31 +92,6 @@ const reducer = (state = initialState, action) => {
                 players: restPlayers,
                 ...restState,
             };
-        }
-
-        case 'MOVE_STARTED': {
-            const { data: { direction, playerId } } = action;
-            return replacePlayerProps(state, playerId, {
-                direction,
-                isMoving: true,
-            });
-        }
-
-        case 'MOVE_STOPPED': {
-            const { data: { direction, playerId } } = action;
-            return replacePlayerProps(state, playerId, {
-                direction,
-                isMoving: true,
-            });
-        }
-
-        case 'MOVE_TO': {
-            const { data: { direction, playerId, x, y } } = action;
-            return replacePlayerProps(state, playerId, {
-                direction,
-                x,
-                y,
-            });
         }
 
         case 'PING_LATENCY': {
@@ -162,4 +106,34 @@ const reducer = (state = initialState, action) => {
     }
 };
 
-export default reducer;
+export const getRules = store => store.getState().rules;
+
+export const spawnJoins = (action$, store: Store) =>
+    action$
+        .ofType('SELF_JOINED')
+        .map(({ data: { playerId } }) => {
+            const { rules: { worldWidth, worldHeight, moveDistance }} = store.getState();
+            return spawn({ playerId, worldWidth, worldHeight, moveDistance });
+        });
+
+export const broadcastJoins = (action$, store: Store) =>
+    action$
+        .ofType('SELF_JOINED')
+        .map(({ data: { playerId, playerName } }) => {
+            const player = store.getState().players[playerId];
+            return {
+                type: 'PLAYER_JOINED',
+                origin: 'server', // todo fugly
+                sendToClient: true, // todo fugly
+                toAll: true, // todo fugly
+                data: {
+                    player: { ...player, name: playerName, } // todo: this is ugly, dp SELF_JOINED -> state update -> broadcast
+                },
+            };
+        });
+
+
+export const epic = combineEpics(
+    broadcastJoins,
+    spawnJoins,
+);

@@ -4,8 +4,8 @@ import React, { PureComponent } from 'react';
 import { connect } from 'react-redux';
 import type { Connector } from 'react-redux';
 
-import { getRules } from '../state/game';
-import { getShotsList } from '../state/shots';
+import { getRules } from '../state/module-game';
+import { getShotsList } from '../state/module-shots';
 import ShotsContainer from '../sprites/ShotsContainer';
 import Shot from '../sprites/Shot';
 import type { State, Shot as ShotType } from '../types/game';

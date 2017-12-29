@@ -2,7 +2,7 @@
 
 import React, { PureComponent } from 'react';
 import { connect } from 'react-redux';
-import { getLatency } from '../state/game';
+import { getLatency } from '../state/module-game';
 
 import type { Connector } from 'react-redux';
 import type { State } from '../types/game';

@@ -2,8 +2,8 @@
 
 import React, { PureComponent } from 'react';
 import { connect } from 'react-redux';
-import { getRules } from '../state/game';
-import { getExplosionsList } from '../state/explosions';
+import { getRules } from '../state/module-game';
+import { getExplosionsList } from '../state/module-explosions';
 import ExplosionsContainer from '../sprites/ExplosionsContainer';
 import Explosion from '../sprites/Explosion';
 import type { Connector } from 'react-redux';

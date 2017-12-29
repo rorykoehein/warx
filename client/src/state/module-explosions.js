@@ -2,9 +2,9 @@
 
 import { combineEpics } from 'redux-observable';
 import { createSelector } from 'reselect';
-import { toList } from './helpers';
+import { toList } from '../shared/helpers';
 
-import type { State, ExplosionsType, Explosion, PlayerId } from '../types/game';
+import type { State as FullState, ExplosionsType, Explosion, PlayerId } from '../types/game';
 
 // local types
 export type AddExplosionAction = {
@@ -29,6 +29,14 @@ export type RemoveExplosionAction = {
 
 type Action = AddExplosionAction | RemoveExplosionAction;
 
+export type ModuleState = {
+    +explosions: ExplosionsType,
+};
+
+export const initialState: ModuleState = {
+    explosions: {}
+};
+
 // actions
 export const removeExplosion = ({ id }: { id: number }): RemoveExplosionAction => {
     return {
@@ -43,7 +51,7 @@ export const removeExplosion = ({ id }: { id: number }): RemoveExplosionAction =
 };
 
 // reducer
-export const reducer = (state: State, action: Action): State => {
+export const reducer = (state: FullState, action: Action): FullState => {
     switch (action.type) {
         case 'EXPLOSION_ADDED': {
             const { data: { id, x, y, size } } = action;
@@ -73,7 +81,7 @@ export const reducer = (state: State, action: Action): State => {
 };
 
 // selectors
-export const getExplosions = (state: State) => state.explosions;
+export const getExplosions = (state: FullState) => state.explosions;
 
 export const getExplosionsList = createSelector(
     getExplosions,

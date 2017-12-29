@@ -35,13 +35,13 @@ export type Players = {
 export type PlayerList = Array<Player>;
 
 export type Rules = {
-    +reloadTime: number, // time to reload the weapon after shooting
-    +coolTime: number, // time the shot stays visible
-    +moveTime: number,
-    +moveDistance: number, // px
-    +worldWidth: number,
-    +worldHeight: number,
-    +playerSize: number, //
+    +reloadTime: ?number, // time to reload the weapon after shooting
+    +coolTime: ?number, // time the shot stays visible
+    +moveTime: ?number,
+    +moveDistance: ?number, // px
+    +worldWidth: ?number,
+    +worldHeight: ?number,
+    +playerSize: ?number, //
 };
 
 export type MessagesType = {

@@ -1,13 +1,14 @@
 // @flow
 
+// rename to lasers
 import { Observable } from 'rxjs/Observable';
 import { combineEpics } from 'redux-observable';
 import { sendAction } from '../socket';
-import { toList } from './helpers';
+import { toList } from '../shared/helpers';
 
 import type { Store } from '../types/framework';
 import type { State, PlayerId } from '../types/game';
-import type { ActionOrigin } from '../types/actions';
+import type { ActionOrigin } from '../types/framework';
 
 // local types
 // when the current client fires a shot
@@ -46,6 +47,11 @@ type ShotRequestAction = {
 };
 
 type Action = SelfShotFireAction | ShotFireAction | ShotCoolAction | WeaponReloadAction | ShotRequestAction;
+
+// initial state
+const initialState = {
+    shots: {},
+};
 
 // actions
 
