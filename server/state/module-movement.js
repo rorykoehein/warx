@@ -79,7 +79,6 @@ export const reducer = (state: FullState, action: ActionInterface): FullState =>
 };
 
 // selectors
-// const getMap = (state: ModuleState) => state.thing;
 
 // epics
 const moves = (action$, store: Store) => action$

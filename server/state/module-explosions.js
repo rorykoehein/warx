@@ -6,6 +6,10 @@ import { hit } from './module-hits';
 import type { AddExplosionAction, RemoveExplosionAction } from
     '../../client/src/types/actions';
 
+// other modules may this module when players are hit, bombs explode, etc.
+// if any player is located within the radius of an explosion, that player will
+// be 'hit', which will cause another explosion
+
 // helpers
 const pointCircleCollision = (point, circle, radius) => {
     if (radius === 0) return false;
