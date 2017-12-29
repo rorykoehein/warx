@@ -6,27 +6,9 @@ import type { State as FullState, ActionInterface } from './types';
 import loop from '../shared/loop';
 import type { Store } from '../../client/src/types/framework';
 import type { Player, Direction, Rules } from '../../client/src/types/game';
+import { replacePlayerProps } from "./helpers";
 
-// local types
-
-// helpers
-const replacePlayerProps = (state, playerId, props) => {
-    const { players, ...rest } = state;
-    const player = players[playerId];
-    if(!player) return state;
-    return {
-        ...rest,
-        players: {
-            ...players,
-            [playerId]: {
-                ...player,
-                ...props,
-            },
-        },
-    };
-};
-
-export const calculateMovement = (
+const calculateMovement = (
     startX: number, startY: number, startTime: number, endTime: number, rules: Rules, direction: Direction
 ) => {
     const { moveTime, moveDistance } = rules;
@@ -47,7 +29,7 @@ export const calculateMovement = (
     return { x: newX, y: newY }
 };
 
-export const canMove = (player: Player, direction: Direction, rules: Rules): boolean => {
+const canMove = (player: Player, direction: Direction, rules: Rules): boolean => {
     const { moveDistance, worldWidth, worldHeight } = rules;
     const { x, y } = player;
     return (direction === 'left' && x - moveDistance >= 0) ||
