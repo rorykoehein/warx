@@ -120,7 +120,7 @@ const moves = (action$, store: Store) => action$
                 .filter(({ type, data: { direction: stopDirection, playerId: stopPlayerId } }) =>
                     (type === 'MOVE_STOPPED' &&
                     stopDirection === direction && playerId === stopPlayerId) ||
-                    (type === 'DISCONNECT' && playerId === stopPlayerId)
+                    (type === 'DISCONNECTION_REQUESTED' && playerId === stopPlayerId)
                 )
             )
     });
@@ -133,18 +133,18 @@ const moveStarts = (action$, store: Store) => action$
         // stop any current movement
         return [{
             type: 'MOVE_STOPPED',
-            origin: 'server', // todo fugly
-            sendToClient: true, // todo fugly
-            toAll: true, // todo fugly
+            origin: 'server',
+            sendToClient: true,
+            toAll: true,
             data: {
                 playerId,
                 direction: player.direction,
             },
         }, {
             type: 'MOVE_STARTED',
-            origin: 'server', // todo fugly
-            sendToClient: true, // todo fugly
-            toAll: true, // todo fugly
+            origin: 'server',
+            sendToClient: true,
+            toAll: true,
             data: {
                 playerId,
                 direction,
@@ -162,9 +162,9 @@ const moveStops = (action$, store: Store) => action$
         const player = players[playerId]; // todo use selector function for getting players?
         return {
             type: 'MOVE_STOPPED',
-            origin: 'server', // todo fugly
-            sendToClient: true, // todo fugly
-            toAll: true, // todo fugly
+            origin: 'server',
+            sendToClient: true,
+            toAll: true,
             data: {
                 playerId,
                 direction,

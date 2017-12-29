@@ -30,7 +30,7 @@ export const spawn = ({ playerId, worldWidth, worldHeight, moveDistance, playerN
 // todo: server state and action types
 export const reducer = (state, action) => {
     switch (action.type) {
-        case 'CONNECT': {
+        case 'CONNECTION_REQUESTED': {
             const { players, ...rest } = state;
             const { data: { playerId } } = action;
             return {
@@ -48,7 +48,7 @@ export const reducer = (state, action) => {
             };
         }
 
-        case 'SELF_JOINED': { // todo: rename to join request
+        case 'JOIN_REQUESTED': { // todo: rename to join request
             const { players, ...rest } = state;
             const { data: { playerId, playerName } } = action;
             const player = players[playerId];
@@ -84,7 +84,7 @@ export const reducer = (state, action) => {
             };
         }
 
-        case 'DISCONNECT': {
+        case 'DISCONNECTION_REQUESTED': {
             const { players, ...restState } = state;
             const { data: { playerId } } = action;
             const { [playerId]: playerToRemove, ...restPlayers } = players;
@@ -110,7 +110,7 @@ export const getRules = store => store.getState().rules;
 
 export const spawnJoins = (action$, store: Store) =>
     action$
-        .ofType('SELF_JOINED')
+        .ofType('JOIN_REQUESTED')
         .map(({ data: { playerId } }) => {
             const { rules: { worldWidth, worldHeight, moveDistance }} = store.getState();
             return spawn({ playerId, worldWidth, worldHeight, moveDistance });
@@ -118,16 +118,16 @@ export const spawnJoins = (action$, store: Store) =>
 
 export const broadcastJoins = (action$, store: Store) =>
     action$
-        .ofType('SELF_JOINED')
+        .ofType('JOIN_REQUESTED')
         .map(({ data: { playerId, playerName } }) => {
             const player = store.getState().players[playerId];
             return {
                 type: 'PLAYER_JOINED',
-                origin: 'server', // todo fugly
-                sendToClient: true, // todo fugly
-                toAll: true, // todo fugly
+                origin: 'server',
+                sendToClient: true,
+                toAll: true,
                 data: {
-                    player: { ...player, name: playerName, } // todo: this is ugly, dp SELF_JOINED -> state update -> broadcast
+                    player: { ...player, name: playerName, } // todo: this is ugly, dp JOIN_REQUESTED -> state update -> broadcast
                 },
             };
         });

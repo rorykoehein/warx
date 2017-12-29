@@ -134,6 +134,7 @@ const connected = (action$) => {
         )
 };
 
+// todo: pings should go the other way, clients should not send their own ping
 const pings = (action$, store: Store) =>
     Observable
         .combineLatest(

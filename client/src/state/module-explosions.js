@@ -42,8 +42,6 @@ export const removeExplosion = ({ id }: { id: number }): RemoveExplosionAction =
     return {
         type: 'EXPLOSION_REMOVED',
         origin: 'client',
-        sendToClient: true,
-        toAll: true,
         data: {
             id
         }

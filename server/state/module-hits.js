@@ -22,9 +22,9 @@ export const initialState: ModuleState = {
 // actions
 export const hit = ({ shooter, hits }) => ({
     type: 'HIT',
-    origin: 'server', // todo fugly
-    sendToClient: true, // todo fugly
-    toAll: true, // todo fugly
+    origin: 'server',
+    sendToClient: true,
+    toAll: true,
     data: {
         shooter,
         hits
@@ -107,9 +107,9 @@ export const hitsNewPlayerState = (action$, store: Store) =>
 
             return {
                 type: 'PLAYERS_UPDATED',
-                origin: 'server', // todo fugly
-                sendToClient: true, // todo fugly
-                toAll: true, // todo fugly
+                origin: 'server',
+                sendToClient: true,
+                toAll: true,
                 data: {
                     players: newPlayers
                 }
