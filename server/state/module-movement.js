@@ -2,11 +2,16 @@
 
 import 'rxjs';
 import { combineEpics } from 'redux-observable';
-import type { State as FullState, ActionInterface } from './types';
 import loop from '../shared/loop';
-import type { Store } from '../../client/src/types/framework';
-import type { Player, Direction, Rules } from '../../client/src/types/game';
 import { replacePlayerProps } from "./helpers";
+import { getPlayerById, getRules } from "./module-game";
+
+import type { State as FullState, ActionInterface } from './types';
+import type { Store } from '../../client/src/types/framework';
+import type {
+    Player, Direction, Rules,
+    PlayerId
+} from '../../client/src/types/game';
 
 const calculateMovement = (
     startX: number, startY: number, startTime: number, endTime: number, rules: Rules, direction: Direction
@@ -83,14 +88,21 @@ export const reducer = (state: FullState, action: ActionInterface): FullState =>
 // epics
 const moves = (action$, store: Store) => action$
     .ofType('MOVE_STARTED')
-    .flatMap(({ data: { direction, playerId } }) => {
+    .map(({ data: { direction, playerId } }) => ({
+        direction,
+        playerId,
+        player: getPlayerById(store.getState(), playerId)
+    }))
+    .filter(({ player }) => player)
+    .flatMap(({ direction, player, playerId }: { direction: Direction, player: Player, playerId: PlayerId }) => {
         const startTime = Number(Date.now());
-        const player = store.getState().players[playerId];
         const { x: startX, y: startY } = player;
         return loop
-            .map(() => {
-                const { rules, players } = store.getState();
-                const player = players[playerId]; // todo use selector function for getting players?
+            .map(() => getPlayerById(store.getState(), player.id))
+            .filter(player => player)
+            .map(player => {
+                const state = store.getState();
+                const rules = getRules(state);
                 const endTime = Number(Date.now());
                 const { x, y } = calculateMovement(startX, startY, startTime, endTime, rules, direction);
                 return canMove(player, direction, rules) ? {
@@ -117,9 +129,9 @@ const moves = (action$, store: Store) => action$
                 };
             })
             .takeUntil(action$
-                .filter(({ type, data: { direction: stopDirection, playerId: stopPlayerId } }) =>
+                .filter(({type, data: {direction: stopDirection, playerId: stopPlayerId}}) =>
                     (type === 'MOVE_STOPPED' &&
-                    stopDirection === direction && playerId === stopPlayerId) ||
+                        stopDirection === direction && playerId === stopPlayerId) ||
                     (type === 'DISCONNECTION_REQUESTED' && playerId === stopPlayerId)
                 )
             )
@@ -127,9 +139,13 @@ const moves = (action$, store: Store) => action$
 
 const moveStarts = (action$, store: Store) => action$
     .ofType('MOVE_START_REQUESTED')
-    .flatMap(({ data: { direction, playerId }}) => {
-        const { players } = store.getState();
-        const player = players[playerId]; // todo use selector function for getting players?
+    .map(({ data: { direction, playerId } }) => ({
+        direction,
+        playerId,
+        player: getPlayerById(store.getState(), playerId)
+    }))
+    .filter(({ player }) => player)
+    .flatMap(({ direction, player, playerId }: { direction: Direction, player: Player, playerId: PlayerId }) => {
         // stop any current movement
         return [{
             type: 'MOVE_STOPPED',
@@ -157,9 +173,13 @@ const moveStarts = (action$, store: Store) => action$
 
 const moveStops = (action$, store: Store) => action$
     .ofType('MOVE_STOP_REQUESTED')
-    .map(({ data: { direction, playerId }}) => {
-        const { players } = store.getState();
-        const player = players[playerId]; // todo use selector function for getting players?
+    .map(({ data: { direction, playerId } }) => ({
+        direction,
+        playerId,
+        player: getPlayerById(store.getState(), playerId)
+    }))
+    .filter(({ player }) => player)
+    .map(({ player, direction, playerId }) => {
         return {
             type: 'MOVE_STOPPED',
             origin: 'server',

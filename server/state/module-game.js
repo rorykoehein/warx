@@ -3,8 +3,10 @@
 import 'rxjs';
 import { combineEpics } from 'redux-observable';
 import rules from '../shared/default-rules';
-import type { Store } from '../../client/src/types/framework';
 import { getRandomPosition, replacePlayerProps } from "./helpers";
+
+import type { Store } from '../../client/src/types/framework';
+import type { Players, Player, PlayerId } from '../../client/src/types/game';
 
 // this module describes the core behaviors of the game: players connect, join,
 // spawn, latency, etc.
@@ -48,7 +50,7 @@ export const reducer = (state, action) => {
             };
         }
 
-        case 'JOIN_REQUESTED': { // todo: rename to join request
+        case 'JOIN_REQUESTED': {
             const { players, ...rest } = state;
             const { data: { playerId, playerName } } = action;
             const player = players[playerId];
@@ -65,11 +67,9 @@ export const reducer = (state, action) => {
         }
 
         case 'SPAWN': {
-            // todo call spawn after connecting and after hits
             const { players, ...rest } = state;
             const { data: { playerId, x, y } } = action;
             const player = players[playerId];
-
             return {
                 players: {
                     ...players,
@@ -106,8 +106,13 @@ export const reducer = (state, action) => {
     }
 };
 
-export const getRules = store => store.getState().rules;
+// selectors
+export const getRules = state => state.rules;
+export const getPlayers = (state): Players => state.players;
+export const getPlayerById = (state, id: ?PlayerId): ?Player =>
+    (id !== null && id !== undefined) ? getPlayers(state)[id] : null;
 
+// epics
 export const spawnJoins = (action$, store: Store) =>
     action$
         .ofType('JOIN_REQUESTED')
@@ -131,7 +136,6 @@ export const broadcastJoins = (action$, store: Store) =>
                 },
             };
         });
-
 
 export const epic = combineEpics(
     broadcastJoins,
