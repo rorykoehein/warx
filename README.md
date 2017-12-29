@@ -8,8 +8,9 @@ Each of these should be replacable with out touching other layers (much). Ideall
 2. www (http server)
 3. app (express)
 4. network messages (send and get messages, now socket.io, possibly plain websockets)
-5. game state (redux + redux-observable, possibly mobx or redux + sagas)
-6. possibly: data sources
+5. messages-actions (network-state-glue: translates network messages to redux actions vice versa)
+6. game state (redux + redux-observable, possibly mobx or redux + sagas)
+7. possibly: data sources
 
 ## Modules in state
 The state folder is where the business logic lives. This is the largest layer and
