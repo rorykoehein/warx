@@ -1,6 +1,6 @@
 # Nodewarx
 
-[![CircleCI](https://circleci.com/gh/nextminds/nodewarx/tree/master.svg?style=svg)](https://circleci.com/gh/nextminds/nodewarx/tree/master)
+[![CircleCI](https://circleci.com/gh/nextminds/nodewarx.svg?style=svg&circle-token=c45171ab3d2003483aa8bf817be834375ecdae5e)](https://circleci.com/gh/nextminds/nodewarx)
 
 ## Architecture
 
