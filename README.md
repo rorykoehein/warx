@@ -2,9 +2,16 @@
 
 [![CircleCI](https://circleci.com/gh/nextminds/nodewarx.svg?style=svg&circle-token=c45171ab3d2003483aa8bf817be834375ecdae5e)](https://circleci.com/gh/nextminds/nodewarx)
 
+## Server and client
+This project is split up in a Node Express server and a React.js client.
+The server lives in the root dir, with the source in the `server` dir.
+The client lives in the client subdirectory. Shared code can be placed in
+the client directory where the server can access it. *Note: at the moment
+this does not work correctly because of different babel configurations.*
+
 ## Architecture
 
-Each of these should be replacable with out touching other layers (much). Ideally layer should only touch the one below:
+Each of these should be replacable with out touching other layers much. Ideally layer should only touch the one below:
 
 1. client (see client architecture in client/README.md)
 2. www (http server)
@@ -12,7 +19,31 @@ Each of these should be replacable with out touching other layers (much). Ideall
 4. network messages (send and get messages, now socket.io, possibly plain websockets)
 5. messages-actions (network-state-glue: translates network messages to redux actions vice versa)
 6. game state (redux + redux-observable, possibly mobx or redux + sagas)
-7. possibly: data sources
+7. data sources (not yet implemented)
+
+## Tests
+Jest is used for unit tests. Run `yarn test` in the root dir to run the
+server tests or in the client dir to run the client tests.
+
+### CI
+CircleCI is configured to run the tests in this repository on every
+branch and master. Tests must pass on PRs before merging.
+
+## Deployments
+
+### Heroku
+1. initialize heroku in the dist folder
+
+```
+$ cd dist/
+$ git init
+$ heroku git:remote -a {my-heroku-project}
+```
+
+2. run `./build.sh` and then `./heroku.sh` from the root project folder
+
+### Now.sh
+Run `now` from the dist folder
 
 ## Modules in state
 The state folder is where the business logic lives. This is the largest layer and
@@ -45,19 +76,3 @@ server actions will be sent to the client in one spot
 ### Option 3: ditch shared actions, for special messages
 - pro: separate client and server actions
 - con: extra translation between messages and actions needed
-
-## Deployments
-
-### Heroku
-1. initialize heroku in the dist folder
-
-```
-$ cd my-project/
-$ git init
-$ heroku git:remote -a {my-heroku-project}
-```
-
-2. run `./build.sh` and then `./heroku.sh` from the root project folder
-
-### Now.sh
-Run `now` from the dist folder
