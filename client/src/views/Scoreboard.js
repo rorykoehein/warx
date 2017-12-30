@@ -3,7 +3,7 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'react-redux';
 import type { Connector } from 'react-redux';
-import { isSignedIn } from '../state/module-game';
+import { isSignedIn } from '../state/module-players';
 import { selectIsScoreboardVisible, selectPlayerScores } from '../state/module-scores';
 import type { State, Player } from '../types/game';
 import Overlay from '../sprites/Overlay';

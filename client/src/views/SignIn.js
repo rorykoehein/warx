@@ -6,7 +6,7 @@ import LargeInput from '../sprites/LargeInput';
 import Overlay from '../sprites/Overlay';
 import OverlayContainer from '../sprites/OverlayContainer';
 import { selfJoin } from '../state/module-players';
-import { isSignedIn } from '../state/module-game';
+import { isSignedIn } from '../state/module-players';
 
 import type { Connector } from 'react-redux';
 import type { Dispatch } from '../types/framework';

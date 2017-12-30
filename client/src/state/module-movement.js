@@ -3,7 +3,7 @@
 import 'rxjs';
 import { Observable } from 'rxjs/Observable';
 import { combineEpics } from 'redux-observable';
-import { isSignedIn } from "./module-game";
+import { isSignedIn } from "./module-players";
 import { sendAction } from '../socket';
 import { selfShotFire } from './module-shots'; // todo move out
 

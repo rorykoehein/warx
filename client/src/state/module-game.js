@@ -46,7 +46,6 @@ type Action = GameStateChangedAction | PingLatencyAction | KeyDownAction | KeyUp
 export const initialState = {
     rules: null,
     latency: null,
-    isSignedIn: false,
 };
 
 // actions
@@ -97,9 +96,6 @@ export const reducer = (state: State, action: Action): State => {
 // selectors
 // ping latency
 export const getLatency = (state: State) => state.latency;
-
-// sign in
-export const isSignedIn = (state: State) => state.isSignedIn;
 
 // rules
 export const getRules = (state: State): Rules => state.rules || defaultRules;

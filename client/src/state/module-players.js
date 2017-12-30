@@ -49,10 +49,18 @@ type SpawnAction = {
 
 type Action = SelfJoinAction | PlayerJoinAction | PlayerLeftAction | PlayerUpdatedAction | SpawnAction;
 
+// the part of the state this module is responsible for
+export type PlayersState = {
+    +currentPlayerId: ?PlayerId,
+    +players: Players,
+    +isSignedIn: boolean,
+};
+
 // initial state
-export const initialState = {
+export const initialState: PlayersState = {
     currentPlayerId: null,
     players: {},
+    isSignedIn: false,
 };
 
 // actions
@@ -68,7 +76,9 @@ export const selfJoin = ({ playerName }: { playerName: string }): SelfJoinAction
 };
 
 // reducer
-export const reducer = (state: State, action: Action): State => {
+// all though the reducer returns and gets passed more than just PlayersState
+// we only should know about PlayersState in here
+export const reducer = (state: PlayersState, action: Action): PlayersState => {
     const { players, currentPlayerId } = state;
     switch (action.type) {
         case 'PLAYER_JOINED': {
@@ -127,6 +137,7 @@ export const reducer = (state: State, action: Action): State => {
 };
 
 // selectors
+export const isSignedIn = (state: State) => state.isSignedIn;
 export const getPlayers = (state: State): Players => state.players;
 export const getPlayerById = (state: State, id: ?PlayerId): ?Player =>
     (id !== null && id !== undefined) ? getPlayers(state)[id] : null;
