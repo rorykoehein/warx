@@ -19,11 +19,37 @@
   "scripts": {
     "start": "node ./server/www",
     "dev": "NODE_ENV=development babel-node --inspect ./server/www",
+    "test": "jest",
+    "test-ci": "jest --ci --coverage --testResultsProcessor=\"jest-junit\"",
     "build-server": "babel ./server/ -d ./dist/server",
     "build-shared": "babel ./client/src/types -d ./dist/client/src/types && babel ./client/src/shared -d ./dist/client/src/shared && babel ./client/src/state -d ./dist/client/src/state"
   },
   "devDependencies": {
+    "babel-jest": "^22.0.4",
     "babel-preset-react-app": "^3.1.0",
+    "jest": "^22.0.4",
+    "jest-junit": "^3.4.1",
     "plop": "^1.9.0"
+  },
+  "jest": {
+    "testMatch": [
+      "<rootDir>/server/**/__tests__/**/*.{js,mjs}",
+      "<rootDir>/server/**/?(*.)(spec|test).{js,mjs}"
+    ],
+    "collectCoverageFrom": [
+      "<rootDir>/server/**/*.{js,mjs}"
+    ],
+    "testEnvironment": "node",
+    "testURL": "http://localhost",
+    "transform": {
+      "^.+\\.(js|jsx|mjs)$": "<rootDir>/node_modules/babel-jest"
+    },
+    "transformIgnorePatterns": [
+      "[/\\\\]node_modules[/\\\\].+\\.(js|jsx|mjs)$"
+    ],
+    "moduleFileExtensions": [
+      "mjs",
+      "js"
+    ]
   }
 }

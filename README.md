@@ -1,5 +1,7 @@
 # Nodewarx
 
+[![CircleCI](https://circleci.com/gh/nextminds/nodewarx/tree/master.svg?style=svg)](https://circleci.com/gh/nextminds/nodewarx/tree/master)
+
 ## Architecture
 
 Each of these should be replacable with out touching other layers (much). Ideally layer should only touch the one below:
