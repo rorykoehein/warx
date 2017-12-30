@@ -24,6 +24,7 @@
     "build-shared": "babel ./client/src/types -d ./dist/client/src/types && babel ./client/src/shared -d ./dist/client/src/shared && babel ./client/src/state -d ./dist/client/src/state"
   },
   "devDependencies": {
+    "babel-jest": "^22.0.4",
     "babel-preset-react-app": "^3.1.0",
     "jest": "^22.0.4",
     "plop": "^1.9.0"
