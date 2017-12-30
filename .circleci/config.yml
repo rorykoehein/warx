@@ -12,20 +12,23 @@ jobs:
 
     steps:
       - checkout
+      # server
       - restore_cache:
           keys:
           - v1-server-{{ checksum "package.json" }}
           - v1-server-
-      - run: yarn install
+      - run:
+          name: Install server
+          command: yarn install
       - save_cache:
           paths:
             - node_modules
           key: v1-server-{{ checksum "package.json" }}
-
       - run:
           name: Test server
           command: yarn test
 
+      # client
       - restore_cache:
           keys:
           - v1-client-{{ checksum "package.json" }}
@@ -38,7 +41,6 @@ jobs:
           paths:
             - client/node_modules
           key: v1-client-{{ checksum "package.json" }}
-
       - run:
           name: Test client
           command: yarn test

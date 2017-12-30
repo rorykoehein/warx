@@ -12,7 +12,7 @@ describe('module-game', () => {
                 type: 'CONNECTION_REQUESTED',
                 origin: 'client',
                 data: {
-                    playerId: '1',
+                    playerId: '2',
                 }
             });
 
