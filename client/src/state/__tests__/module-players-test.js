@@ -46,7 +46,7 @@ describe('module-movement', () => {
 
             expect(resultState).toEqual({
                 isSignedIn: true,
-                currentPlayerId: '2',
+                currentPlayerId: '1',
                 players: {
                     '0': playerZero,
                     '1': playerOne,
