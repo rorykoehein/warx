@@ -45,10 +45,10 @@ jobs:
           name: Test client
           command: yarn test
           working_directory: client
-deployment:
-  production:
-    branch: master
-    commands:
-      - ./build.sh
-      - ./heroku.sh
+  deployment:
+    production:
+      branch: master
+      commands:
+        - ./build.sh
+        - ./heroku.sh
 
