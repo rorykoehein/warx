@@ -5,7 +5,6 @@ import type { Player } from '../../types/game';
 
 describe('module-movement', () => {
     describe('reducer', () => {
-
         const playerZero: Player = {
             id: '0',
             name: 'dummy',
