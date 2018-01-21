@@ -11,7 +11,7 @@ this does not work correctly because of different babel configurations.*
 
 ## Architecture
 
-Each of these should be replacable with out touching other layers much. Ideally layer should only touch the one below:
+Each of these should be replacable with out touching other layers much. Ideally each layer should only touch the one below:
 
 1. client (see client architecture in client/README.md)
 2. www (http server)

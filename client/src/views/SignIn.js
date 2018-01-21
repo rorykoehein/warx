@@ -3,8 +3,12 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'react-redux';
 import LargeInput from '../sprites/LargeInput';
+import Form from '../sprites/Form';
 import Overlay from '../sprites/Overlay';
 import OverlayContainer from '../sprites/OverlayContainer';
+import KeyInstructions from '../sprites/KeyInstructions';
+import KeyInstruction from '../sprites/KeyInstruction';
+import Key from '../sprites/Key';
 import { selfJoin } from '../state/module-players';
 import { isSignedIn } from '../state/module-players';
 
@@ -51,14 +55,28 @@ class SignIn extends PureComponent<Props, State> {
             <OverlayContainer>
                 {isSignedIn ? null : (
                     <Overlay>
-                        <form onSubmit={this.onSubmit}>
+                        <Form onSubmit={this.onSubmit}>
                             <LargeInput
                                 onChange={this.onChange}
                                 placeholder="Enter username to start..."
                                 autoFocus
                                 maxLength={20}
                             />
-                        </form>
+                        </Form>
+                        <KeyInstructions>
+                            <KeyInstruction instruction="Move">
+                                <Key>&larr;</Key>
+                                <Key>&uarr;</Key>
+                                <Key>&rarr;</Key>
+                                <Key>&darr;</Key>
+                            </KeyInstruction>
+                            <KeyInstruction instruction="Shoot">
+                                <Key>Space</Key>
+                            </KeyInstruction>
+                            <KeyInstruction instruction="Toggle highscores">
+                                <Key>H</Key>
+                            </KeyInstruction>
+                        </KeyInstructions>
                     </Overlay>
                 )}
             </OverlayContainer>
