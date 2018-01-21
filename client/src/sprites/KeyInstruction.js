@@ -10,6 +10,7 @@ export default styled.div`
     
     &::before {
       display: inline-block;
+      color: grey;
       content: ${({ instruction }) => `'${instruction}'`};
       padding-right: 2rem;
       box-sizing: border-box;

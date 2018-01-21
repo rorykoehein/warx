@@ -1,6 +1,19 @@
-# Nodewarx
+# WARX
 
 [![CircleCI](https://circleci.com/gh/nextminds/nodewarx.svg?style=svg&circle-token=c45171ab3d2003483aa8bf817be834375ecdae5e)](https://circleci.com/gh/nextminds/nodewarx)
+
+## Background
+
+I created this game to see if I could create a multi-player game with
+React and Redux, using out some stuff I wanted to try out for a while
+(mainly RxJS and Flow).
+
+## Contributions and usage
+
+Any issues or ideas are welcome in the Github issues. I have no clear
+goal for this, so any improvements are welcome in PRs, also game-play.
+Feel free to fork and run your own instances, but please note this
+project is under the [GNU General Public License v3.0](LICENSE).
 
 ## Server and client
 This project is split up in a Node Express server and a React.js client.

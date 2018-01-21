@@ -4,6 +4,8 @@ import React, { PureComponent } from 'react';
 import { connect } from 'react-redux';
 import LargeInput from '../sprites/LargeInput';
 import Form from '../sprites/Form';
+import IntroText from '../sprites/IntroText';
+import Link from '../sprites/Link';
 import Overlay from '../sprites/Overlay';
 import OverlayContainer from '../sprites/OverlayContainer';
 import KeyInstructions from '../sprites/KeyInstructions';
@@ -55,14 +57,6 @@ class SignIn extends PureComponent<Props, State> {
             <OverlayContainer>
                 {isSignedIn ? null : (
                     <Overlay>
-                        <Form onSubmit={this.onSubmit}>
-                            <LargeInput
-                                onChange={this.onChange}
-                                placeholder="Enter username to start..."
-                                autoFocus
-                                maxLength={20}
-                            />
-                        </Form>
                         <KeyInstructions>
                             <KeyInstruction instruction="Move">
                                 <Key>&larr;</Key>
@@ -77,6 +71,19 @@ class SignIn extends PureComponent<Props, State> {
                                 <Key>H</Key>
                             </KeyInstruction>
                         </KeyInstructions>
+                        <Form onSubmit={this.onSubmit}>
+                            <LargeInput
+                                onChange={this.onChange}
+                                placeholder="Enter player name to start..."
+                                autoFocus
+                                maxLength={20}
+                            />
+                        </Form>
+                        <IntroText>
+                            WARX is a silly little game built with Javascript,
+                            React and Redux. Contribute and file issues on <Link
+                            href="https://github.com/nextminds/warx">github</Link>.
+                        </IntroText>
                     </Overlay>
                 )}
             </OverlayContainer>
