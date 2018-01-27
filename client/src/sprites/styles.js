@@ -1,11 +1,11 @@
 export default {
-    playerSize: '1rem',
-    hudMargin: '1rem',
+    hudMargin: '1.5vw',
     shotRed: '#EE0606',
     meColor: '#fff',
     enemyColor: '#ce0606',
     overlayIndex: 1000,
-    colorPrimary: '#111',
+    background: '#010019',
+    colorPrimary: '#000026',
     colorSecondary: '#fff',
-    colorTertiary: '#FAD134',
+    colorTertiary: '#38c9ff',
 }

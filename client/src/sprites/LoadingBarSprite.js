@@ -9,6 +9,7 @@ export default styled.div`
     height: ${({ height = 1.6 }) => `${height}rem`};
     background: ${styles.colorPrimary};
     border: .1rem solid ${styles.colorTertiary};
+    box-shadow: 0 0 0 .5vw rgba(56, 201, 255, 0.2);
 
     &::after {
       content: "";
