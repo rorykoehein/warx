@@ -1,5 +1,5 @@
 export default {
-    hudMargin: '1.5vw',
+    hudMargin: '.75vw 1.5vw',
     shotRed: '#EE0606',
     meColor: '#fff',
     enemyColor: '#ce0606',
