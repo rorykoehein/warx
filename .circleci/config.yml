@@ -4,6 +4,11 @@
 #
 version: 2
 jobs:
+  deployment:
+    staging:
+      branch: master
+      heroku:
+        appname: warx
   build:
     docker:
       - image: circleci/node:7.10
