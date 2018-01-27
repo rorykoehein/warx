@@ -42,7 +42,11 @@ server tests or in the client dir to run the client tests.
 CircleCI is configured to run the tests in this repository on every
 branch and master. Tests must pass on PRs before merging.
 
-## Deployment
+## Build and deploy
+
+This is still a bit awkward with some .sh files and manual steps.
+
+First create a `dist` folder in the root.
 
 ### Heroku
 1. initialize heroku in the dist folder
