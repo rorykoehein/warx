@@ -1,23 +1,23 @@
 import styled from 'styled-components';
 import styles from './styles';
+import { darken } from 'polished';
 
 export default styled.input`
-    position: absolute;
-    width: 54rem;
+    display: inline-block;
+    width: 45rem;
+    height: 7rem;
     font-size: 3.2rem;
-    padding: 1.2rem;
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%, -50%);
+    margin-right: 2rem;
+    padding: 1.6rem;
     outline: 0;
     color: white;
-    background: ${styles.colorTertiary};
-    border: 0;
+    background: ${darken(0.5, styles.colorPrimary)};
+    border: 1px solid ${styles.colorTertiary};
     font-family: 'Roboto Condensed', sans-serif;
     text-transform: uppercase;
-    box-shadow: 0 0 0 .5vw rgba(56, 201, 255, 0.2);
+    //box-shadow: 0 0 0 .8rem rgba(56, 201, 255, 0.4);
     
     &::placeholder {
-      color: black;
+      color: grey;
     }
 `;

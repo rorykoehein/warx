@@ -2,7 +2,6 @@
 
 import React, { PureComponent } from 'react';
 import { Transition } from 'react-transition-group';
-import { transparentize } from 'polished';
 import styles from './styles';
 import type { Direction } from '../types/game';
 
