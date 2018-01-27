@@ -10,17 +10,18 @@ export default class WorldSprite extends React.PureComponent {
         const { ratio } = this.props;
         const style = {
             position: 'absolute',
-            width: `calc((100vh - 1vw) * ${ratio})`,
-            height: `calc((100vw - 1vw) * ${1/ratio})`,
-            maxHeight: 'calc(100vh - 1vw)',
-            maxWidth: 'calc(100vw - 1vw)',
+            width: `calc((100vh - 3vw) * ${ratio})`,
+            height: `calc((100vw - 3vw) * ${1/ratio})`,
+            maxHeight: 'calc(100vh - 3vw)',
+            maxWidth: 'calc(100vw - 3vw)',
             left: '50%',
             top: '50%',
             transform: 'translate(-50%, -50%)',
             boxSizing: 'content-box',
             border: `.1rem solid ${styles.colorTertiary}`,
             overflow: 'hidden',
-            background: styles.colorPrimary
+            boxShadow: '0px 0px 0px .5vw rgba(56, 201, 255, 0.2)',
+            background: styles.colorPrimary,
         };
 
         return (

@@ -10,8 +10,14 @@ export default styled.input`
     top: 50%;
     transform: translate(-50%, -50%);
     outline: 0;
-    color: ${styles.colorPrimary};
+    color: white;
     background: ${styles.colorTertiary};
     border: 0;
     font-family: 'Roboto Condensed', sans-serif;
+    text-transform: uppercase;
+    box-shadow: 0 0 0 .5vw rgba(56, 201, 255, 0.2);
+    
+    &::placeholder {
+      color: black;
+    }
 `;
