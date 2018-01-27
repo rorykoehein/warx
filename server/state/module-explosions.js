@@ -3,8 +3,7 @@
 import { combineEpics } from 'redux-observable';
 import { getRules } from './module-game';
 import { hit } from './module-hits';
-import type { AddExplosionAction, RemoveExplosionAction } from
-    '../../client/src/types/actions';
+import type { PlayerId } from '../../client/src/types/game';
 
 // other modules may this module when players are hit, bombs explode, etc.
 // if any player is located within the radius of an explosion, that player will
@@ -20,8 +19,7 @@ const pointCircleCollision = (point, circle, radius) => {
 
 // actions
 export const addExplosion = (
-    { id, x, y, size, causedBy }: { id: number, x: number, y: number, size: number, causedBy: PlayerId })
-    : AddExplosionAction =>
+    { id, x, y, size, causedBy }: { id: number, x: number, y: number, size: number, causedBy: PlayerId }) =>
     ({
         type: 'EXPLOSION_ADDED',
         origin: 'server',
