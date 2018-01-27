@@ -2,7 +2,7 @@
   "name": "nodewarx-server",
   "version": "1.0.0",
   "main": "www/index.js",
-  "license": "MIT",
+  "license": "GPL-3.0+",
   "dependencies": {
     "babel-cli": "^6.26.0",
     "babel-plugin-transform-flow-strip-types": "^6.22.0",
@@ -22,7 +22,7 @@
     "test": "jest",
     "test-ci": "jest --ci --coverage --testResultsProcessor=\"jest-junit\"",
     "build-server": "babel ./server/ -d ./dist/server",
-    "build-shared": "babel ./client/src/types -d ./dist/client/src/types && babel ./client/src/shared -d ./dist/client/src/shared && babel ./client/src/state -d ./dist/client/src/state"
+    "build-shared": "babel ./client/src/types -d ./dist/client/src/types"
   },
   "devDependencies": {
     "babel-jest": "^22.0.4",
