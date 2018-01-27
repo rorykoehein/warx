@@ -4,9 +4,9 @@
 
 ## Background
 
-I created this game to see if I could create a multi-player game with
-React and Redux, using out some stuff I wanted to try out for a while
-(mainly RxJS and Flow).
+I wanted to see if I could create a multi-player game with React and
+Redux, using some stuff I wanted to try out for a while, like RxJS and
+Flow.
 
 ## Contributions and usage
 
@@ -42,7 +42,7 @@ server tests or in the client dir to run the client tests.
 CircleCI is configured to run the tests in this repository on every
 branch and master. Tests must pass on PRs before merging.
 
-## Deployments
+## Deployment
 
 ### Heroku
 1. initialize heroku in the dist folder
@@ -56,7 +56,7 @@ $ heroku git:remote -a {my-heroku-project}
 2. run `./build.sh` and then `./heroku.sh` from the root project folder
 
 ### Now.sh
-Run `now` from the dist folder
+Run `./build.sh` an then `now` from the dist folder
 
 ## Modules in state
 The state folder is where the business logic lives. This is the largest layer and
@@ -84,7 +84,7 @@ which actions will be sent to the client in one spot
 ### Option 2: keep a list of these types in a single file
 - pro: it's easy to see which client-actions will be sent to the server and which
 server actions will be sent to the client in one spot
-- con: needs a separate list of
+- con: needs a separate list of actions
 
 ### Option 3: ditch shared actions, for special messages
 - pro: separate client and server actions
