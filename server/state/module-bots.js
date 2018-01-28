@@ -131,17 +131,19 @@ export const driveBot = (action$, store: Store) =>
             return Observable.interval(randTime)
                 .map(() => {
                     const { bots, players, rules } = store.getState();
-                    const { explosionSize } = rules;
                     const bot = bots[botId];
-                    const botPlayer = players[botId];
-                    const target = players[bot.target];
-
-                    if(!botPlayer.alive || !target || botPlayer.x === target.x || botPlayer.y === target.y) {
-                        return {
-                            type: 'VOID',
-                            data: {},
-                        };
-                    } else if (botPlayer.isMoving) {
+                    return {
+                        target: players[bot.target],
+                        botPlayer: players[botId],
+                        explosionSize: rules.explosionSize,
+                    }
+                })
+                .filter(({ target, botPlayer }) => {
+                    return botPlayer.alive && target
+                        && botPlayer.x !== target.x && botPlayer.y !== target.y;
+                })
+                .map(({ target, botPlayer, explosionSize}) => {
+                    if (botPlayer.isMoving) {
                         return {
                             type: 'MOVE_STOP_REQUESTED',
                             data: {
@@ -187,23 +189,25 @@ export const driveBot = (action$, store: Store) =>
 
 export const botShots = (action$, store: Store) =>
     action$
+        // todo: this is likely the perf bottleneck, runs on every move_to, which can be every 60ms
         .ofType('MOVE_TO')
         .map(({ data: { playerId: botId } }) => {
-            const { bots, players, rules } = store.getState();
+            const { bots, players } = store.getState();
             const bot = bots[botId];
             const botPlayer = bot && players[botId];
             const target = bot && players[bot.target];
-            return { bot, botPlayer, target, explosionSize: rules.explosionSize };
+            return { bot, botPlayer, target };
         })
         .filter(({ bot, botPlayer, target }) => {
             return bot && botPlayer.alive && target && target.alive &&
                 (botPlayer.x === target.x || botPlayer.y === target.y);
         })
-        .filter(({ botPlayer, target, explosionSize }) => {
+        .filter(({ botPlayer, target }) => {
+            const { rules } = store.getState();
             const xDelta = target.x - botPlayer.x;
             const yDelta = target.y - botPlayer.y;
-            const tooClose = Math.abs(yDelta + 10) <= explosionSize
-                && Math.abs(xDelta + 10) <= explosionSize;
+            const tooClose = Math.abs(yDelta + 10) <= rules.explosionSize
+                && Math.abs(xDelta + 10) <= rules.explosionSize;
             return !tooClose;
         })
         .flatMap(({ bot, botPlayer, target }) => {
