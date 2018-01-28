@@ -155,13 +155,18 @@ export const driveBot = (action$, store: Store) =>
                     // find out if the target player is further away from X or Y
                     const xDelta = target.x - botPlayer.x;
                     const yDelta = target.y - botPlayer.y;
-                    const axis = Math.abs(xDelta) < Math.abs(yDelta) ? 'x' : 'y';
-                    const direction =
-                        axis === 'x' && xDelta < 0 && xDelta > explosionSize ? 'left'
-                            : axis === 'x' && xDelta > 0 && xDelta > explosionSize ? 'right'
-                            : axis === 'y' && yDelta < 0 && yDelta > explosionSize ? 'up'
-                                : axis === 'y' && yDelta > 0 && yDelta > explosionSize ? 'down'
-                                    : ['left', 'right', 'up', 'down'][Math.floor(Math.random() * 3)];
+                    const xDeltaAbs = Math.abs(xDelta);
+                    const yDeltaAbs = Math.abs(yDelta);
+                    const axis = xDeltaAbs < yDeltaAbs ? 'x' : 'y';
+                    const tooClose = yDeltaAbs <= explosionSize && xDeltaAbs <= explosionSize;
+                    const randomDirection = ['left', 'right', 'up', 'down'][Math.floor(Math.random() * 3)];
+                    const direction = tooClose ?
+                        randomDirection
+                            : axis === 'x' && xDelta < 0 ? 'left'
+                            : axis === 'x' && xDelta > 0 ? 'right'
+                            : axis === 'y' && yDelta < 0 ? 'up'
+                            : axis === 'y' && yDelta > 0 ? 'down'
+                            : randomDirection;
 
                     if(direction) {
                         return {
@@ -184,22 +189,29 @@ export const botShots = (action$, store: Store) =>
     action$
         .ofType('MOVE_TO')
         .map(({ data: { playerId: botId } }) => {
-            const { bots, players } = store.getState();
+            const { bots, players, rules } = store.getState();
             const bot = bots[botId];
             const botPlayer = bot && players[botId];
             const target = bot && players[bot.target];
-            return { bot, botPlayer, target };
+            return { bot, botPlayer, target, explosionSize: rules.explosionSize };
         })
         .filter(({ bot, botPlayer, target }) => {
             return bot && botPlayer.alive && target && target.alive &&
                 (botPlayer.x === target.x || botPlayer.y === target.y);
         })
+        .filter(({ botPlayer, target, explosionSize }) => {
+            const xDelta = target.x - botPlayer.x;
+            const yDelta = target.y - botPlayer.y;
+            const tooClose = Math.abs(yDelta + 10) <= explosionSize
+                && Math.abs(xDelta + 10) <= explosionSize;
+            return !tooClose;
+        })
         .flatMap(({ bot, botPlayer, target }) => {
             const direction =
                 botPlayer.x === target.x && botPlayer.y > target.y ? 'up'
-                    : botPlayer.x === target.x && botPlayer.y <= target.y ? 'down'
+                    : botPlayer.x === target.x && botPlayer.y < target.y ? 'down'
                     : botPlayer.y === target.y && botPlayer.x > target.x ? 'left'
-                        : botPlayer.y === target.y && botPlayer.x <= target.x ? 'right' : 'right';
+                        : botPlayer.y === target.y && botPlayer.x < target.x ? 'right' : 'right';
             const obs = Observable.of(null);
             const randTime = Math.round(Math.random() * 1000 + 750);
             return Observable.merge(
@@ -216,7 +228,7 @@ export const botShots = (action$, store: Store) =>
                         playerId: bot.id,
                         direction: direction,
                     }
-                }).delay(randTime),
+                }).delay(250),
                 obs.mapTo({
                     type: 'SHOT_REQUESTED',
                     data: {
