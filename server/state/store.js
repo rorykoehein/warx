@@ -41,4 +41,9 @@ const store = createStore(
     applyMiddleware(createNodeLogger({ }), createEpicMiddleware(epic))
 );
 
+store.dispatch({
+    type: 'GAME_STARTED',
+    origin: 'server',
+});
+
 export default store;
