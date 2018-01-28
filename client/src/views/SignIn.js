@@ -2,8 +2,9 @@
 
 import React, { PureComponent } from 'react';
 import { connect } from 'react-redux';
+import LargeButton from '../sprites/LargeButton';
 import LargeInput from '../sprites/LargeInput';
-import Form from '../sprites/Form';
+import SignInForm from '../sprites/SignInForm';
 import IntroText from '../sprites/IntroText';
 import Link from '../sprites/Link';
 import Overlay from '../sprites/Overlay';
@@ -71,14 +72,15 @@ class SignIn extends PureComponent<Props, State> {
                                 <Key>H</Key>
                             </KeyInstruction>
                         </KeyInstructions>
-                        <Form onSubmit={this.onSubmit}>
+                        <SignInForm onSubmit={this.onSubmit}>
                             <LargeInput
                                 onChange={this.onChange}
-                                placeholder="Enter player name to start..."
+                                placeholder="Enter player name to start"
                                 autoFocus
                                 maxLength={20}
                             />
-                        </Form>
+                            <LargeButton>Go</LargeButton>
+                        </SignInForm>
                         <IntroText>
                             WARX is a silly little game built with Javascript,
                             React and Redux. Contribute and file issues on <Link
