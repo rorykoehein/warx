@@ -45,6 +45,7 @@ describe('module-servers', () => {
 
         describe('serverRegisterRequests', () => {
             const now = () => 999;
+            const timer = () => Observable.of([1]); // mock Observable.timer
             const store = {
                 getState: () => ({
                     isHub: false,
@@ -60,11 +61,6 @@ describe('module-servers', () => {
                         }
                     }
                 });
-                observer.complete();
-            });
-
-            const errorPost = (url, data) => Observable.create(observer => {
-                observer.error({});
                 observer.complete();
             });
 
@@ -119,6 +115,13 @@ describe('module-servers', () => {
                 ts.flush();
             });
 
+            let errorPostCalled = 0; // keep track of this for retry test
+            const errorPost = (url, data) => Observable.create(observer => {
+                errorPostCalled++;
+                observer.error({});
+                observer.complete();
+            });
+
             it('should retry if the registration request fails', () => {
                 const values = {
                     a: {
@@ -126,22 +129,20 @@ describe('module-servers', () => {
                         data: {
                             hub: 'http://x.com',
                         },
-                    },
-                    b: {
-                        type: 'SERVERS_REGISTRATION_FAILED',
-                        data: {},
-                    },
+                    }
                 };
 
                 const input = '-a-';
-                const output = '-b-';
+                const output = '---';
+                const retryTimes = 20;
                 const ts = createTestScheduler();
                 const source = R(ts.createColdObservable(input, values));
                 const actual = serverRegisterRequests(
-                    source, store, errorPost, now
+                    source, store, errorPost, now, timer, retryTimes
                 );
                 ts.expectObservable(actual).toBe(output, values);
                 ts.flush();
+                expect(errorPostCalled).toBe(retryTimes);
             });
         });
 

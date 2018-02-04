@@ -10,3 +10,16 @@ export const reduceReducers = (...reducers: Array<Function>): Function =>
 
 let nextId = 0;
 export const generateId = () => `${nextId++}`; // make it a string, we later may want to replace by base 64 number or so
+
+export const fibonacci = (num: number) => {
+    let a = 1, b = 0, temp;
+
+    while (num >= 0) {
+        temp = a;
+        a = a + b;
+        b = temp;
+        num--;
+    }
+
+    return b;
+};
