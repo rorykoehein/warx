@@ -31,7 +31,7 @@ jobs:
           key: v1-server-{{ checksum "package.json" }}
       - run:
           name: Test server
-          command: yarn test
+          command: yarn test-ci
 
       # client
       - restore_cache:
@@ -48,5 +48,5 @@ jobs:
           key: v1-client-{{ checksum "package.json" }}
       - run:
           name: Test client
-          command: yarn test
+          command: yarn test-ci
           working_directory: client
