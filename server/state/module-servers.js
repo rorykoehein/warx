@@ -214,7 +214,7 @@ export const hubServerRegisterRequests =
     (action$: ActionInterface, // todo: special redux-observable Action$ type?
      store: Store,
      checkTime: number = 10000,
-     fetch: Function = fetch,
+     httpFetch: Function = fetch,
      timer: Function = Observable.timer,
      now: Function = () => Number(Date.now())
     ) => (
@@ -225,7 +225,7 @@ export const hubServerRegisterRequests =
                     .map(() => action)
             )
             .mergeMap(({ data: { address }}) =>
-                fetch(`${address}/check`)
+                httpFetch(`${address}/check`)
                     .map(({ players, address, location, name }) => ({
                         type: 'SERVERS_HUB_CHECK_SUCCESS',
                         data: {
@@ -248,12 +248,16 @@ export const hubServerRegisterRequests =
 
 // todo: what if this call doesn't work? retry the register every x seconds
 // todo: what if the hub stops 'checking' on us? re-register after not receiving a check for x seconds
-export const serverRegisterRequests = (action$, store, getEnv = getServersEnv, post = post) =>
+export const serverRegisterRequests = (
+    action$,
+    store, getEnv = getServersEnv,
+    httpPost = post
+) =>
     action$
         .ofType('SERVERS_INITIALIZED')
         .filter(() => !store.getState().isHub)
         .mergeMap(({ data: { hub, ...rest }}) =>
-            post(`${hub}/register`, rest)
+            httpPost(`${hub}/register`, rest)
                 .map(({ servers }) => ({
                     // todo: registration_success?
                     type: 'SERVERS_REGISTER_RESPONSE',
