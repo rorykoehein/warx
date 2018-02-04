@@ -185,27 +185,23 @@ export const addBots = (
             );
     });
 
-const getRandomTime = () => Math.round(Math.random() * 10000 + 10000);
-const getRandomId = (num) => Math.floor(Math.random() * num);
-
 export const setTargets = (
     // $FlowFixMe
     action$,
     store: Store,
-    getRandomTime: Function = getRandomTime,
-    getRandomId: Function = getRandomId,
+    random: Function = (max, start = 0) => Math.floor(Math.random() * max + start),
     timer: Function = Observable.timer,
 ) => action$
     .ofType('ADD_BOT')
     .flatMap(({ data: { playerId: botId }}) => {
-        const randTime = getRandomTime();
+        const randTime = random(10000, 10000);
         return timer(250, randTime)
             .map(() => {
                 const { players } = store.getState();
                 const playerIds = Object
                     .keys(players)
                     .filter(id => id !== botId);
-                const index = getRandomId(playerIds.length);
+                const index = random(playerIds.length);
                 const playerId = playerIds[index] || null;
                 return botSetTarget({ botId, playerId });
             });

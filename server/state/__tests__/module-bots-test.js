@@ -109,10 +109,9 @@ describe('module-bots', () => {
 
     it('should set the target after adding a bot', () => {
         const timer = () => Observable.range(1, 2); // mock Observable.timer
-        const getRandomTime = () => 9999; // mock
         // mock the random id generator so it returns 1, 2, etc.
         let nextId = 0;
-        const getRandomId = () => nextId++;
+        const random = () => nextId++;
 
         const store = ({
             getState: () => ({
@@ -160,7 +159,7 @@ describe('module-bots', () => {
 
         const ts = createTestScheduler();
         const source = R(ts.createColdObservable(input, values));
-        const actual = setTargets(source, store, getRandomTime, getRandomId, timer);
+        const actual = setTargets(source, store, random, timer);
         ts.expectObservable(actual).toBe(output, values);
         ts.flush();
     });
