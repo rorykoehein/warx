@@ -250,19 +250,20 @@ export const hubServerRegisterRequests =
 // todo: what if the hub stops 'checking' on us? re-register after not receiving a check for x seconds
 export const serverRegisterRequests = (
     action$,
-    store, getEnv = getServersEnv,
-    httpPost = post
+    store,
+    httpPost = post,
+    now = () => Number(Date.now())
 ) =>
     action$
         .ofType('SERVERS_INITIALIZED')
-        .filter(() => !store.getState().isHub)
+        .filter(({ data: { hub, ...rest }}) => !store.getState().isHub && hub)
         .mergeMap(({ data: { hub, ...rest }}) =>
             httpPost(`${hub}/register`, rest)
                 .map(({ servers }) => ({
                     // todo: registration_success?
                     type: 'SERVERS_REGISTER_RESPONSE',
                     data: {
-                        lastUpdated: Number(Date.now()),
+                        lastUpdated: now(),
                         servers
                     }
                 }))
