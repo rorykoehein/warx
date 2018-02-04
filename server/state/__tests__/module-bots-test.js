@@ -109,10 +109,15 @@ describe('module-bots', () => {
 
     it('should set the target after adding a bot', () => {
         const timer = () => Observable.range(1, 2); // mock Observable.timer
-        // mock the random id generator so it returns 1, 2, etc.
+        // mock the random id generator so it returns 0 or 1
         let nextId = 0;
-        const random = () => nextId++;
+        const random = () => {
+            nextId = nextId === 1 ? 0 : 1;
+            return nextId;
+        };
 
+        // note: setTargets will call random twice for every ADD_BOT, once to
+        // add time
         const store = ({
             getState: () => ({
                 players: {
@@ -130,31 +135,21 @@ describe('module-bots', () => {
             a: {
                 type: 'ADD_BOT',
                 origin: 'server',
-                data: {
-                    playerId: '5',
-                    x: 10,
-                    y: 10,
-                }
+                data: { playerId: '5', x: 10, y: 10 }
             },
             b: {
                 type: 'SET_TARGET',
                 origin: 'server',
-                data: {
-                    playerId: '1',
-                    botId: '5',
-                }
+                data: { playerId: '1', botId: '5' }
             },
             c: {
                 type: 'SET_TARGET',
                 origin: 'server',
-                data: {
-                    playerId: '2',
-                    botId: '5',
-                }
+                data: { playerId: '2', botId: '5' }
             },
         };
 
-        const input  = 'c--a--c';
+        const input  = '---a---';
         const output = '---(bc)';
 
         const ts = createTestScheduler();
