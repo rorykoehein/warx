@@ -35,10 +35,19 @@ modules
     .filter(module => module.dispatchActions)
     .forEach(module => module.dispatchActions(store));
 
+const middleware = process.env.NODE_ENV === 'development' ?
+    applyMiddleware(createNodeLogger({}), createEpicMiddleware(epic)) :
+    applyMiddleware(createEpicMiddleware(epic));
+
 // setup store
 const store = createStore(
     reduceReducers(coreReducer, reducer),
-    applyMiddleware(createNodeLogger({ }), createEpicMiddleware(epic))
+    middleware,
 );
+
+store.dispatch({
+    type: 'GAME_STARTED',
+    origin: 'server',
+});
 
 export default store;

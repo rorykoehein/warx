@@ -65,7 +65,7 @@ export const reducer = (state: FullState, action: ActionInterface): FullState =>
             const { data: { direction, playerId } } = action;
             return replacePlayerProps(state, playerId, {
                 direction,
-                isMoving: true,
+                isMoving: false,
             });
         }
 

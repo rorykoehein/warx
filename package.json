@@ -19,7 +19,7 @@
   "scripts": {
     "start": "node ./server/www",
     "dev": "NODE_ENV=development babel-node --inspect ./server/www",
-    "test": "jest",
+    "test": "jest -o --watch",
     "test-ci": "jest --ci --coverage --testResultsProcessor=\"jest-junit\"",
     "build-server": "babel ./server/ -d ./dist/server",
     "build-shared": "babel ./client/src/types -d ./dist/client/src/types"

@@ -33,10 +33,14 @@ export const initialState = {
 
 const coreReducer = (state = initialState, action: ActionInterface) => state;
 
+const middleware = process.env.NODE_ENV === 'development' ?
+    applyMiddleware(createLogger({}), createEpicMiddleware(epic)) :
+    applyMiddleware(createEpicMiddleware(epic));
+
 // setup store
 const store: Store = createStore(
     reduceReducers(coreReducer, reducer),
-    applyMiddleware(createLogger({}), createEpicMiddleware(epic)),
+    middleware,
     window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__()
 );
 

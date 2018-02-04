@@ -1,6 +1,6 @@
 import Rx from 'rxjs';
 import { packKey, unpack } from '../shared/pack-messages';
-import generateId from './generate-id';
+import { generateId } from '../shared/helpers';
 import { setIds } from './socket-id-maps';
 
 // map socket.io messages to an observable

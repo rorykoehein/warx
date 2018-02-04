@@ -33,12 +33,24 @@ const requestedShots = (action$, store: Store) =>
         .groupBy(payload => payload.data.playerId)
         .flatMap(group => group
             .throttleTime(store.getState().rules.reloadTime)
-            .map(payload => ({
-                ...payload,
-                type: 'SHOT_FIRED',
-                origin: 'server',
-                sendToClient: true,
-            }))
+            .filter(payload => {
+                const { data: { playerId } } = payload;
+                const { players } = store.getState();
+                const player = players[playerId];
+                return player && player.alive;
+            })
+            .map(payload => {
+                const { data: { playerId } } = payload;
+                const { players } = store.getState();
+                const isBot = players[playerId].isBot;
+                return {
+                    ...payload,
+                    type: 'SHOT_FIRED',
+                    origin: 'server',
+                    sendToClient: true,
+                    toAll: isBot, // todo, maybe send shot_fired to all players always, needs change on client
+                }
+            })
         );
 
 export const epic = combineEpics(
