@@ -4,8 +4,10 @@ import 'rxjs';
 import { Observable, TestScheduler } from 'rxjs';
 import { ActionsObservable } from 'redux-observable';
 import {
-    initialState, reducer, gameStarts, hubServerRegisterRequests, serverRegisterRequests
+    initialState, reducer, gameStarts, hubServerRegisterRequests,
+    serverRegisterRequests
 } from '../module-servers';
+import type {PlayerId} from "../../../client/src/types/game";
 
 const R = (observable) => ActionsObservable.from(observable);
 const deepEquals = (actual, expected) => expect(actual).toEqual(expected);
@@ -17,7 +19,6 @@ const getEnv = () => ({
     name: 'warx-us',
     address: 'http://us.warx.io',
 });
-
 
 describe('module-servers', () => {
     describe('epics', () => {
@@ -43,12 +44,104 @@ describe('module-servers', () => {
         });
 
         describe('serverRegisterRequests', () => {
+            const now = () => 999;
+            const store = {
+                getState: () => ({
+                    isHub: false,
+                })
+            };
+
+            // mock fetch
+            const successPost = (url, data) => Observable.create(observer => {
+                observer.next({
+                    servers: {
+                        'http://x.com': {
+                            address: 'http://x.com'
+                        }
+                    }
+                });
+                observer.complete();
+            });
+
+            const errorPost = (url, data) => Observable.create(observer => {
+                observer.error({});
+                observer.complete();
+            });
+
             it('should register itself with the hub on initializing if there is a hub', () => {
-                // todo
+                const values = {
+                    a: {
+                        type: 'SERVERS_INITIALIZED',
+                        data: {
+                            hub: 'http://x.com',
+                        },
+                    },
+                    b: {
+                        type: 'SERVERS_REGISTER_RESPONSE',
+                        data: {
+                            lastUpdated: 999,
+                            servers: {
+                                'http://x.com': {
+                                    address: 'http://x.com',
+                                },
+                            },
+                        },
+                    },
+                };
+
+                const input = '-a';
+                const output = '-b';
+                const ts = createTestScheduler();
+                const source = R(ts.createColdObservable(input, values));
+                const actual = serverRegisterRequests(
+                    source, store, successPost, now
+                );
+                ts.expectObservable(actual).toBe(output, values);
+                ts.flush();
+            });
+
+            it('should no nothing if there is no hub', () => {
+                const values = {
+                    a: {
+                        type: 'SERVERS_INITIALIZED',
+                        data: {},
+                    },
+                };
+
+                const input = '-a';
+                const output = '--';
+                const ts = createTestScheduler();
+                const source = R(ts.createColdObservable(input, values));
+                const actual = serverRegisterRequests(
+                    source, store, successPost, now
+                );
+                ts.expectObservable(actual).toBe(output, values);
+                ts.flush();
             });
 
             it('should retry if the registration request fails', () => {
-                // todo
+                const values = {
+                    a: {
+                        type: 'SERVERS_INITIALIZED',
+                        data: {
+                            hub: 'http://x.com',
+                        },
+                    },
+                    b: {
+                        type: 'SERVERS_REGISTRATION_FAILED',
+                        data: {},
+                    },
+                };
+
+                const input = '-a-';
+                const output = '-b-';
+                const ts = createTestScheduler();
+                const source = R(ts.createColdObservable(input, values));
+                const actual = serverRegisterRequests(
+                    source, store, errorPost, now
+                );
+                ts.expectObservable(actual).toBe(output, values);
+                ts.flush();
             });
         });
 
