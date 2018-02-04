@@ -42,9 +42,8 @@
       "<rootDir>/server/**/__tests__/**/*.{js,mjs}",
       "<rootDir>/server/**/?(*.)(spec|test).{js,mjs}"
     ],
-    "collectCoverageFrom": [
-      "<rootDir>/server/**/*.{js,mjs}"
-    ],
+    "collectCoverage": true,
+    "collectCoverageFrom": ["server/**/*.js"],
     "testEnvironment": "node",
     "testURL": "http://localhost",
     "transform": {
