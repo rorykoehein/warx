@@ -3,7 +3,8 @@
 import { combineEpics } from 'redux-observable';
 import { Observable } from 'rxjs/Observable';
 import { createSelector } from 'reselect';
-import { fetch, post } from '../shared/http';
+import { fetch, post,  } from '../shared/http';
+import { fibonacci } from '../shared/helpers';
 import type { ActionInterface, Store } from  '../../client/src/types/framework';
 
 // there is one central hub and X servers, each server registers itself at the
@@ -245,14 +246,15 @@ export const hubServerRegisterRequests =
             )
     );
 
-
-// todo: what if this call doesn't work? retry the register every x seconds
-// todo: what if the hub stops 'checking' on us? re-register after not receiving a check for x seconds
+// todo: what if the hub stops 'checking' on us? re-register after not
+// receiving a check for x seconds?
 export const serverRegisterRequests = (
     action$,
     store,
     httpPost = post,
-    now = () => Number(Date.now())
+    now = () => Number(Date.now()),
+    timer = Observable.timer,
+    retryTimes = 20
 ) =>
     action$
         .ofType('SERVERS_INITIALIZED')
@@ -267,10 +269,11 @@ export const serverRegisterRequests = (
                         servers
                     }
                 }))
-                .catch(error => Observable.of({
-                    type: 'SERVERS_REGISTRATION_FAILED',
-                    data: {}
-                }))
+                .retryWhen(attempts =>
+                    Observable.range(1, retryTimes - 1)
+                        .zip(attempts, i => i)
+                        .flatMap(i => timer(fibonacci(i) * 1000))
+                )
         );
 
 
