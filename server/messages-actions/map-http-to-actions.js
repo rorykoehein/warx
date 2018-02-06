@@ -38,8 +38,9 @@ export default (app, env = getEnv()) => {
             console.log('check back', { players, location, name, address });
             res.json({ players, location, name, address });
 
-            // todo: dispatch to store: register last 'check' time with the server so we can reregister if we're not checked on any more
-            store.dispatch(createServerCheckReceived());
+            store.dispatch(createServerCheckReceived({
+                time: Number(Date.now()),
+            }));
         });
     }
 
