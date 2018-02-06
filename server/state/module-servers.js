@@ -23,6 +23,14 @@ export type InitializedAction = {
     }
 };
 
+export type RegisterRequestAction = {
+    +type: 'SERVERS_REGISTER_REQUEST',
+    +origin: 'server',
+    +data: {
+        address: string, location: string, name: string, hub: string
+    }
+};
+
 export type RegisterResponseAction = {
     +type: 'SERVERS_REGISTER_RESPONSE',
     +origin: 'server',
@@ -45,12 +53,6 @@ export type HubCheckErrorAction = {
     }
 };
 
-export type CheckReceivedAction = {
-    +type: 'SERVERS_CHECK_RECEIVED',
-    +origin: 'server',
-    +data: {}
-};
-
 export type RegistrationFailedAction = {
     +type: 'SERVERS_REGISTRATION_FAILED',
     +origin: 'server',
@@ -65,9 +67,18 @@ export type HubRegistrationReceivedAction = {
     },
 };
 
-export type Action = InitializedAction | RegisterResponseAction |
-    HubCheckSuccessAction| HubCheckErrorAction | HubRegistrationReceivedAction |
-    RegistrationFailedAction;
+export type CheckReceivedAction = {
+    +type: 'SERVERS_CHECK_RECEIVED',
+    +origin: 'server',
+    +data: {
+        +time: number,
+    },
+};
+
+export type Action = InitializedAction | RegisterRequestAction |
+    RegisterResponseAction | HubCheckSuccessAction| HubCheckErrorAction |
+    HubRegistrationReceivedAction | RegistrationFailedAction |
+    CheckReceivedAction;
 
 export type Env = {
     +hub: ?string,
@@ -93,6 +104,7 @@ export type State = {
     isHub: boolean,
     currentServer: ?string,
     isRegistered: boolean,
+    lastHubCheck: 0,
 };
 
 // returns env vars which describe this server
@@ -110,31 +122,37 @@ export const initialState: State = {
     isHub: false,
     isRegistered: false,
     currentServer: null,
+    lastHubCheck: 0,
 };
 
 // actions
 
 // hub: when a server requests to register on this hub
-export const createHubRegistrationReceived = ({ address }: { address: string }): HubRegistrationReceivedAction => ({
-    type: 'SERVERS_HUB_REGISTRATION_RECEIVED',
-    origin: 'server',
-    data: {
-        address,
-    },
-});
+export const createHubRegistrationReceived = ({ address }: { address: string }):
+    HubRegistrationReceivedAction => ({
+        type: 'SERVERS_HUB_REGISTRATION_RECEIVED',
+        origin: 'server',
+        data: {
+            address,
+        },
+    });
 
 // hub: when a server requests to register on this hub
-export const createServerCheckReceived = (): CheckReceivedAction => ({
-    type: 'SERVERS_CHECK_RECEIVED',
-    origin: 'server',
-    data: {},
-});
+export const createServerCheckReceived = ({ time }: { time: number }):
+    CheckReceivedAction => ({
+        type: 'SERVERS_CHECK_RECEIVED',
+        origin: 'server',
+        data: {
+            time
+        },
+    });
 
 // reducer
 
 export const reducer = (state: State, action: Action) => {
     switch (action.type) {
         case 'SERVERS_INITIALIZED': {
+            // both on server and hub to initialize
             const { data: { address, location, name, hub } } = action;
             return {
                 ...state,
@@ -153,7 +171,15 @@ export const reducer = (state: State, action: Action) => {
             };
         }
 
+        case 'SERVERS_REGISTER_REQUEST': {
+            return {
+                ...state,
+                isRegistered: false,
+            };
+        }
+
         case 'SERVERS_REGISTER_RESPONSE': {
+            // on the server when the hub responded to our registration
             const currentServer = getCurrentServer(state);
             const { data: { servers } } = action;
             const address = state.currentServer;
@@ -171,7 +197,17 @@ export const reducer = (state: State, action: Action) => {
             };
         }
 
+        case 'SERVERS_CHECK_RECEIVED': {
+            // on the server when the hub has checked up with us
+            const { data: { time } } = action;
+            return {
+                ...state,
+                lastHubCheck: time,
+            };
+        }
+
         case 'SERVERS_HUB_CHECK_SUCCESS': {
+            // on the hub after a server answers the check request
             const { data: { address, ...rest } } = action;
             return {
                 ...state,
@@ -186,6 +222,8 @@ export const reducer = (state: State, action: Action) => {
         }
 
         case 'SERVERS_HUB_CHECK_ERROR': {
+            // on the hub after an error from the server after a check:
+            // remove the server from the list
             const { data: { address } } = action;
             const { servers: { [address]: addressToRemove, ...rest } } = state;
             return {
@@ -204,65 +242,93 @@ export const reducer = (state: State, action: Action) => {
 export const gameStarts = (action$, store, serverEnv = getServersEnv()) =>
     action$
         .ofType('GAME_STARTED')
-        .map(() => ({
+        .first()
+        .flatMap(() => ([{
             type: 'SERVERS_INITIALIZED',
             data: serverEnv
-        }))
-        .take(1);
+        }, {
+            type: 'SERVERS_REGISTER_REQUEST',
+            data: serverEnv
+        }]));
+
+const hubServerCheckTime = 5000; // check on the server every 10 seconds
 
 // checkTime the interval at which the hubs should 'check' on the servers
-export const hubServerRegisterRequests =
-    (action$: ActionInterface, // todo: special redux-observable Action$ type?
-     store: Store,
-     checkTime: number = 10000,
-     httpFetch: Function = fetch,
-     timer: Function = Observable.timer,
-     now: Function = () => Number(Date.now())
-    ) => (
-        action$
-            .ofType('SERVERS_HUB_REGISTRATION_RECEIVED')
-            .flatMap(action =>
-                timer(0, checkTime)
-                    .map(() => action)
-            )
-            .mergeMap(({ data: { address }}) =>
-                httpFetch(`${address}/check`)
-                    .map(({ players, address, location, name }) => ({
-                        type: 'SERVERS_HUB_CHECK_SUCCESS',
-                        data: {
-                            lastUpdated: now(),
-                            address,
-                            location,
-                            name,
-                            players,
-                        }
-                    }))
-                    .catch(error => Observable.of({
-                        type: 'SERVERS_HUB_CHECK_ERROR',
-                        data: {
-                            address: error.options.url.replace('/check', '')
-                        }
-                    }))
-            )
+export const hubServerRegisterRequests = (
+    action$: ActionInterface, // todo: special redux-observable Action$ type?
+    store: Store,
+    checkTime: number = hubServerCheckTime,
+    httpFetch: Function = fetch,
+    timer: Function = Observable.timer,
+    now: Function = () => Number(Date.now())
+) => (
+    action$
+        .ofType('SERVERS_HUB_REGISTRATION_RECEIVED')
+        .flatMap(action =>
+            timer(0, checkTime)
+                .map(() => action)
+        )
+        .mergeMap(({ data: { address }}) =>
+            httpFetch(`${address}/check`)
+                .map(({ players, address, location, name }) => ({
+                    type: 'SERVERS_HUB_CHECK_SUCCESS',
+                    data: {
+                        lastUpdated: now(),
+                        address,
+                        location,
+                        name,
+                        players,
+                    }
+                }))
+                .catch(error => Observable.of({
+                    type: 'SERVERS_HUB_CHECK_ERROR',
+                    data: {
+                        address: error.options.url.replace('/check', '')
+                    }
+                }))
+        )
     );
 
-// todo: what if the hub stops 'checking' on us? re-register after not
-// receiving a check for x seconds?
-export const serverRegisterRequests = (
-    action$,
-    store,
-    httpPost = post,
-    now = () => Number(Date.now()),
-    timer = Observable.timer,
-    retryTimes = 20
+// on the server: reregister with the hub it's not checking on us anymore
+export const serverReregisterRequests = (
+    action$: ActionInterface,
+    store: Store,
+    checkTime: number = hubServerCheckTime,
+    timer: Function = Observable.timer,
+    now: Function = () => Number(Date.now()),
 ) =>
     action$
         .ofType('SERVERS_INITIALIZED')
         .filter(({ data: { hub, ...rest }}) => !store.getState().isHub && hub)
+        .flatMap(action => timer(0, checkTime * 2))
+        .filter(() => {
+            const time = now();
+            const state: State = store.getState();
+            return checkTime * 2 < time - state.lastHubCheck;
+        })
+        .map(() => ({
+            type: 'SERVERS_REGISTER_REQUEST',
+            data: {}
+        }));
+
+
+// todo: what if the hub stops 'checking' on us? re-register after not
+// receiving a check for x seconds?
+export const serverRegisterRequests = (
+    // $FlowFixMe
+    action$,
+    store: Store,
+    httpPost: Function = post,
+    now: Function = () => Number(Date.now()),
+    timer: Function = Observable.timer,
+    retryTimes: number = 20,
+) =>
+    action$
+        .ofType('SERVERS_REGISTER_REQUEST')
+        .filter(({ data: { hub, ...rest }}) => !store.getState().isHub && hub)
         .mergeMap(({ data: { hub, ...rest }}) =>
             httpPost(`${hub}/register`, rest)
                 .map(({ servers }) => ({
-                    // todo: registration_success?
                     type: 'SERVERS_REGISTER_RESPONSE',
                     data: {
                         lastUpdated: now(),
@@ -281,6 +347,7 @@ export const epic = combineEpics(
     gameStarts,
     hubServerRegisterRequests,
     serverRegisterRequests,
+    serverReregisterRequests,
 );
 
 // selectors

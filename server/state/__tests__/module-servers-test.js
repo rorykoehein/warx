@@ -5,9 +5,11 @@ import { Observable, TestScheduler } from 'rxjs';
 import { ActionsObservable } from 'redux-observable';
 import {
     initialState, reducer, gameStarts, hubServerRegisterRequests,
-    serverRegisterRequests
+    serverRegisterRequests, createServerCheckReceived, serverReregisterRequests,
 } from '../module-servers';
-import type {PlayerId} from "../../../client/src/types/game";
+
+// todo: merge epics and run multiple actions at once
+// import { merge } from 'rxjs/observable/merge';
 
 const R = (observable) => ActionsObservable.from(observable);
 const deepEquals = (actual, expected) => expect(actual).toEqual(expected);
@@ -23,15 +25,18 @@ const getEnv = () => ({
 describe('module-servers', () => {
     describe('epics', () => {
         describe('gameStarts', () => {
+
             it('should initialize the server on startup only once', () => {
+                expect.hasAssertions();
                 const values = {
                     a: { type: 'GAME_STARTED' },
                     b: { type: 'SERVERS_INITIALIZED', data: getEnv() },
                     c: { type: 'UNKNOWN_ACTION' },
+                    d: { type: 'SERVERS_REGISTER_REQUEST', data: getEnv() },
                 };
 
                 const input = '-a--c--a--';
-                const output = '-(b|)';
+                const output = '-(bd|)';
 
                 const ts = createTestScheduler();
                 const source = R(
@@ -64,29 +69,29 @@ describe('module-servers', () => {
                 observer.complete();
             });
 
-            it('should register itself with the hub on initializing if there is a hub', () => {
+            it('should register itself with on SERVERS_REGISTER_REQUEST', () => {
+                expect.hasAssertions();
+
                 const values = {
                     a: {
-                        type: 'SERVERS_INITIALIZED',
-                        data: {
-                            hub: 'http://x.com',
-                        },
+                        type: 'SERVERS_REGISTER_REQUEST',
+                        data: getEnv(),
                     },
                     b: {
                         type: 'SERVERS_REGISTER_RESPONSE',
                         data: {
-                            lastUpdated: 999,
                             servers: {
                                 'http://x.com': {
                                     address: 'http://x.com',
-                                },
+                                }
                             },
-                        },
-                    },
+                            lastUpdated: now(),
+                        }
+                    }
                 };
 
-                const input = '-a';
-                const output = '-b';
+                const input = '-a-a--a';
+                const output = '-b-b--b';
                 const ts = createTestScheduler();
                 const source = R(ts.createColdObservable(input, values));
                 const actual = serverRegisterRequests(
@@ -97,9 +102,10 @@ describe('module-servers', () => {
             });
 
             it('should no nothing if there is no hub', () => {
+                expect.hasAssertions();
                 const values = {
                     a: {
-                        type: 'SERVERS_INITIALIZED',
+                        type: 'SERVERS_REGISTER_REQUEST',
                         data: {},
                     },
                 };
@@ -123,12 +129,11 @@ describe('module-servers', () => {
             });
 
             it('should retry if the registration request fails', () => {
+                expect.hasAssertions();
                 const values = {
                     a: {
-                        type: 'SERVERS_INITIALIZED',
-                        data: {
-                            hub: 'http://x.com',
-                        },
+                        type: 'SERVERS_REGISTER_REQUEST',
+                        data: getEnv()
                     }
                 };
 
@@ -146,7 +151,64 @@ describe('module-servers', () => {
             });
         });
 
+        describe('serverReregisterRequests', () => {
+            expect.hasAssertions();
+            const now = (time) => () => time;
+            const timer = () => Observable.of([1]); // mock Observable.timer
+
+            const values = {
+                a: { type: 'SERVERS_INITIALIZED', data: {} },
+                b: { type: 'SERVERS_REGISTER_REQUEST', data: {} },
+            };
+
+            const store = lastCheckedTime => ({
+                getState: () => ({
+                    lastHubCheck: lastCheckedTime,
+                })
+            });
+
+            it('should not reregister if recently checked on', () => {
+                const input = '-a';
+                const output = '--';
+
+                const ts = createTestScheduler();
+                const source = R(
+                    ts.createColdObservable(input, values)
+                );
+                // last checked = 10
+                // now = 20
+                // check time = 6
+                // should have been checked at 16 and 22, missed just one check
+                const actual = serverReregisterRequests(source, store(10), 6, timer, now(20));
+                ts.expectObservable(actual).toBe(output, values);
+                ts.flush();
+
+
+            });
+
+            it('should reregister if not checked on for longer than' +
+                ' checkTime *2', () => {
+                expect.hasAssertions();
+                const input = '-a';
+                const output = '-b';
+
+                const ts = createTestScheduler();
+                const source = R(
+                    ts.createColdObservable(input, values)
+                );
+
+                // last checked = 10
+                // now = 20
+                // check time = 4
+                // should have been checked at 4 and 8, missed two checked
+                const actual = serverReregisterRequests(source, store(10), 4, timer, now(20));
+                ts.expectObservable(actual).toBe(output, values);
+                ts.flush();
+            });
+        });
+
         describe('hubServerRegisterRequests ', () => {
+            expect.hasAssertions();
             const timer = () => Observable.range(1, 4); // mock Observable.timer
             const now = () => 9999; // mock Observable.timer
             // mock fetch
@@ -167,6 +229,7 @@ describe('module-servers', () => {
             });
 
             it('should check on the servers every X seconds (success)', () => {
+                expect.hasAssertions();
                 const values = {
                     a: {
                         type: 'SERVERS_HUB_REGISTRATION_RECEIVED',
@@ -198,6 +261,7 @@ describe('module-servers', () => {
 
 
             it('should check on the servers every X seconds (error)', () => {
+                expect.hasAssertions();
                 const values = {
                     a: {
                         type: 'SERVERS_HUB_REGISTRATION_RECEIVED',
@@ -246,9 +310,11 @@ describe('module-servers', () => {
                 isHub: false,
                 isRegistered: false,
                 players: {},
+                lastHubCheck: 0,
             };
 
             it('should add itself to the list of servers on SERVERS_INITIALIZED', () => {
+                expect.hasAssertions();
                 const resultState = reducer(initialStateWithPlayers, {
                     type: 'SERVERS_INITIALIZED',
                     origin: 'server',
@@ -263,7 +329,20 @@ describe('module-servers', () => {
                 expect(resultState).toEqual(stateAfterInitialization);
             });
 
+            describe('should save the time after a checkup from the hub', () => {
+                expect.hasAssertions();
+                const now = Number(Date.now());
+                const resultState = reducer(
+                    stateAfterInitialization,
+                    createServerCheckReceived({
+                        time: now,
+                    })
+                );
+                expect(resultState.lastHubCheck).toEqual(now);
+            });
+
             it('should save the servers after SERVERS_REGISTER_RESPONSE', () => {
+                expect.hasAssertions();
                 const resultState = reducer(stateAfterInitialization, {
                     type: 'SERVERS_REGISTER_RESPONSE',
                     origin: 'server',
@@ -311,6 +390,7 @@ describe('module-servers', () => {
                     isHub: false,
                     isRegistered: true,
                     players: {},
+                    lastHubCheck: 0,
                 });
             });
         });
@@ -329,6 +409,7 @@ describe('module-servers', () => {
             });
 
             it('should add itself to the list of servers on SERVERS_INITIALIZED', () => {
+                expect.hasAssertions();
                 expect(resultState).toEqual({
                     servers: {
                         'http://www.warx.io': {
@@ -343,6 +424,7 @@ describe('module-servers', () => {
                     isHub: true,
                     isRegistered: true,
                     players: {},
+                    lastHubCheck: 0,
                 });
             });
 
@@ -360,6 +442,7 @@ describe('module-servers', () => {
             });
 
             it('should add the server on SERVERS_HUB_CHECK_SUCCESS', () => {
+                expect.hasAssertions();
                 expect(checkResult1).toEqual({
                     servers: {
                         'http://www.warx.io': {
@@ -381,6 +464,7 @@ describe('module-servers', () => {
                     isHub: true,
                     isRegistered: true,
                     players: {},
+                    lastHubCheck: 0,
                 });
             });
 
@@ -398,6 +482,7 @@ describe('module-servers', () => {
             });
 
             it('should update an existing server on SERVERS_HUB_CHECK_SUCCESS', () => {
+                expect.hasAssertions();
                 expect(checkResult2).toEqual({
                     servers: {
                         'http://www.warx.io': {
@@ -419,6 +504,7 @@ describe('module-servers', () => {
                     isHub: true,
                     isRegistered: true,
                     players: {},
+                    lastHubCheck: 0,
                 });
             });
 
@@ -431,6 +517,7 @@ describe('module-servers', () => {
             });
 
             it('should remove the server on SERVERS_HUB_CHECK_ERROR', () => {
+                expect.hasAssertions();
                 expect(checkResult3).toEqual({
                     servers: {
                         'http://www.warx.io': {
@@ -445,6 +532,7 @@ describe('module-servers', () => {
                     isHub: true,
                     isRegistered: true,
                     players: {},
+                    lastHubCheck: 0,
                 });
             });
         });
