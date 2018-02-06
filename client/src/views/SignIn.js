@@ -14,6 +14,7 @@ import KeyInstruction from '../sprites/KeyInstruction';
 import Key from '../sprites/Key';
 import { selfJoin } from '../state/module-players';
 import { isSignedIn } from '../state/module-players';
+import ServerSelector from './ServerSelector';
 
 import type { Connector } from 'react-redux';
 import type { Dispatch } from '../types/framework';
@@ -80,6 +81,7 @@ class SignIn extends PureComponent<Props, State> {
                                 maxLength={20}
                             />
                             <LargeButton>Go</LargeButton>
+                            <ServerSelector />
                         </SignInForm>
                         <IntroText>
                             WARX is a silly little game built with Javascript,

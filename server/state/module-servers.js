@@ -75,10 +75,20 @@ export type CheckReceivedAction = {
     },
 };
 
+export type ServersChangedAction = {
+    +type: 'SERVERS_CHANGED',
+    +origin: 'server',
+    +sendToClient: true,
+    +toAll: true,
+    +data: {
+        +servers: Servers,
+    },
+};
+
 export type Action = InitializedAction | RegisterRequestAction |
     RegisterResponseAction | HubCheckSuccessAction| HubCheckErrorAction |
     HubRegistrationReceivedAction | RegistrationFailedAction |
-    CheckReceivedAction;
+    CheckReceivedAction | ServersChangedAction;
 
 export type Env = {
     +hub: ?string,
@@ -251,7 +261,7 @@ export const gameStarts = (action$, store, serverEnv = getServersEnv()) =>
             data: serverEnv
         }]));
 
-const hubServerCheckTime = 5000; // check on the server every 10 seconds
+const hubServerCheckTime = 10000; // todo check on the server every 30 seconds?
 
 // checkTime the interval at which the hubs should 'check' on the servers
 export const hubServerRegisterRequests = (
@@ -261,7 +271,7 @@ export const hubServerRegisterRequests = (
     httpFetch: Function = fetch,
     timer: Function = Observable.timer,
     now: Function = () => Number(Date.now())
-) => (
+) =>
     action$
         .ofType('SERVERS_HUB_REGISTRATION_RECEIVED')
         .flatMap(action =>
@@ -286,7 +296,25 @@ export const hubServerRegisterRequests = (
                         address: error.options.url.replace('/check', '')
                     }
                 }))
+        );
+
+// when we know new information about servers, send this to the client
+// todo: only send when server data has changes,
+// todo: only send to clients that are listening?
+export const sendServersToClients = (action$: ActionInterface, store: Store) =>
+    action$
+        .filter(({ type }) =>
+            type === 'SERVERS_HUB_CHECK_SUCCESS' ||
+            type === 'SERVERS_HUB_REGISTRATION_RECEIVED'
         )
+        .map(() => ({
+            type: 'SERVERS_CHANGED',
+            sendToClient: true,
+            toAll: true,
+            data: {
+                servers: getServers(store.getState()),
+            },
+        })
     );
 
 // on the server: reregister with the hub it's not checking on us anymore
@@ -300,15 +328,15 @@ export const serverReregisterRequests = (
     action$
         .ofType('SERVERS_INITIALIZED')
         .filter(({ data: { hub, ...rest }}) => !store.getState().isHub && hub)
-        .flatMap(action => timer(0, checkTime * 2))
+        .flatMap(action => timer(0, checkTime * 2).mapTo(action))
         .filter(() => {
             const time = now();
             const state: State = store.getState();
             return checkTime * 2 < time - state.lastHubCheck;
         })
-        .map(() => ({
+        .map(({ data }) => ({
             type: 'SERVERS_REGISTER_REQUEST',
-            data: {}
+            data: data,
         }));
 
 
@@ -348,6 +376,7 @@ export const epic = combineEpics(
     hubServerRegisterRequests,
     serverRegisterRequests,
     serverReregisterRequests,
+    sendServersToClients,
 );
 
 // selectors
@@ -359,3 +388,5 @@ export const getCurrentServer = (state: State): ?Server => {
         players: Object.keys(state.players).length,
     } : null;
 };
+
+export const getServers = (state: State): Servers => state.servers;

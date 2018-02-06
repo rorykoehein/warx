@@ -13,7 +13,7 @@ type Env = {
 };
 
 const getEnv = (): Env => ({
-    numBots: Number(process.env.NUM_BOTS) || 2,
+    numBots: process.env.NUM_BOTS ? Number(process.env.NUM_BOTS) : 2,
 });
 
 // types

@@ -157,13 +157,24 @@ describe('module-servers', () => {
             const timer = () => Observable.of([1]); // mock Observable.timer
 
             const values = {
-                a: { type: 'SERVERS_INITIALIZED', data: {} },
-                b: { type: 'SERVERS_REGISTER_REQUEST', data: {} },
+                a: {
+                    type: 'SERVERS_INITIALIZED',
+                    data: {
+                        hub: 'http://www.warx.io',
+                    },
+                },
+                b: {
+                    type: 'SERVERS_REGISTER_REQUEST',
+                    data: {
+                        hub: 'http://www.warx.io',
+                    },
+                },
             };
 
             const store = lastCheckedTime => ({
                 getState: () => ({
                     lastHubCheck: lastCheckedTime,
+                    isHub: false,
                 })
             });
 
@@ -200,7 +211,7 @@ describe('module-servers', () => {
                 // last checked = 10
                 // now = 20
                 // check time = 4
-                // should have been checked at 4 and 8, missed two checked
+                // should have been checked at 4 and 8, missed two checks
                 const actual = serverReregisterRequests(source, store(10), 4, timer, now(20));
                 ts.expectObservable(actual).toBe(output, values);
                 ts.flush();

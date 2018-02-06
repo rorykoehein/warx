@@ -23,8 +23,8 @@
   "scripts": {
     "start": "node ./server/www",
     "dev": "NODE_ENV=development babel-node --inspect ./server/www",
-    "dev1": "LOCATION=eu SERVER_NAME=eu PORT=6000 ADDRESS=http://localhost:6000 HUB=http://localhost:6000 NODE_ENV=development babel-node --inspect ./server/www",
-    "dev2": "LOCATION=us SERVER_NAME=us PORT=7000 ADDRESS=http://localhost:7000 HUB=http://localhost:6000 NODE_ENV=development babel-node ./server/www",
+    "dev1": "NUM_BOTS=0 LOCATION=eu SERVER_NAME=eu PORT=7001 ADDRESS=http://localhost:7001 HUB=http://localhost:7001 NODE_ENV=development babel-node ./server/www",
+    "dev2": "NUM_BOTS=0 LOCATION=us SERVER_NAME=us PORT=7000 ADDRESS=http://localhost:7000 HUB=http://localhost:7001 NODE_ENV=development babel-node ./server/www",
     "test": "jest -o --watch",
     "test-ci": "jest --ci --coverage --testResultsProcessor=\"jest-junit\"",
     "build-server": "babel ./server/ -d ./dist/server",
