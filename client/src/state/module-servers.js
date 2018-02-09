@@ -9,6 +9,7 @@ export type Server = {
     +location: string,
     +name: string,
     +players: number,
+    +maxPlayers: number,
 };
 
 export type ServerList = Array<Server>;

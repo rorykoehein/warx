@@ -8,6 +8,7 @@ export default styled.input`
     height: 7rem;
     font-size: 3.2rem;
     margin-right: 2rem;
+    margin-bottom: 2rem;
     padding: 1.6rem;
     outline: 0;
     color: white;
