@@ -15,6 +15,7 @@ export type Server = {
 export type ServerList = Array<Server>;
 
 type State = {
+    currentServer: ?string,
     servers: {
         [string]: Server,
     }
@@ -22,7 +23,8 @@ type State = {
 
 // initial state
 export const initialState = {
-    servers: {}
+    servers: {},
+    currentServer: null,
 };
 
 // reducer
@@ -31,6 +33,7 @@ export const reducer = (state: State, action) => {
         case 'SERVERS_CHANGED': {
             return {
                 ...state,
+                currentServer: action.data.currentServer,
                 servers: action.data.servers,
             };
         }
@@ -40,3 +43,4 @@ export const reducer = (state: State, action) => {
 };
 
 export const getServerList = (state: State): ServerList => toList(state.servers);
+export const getCurrentServer = (state: State): ?string => state.currentServer;
