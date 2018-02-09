@@ -25,6 +25,7 @@ export type InitializedAction = {
         name: string,
         hub: string,
         maxPlayers: number,
+        isTrusted: boolean,
     }
 };
 
@@ -37,6 +38,7 @@ export type RegisterRequestAction = {
         name: string,
         hub: string,
         maxPlayers: number,
+        isTrusted: boolean,
     }
 };
 
@@ -327,6 +329,7 @@ export const sendServersToClients = (action$: ActionInterface, store: Store) =>
             sendToClient: true,
             toAll: true,
             data: {
+                currentServer: store.getState().currentServer,
                 servers: getServers(store.getState()),
             },
         })
