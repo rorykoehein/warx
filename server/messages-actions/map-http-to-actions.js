@@ -34,10 +34,13 @@ export default (app, env = getEnv()) => {
         // the central hub will check on servers by calling this
         app.get('/check', (req, res) => {
             const state = store.getState();
-            const { players, location, name, address } = getCurrentServer(state);
-            console.log('check back', { players, location, name, address });
-            res.json({ players, location, name, address });
+            const server = getCurrentServer(state);
+            if(!server) {
+                res.status(500).send('Server not initialized');
+                return;
+            }
 
+            res.json(server);
             store.dispatch(createServerCheckReceived({
                 time: Number(Date.now()),
             }));

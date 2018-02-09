@@ -1,5 +1,6 @@
 // @flow
 
+import os from 'os';
 import { combineEpics } from 'redux-observable';
 import { Observable } from 'rxjs/Observable';
 import { createSelector } from 'reselect';
@@ -19,7 +20,11 @@ export type InitializedAction = {
     +type: 'SERVERS_INITIALIZED',
     +origin: 'server',
     +data: {
-        address: string, location: string, name: string, hub: string
+        address: string,
+        location: string,
+        name: string,
+        hub: string,
+        maxPlayers: number,
     }
 };
 
@@ -27,7 +32,11 @@ export type RegisterRequestAction = {
     +type: 'SERVERS_REGISTER_REQUEST',
     +origin: 'server',
     +data: {
-        address: string, location: string, name: string, hub: string
+        address: string,
+        location: string,
+        name: string,
+        hub: string,
+        maxPlayers: number,
     }
 };
 
@@ -102,6 +111,7 @@ export type Server = {
     +location: string,
     +name: string,
     +players: number,
+    +maxPlayers: number,
 };
 
 export type Servers = {
@@ -120,9 +130,10 @@ export type State = {
 // returns env vars which describe this server
 const getServersEnv = (): Env => ({
     hub: process.env.HUB,
-    location: process.env.LOCATION,
-    name: process.env.SERVER_NAME,
-    address: process.env.ADDRESS,
+    location: process.env.LOCATION || 'n/a',
+    name: process.env.SERVER_NAME || os.hostname(),
+    address: process.env.ADDRESS, // todo see if it makes sense to use npm public-ip
+    maxPlayers: process.env.MAX_PLAYERS || 16
 });
 
 // initial state for this module
@@ -163,7 +174,9 @@ export const reducer = (state: State, action: Action) => {
     switch (action.type) {
         case 'SERVERS_INITIALIZED': {
             // both on server and hub to initialize
-            const { data: { address, location, name, hub } } = action;
+            const {
+                data: { address, location, name, hub, maxPlayers }
+            } = action;
             return {
                 ...state,
                 servers: {
@@ -171,6 +184,7 @@ export const reducer = (state: State, action: Action) => {
                         address,
                         location,
                         name,
+                        maxPlayers,
                         players: 0,
                     }
                 },
@@ -280,7 +294,7 @@ export const hubServerRegisterRequests = (
         )
         .mergeMap(({ data: { address }}) =>
             httpFetch(`${address}/check`)
-                .map(({ players, address, location, name }) => ({
+                .map(({ maxPlayers, players, address, location, name }) => ({
                     type: 'SERVERS_HUB_CHECK_SUCCESS',
                     data: {
                         lastUpdated: now(),
@@ -288,6 +302,7 @@ export const hubServerRegisterRequests = (
                         location,
                         name,
                         players,
+                        maxPlayers,
                     }
                 }))
                 .catch(error => Observable.of({
