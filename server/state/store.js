@@ -36,7 +36,7 @@ modules
     .forEach(module => module.dispatchActions(store));
 
 const middleware = process.env.NODE_ENV === 'development' ?
-    applyMiddleware(createNodeLogger({}), createEpicMiddleware(epic)) :
+    applyMiddleware(/*createNodeLogger({}),*/ createEpicMiddleware(epic)) :
     applyMiddleware(createEpicMiddleware(epic));
 
 // setup store

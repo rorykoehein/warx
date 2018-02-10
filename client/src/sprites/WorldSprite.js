@@ -1,5 +1,6 @@
 import React from 'react';
 import styles from './styles';
+import { transparentize } from 'polished';
 
 export default class WorldSprite extends React.PureComponent {
     static defaultProps = {
@@ -21,7 +22,7 @@ export default class WorldSprite extends React.PureComponent {
             border: `.1rem solid ${styles.colorTertiary}`,
             overflow: 'hidden',
             boxShadow: '0px 0px 0px .5vw rgba(56, 201, 255, 0.2)',
-            background: styles.colorPrimary,
+            background: transparentize(0.5, styles.colorPrimary),
         };
 
         return (

@@ -6,6 +6,7 @@ export default {
     overlayIndex: 1000,
     background: '#00011c',
     colorPrimary: '#000228',
-    colorSecondary: '#fff',
-    colorTertiary: '#38c9ff',
+    colorSecondary: '#ff00e1',
+    colorTertiary: '#05E0FF',
+    colorFire: '#ff9700',
 }
