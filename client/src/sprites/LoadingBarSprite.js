@@ -8,7 +8,7 @@ export default styled.div`
     width: ${({ width = 24 }) => `${width}vw`};
     height: ${({ height = 1 }) => `${height}vw`};
     background: ${styles.colorPrimary};
-    border: .1rem solid ${styles.colorTertiary};
+    border: .1rem solid ${styles.colorPrimary};
     box-shadow: 0 0 0 .25vw rgba(56, 201, 255, 0.2);
 
     &::after {
