@@ -19,8 +19,7 @@ export default class WorldSprite extends React.PureComponent {
             top: '50%',
             transform: 'translate(-50%, -50%)',
             boxSizing: 'content-box',
-            border: `.1rem solid ${transparentize(.5, styles.colorTertiary)}`,
-            boxShadow: `0 0 0 .25vw ${transparentize(.8, styles.colorTertiary)}`,
+            border: `1px solid ${transparentize(.7, styles.colorTertiary)}`,
             overflow: 'hidden',
         };
 
