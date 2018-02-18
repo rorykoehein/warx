@@ -1,6 +1,6 @@
 import styled from 'styled-components';
 import styles from './styles';
-import { darken } from 'polished';
+import { darken, transparentize } from 'polished';
 
 export default styled.input`
     display: inline-block;
@@ -16,7 +16,7 @@ export default styled.input`
     border: 1px solid ${styles.colorTertiary};
     font-family: 'Roboto Condensed', sans-serif;
     text-transform: uppercase;
-    //box-shadow: 0 0 0 .8rem rgba(56, 201, 255, 0.4);
+    box-shadow: 0 0 0 .25vw ${transparentize(.8, styles.colorTertiary)};
     
     &::placeholder {
       color: grey;

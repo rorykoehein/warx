@@ -2,6 +2,7 @@
 
 import React, { PureComponent } from 'react';
 import { Transition } from 'react-transition-group';
+import styles from './styles';
 
 type Props = {
     x: number,
@@ -27,7 +28,7 @@ const getStyles = ({ x, y, direction, size, state }) => ({
     opacity: opacityStyles[state],
     transformOrigin: `center center`,
     borderRadius: '50%',
-    background: 'white',
+    background: styles.colorFire,
     width: `${size}px`,
     height: `${size}px`,
     transform: `translate(${x - size/2}px, ${y - size/2}px) ${transformStyles[state]}`,

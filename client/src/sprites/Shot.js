@@ -38,7 +38,7 @@ const transformStyles = (size) => ({
 const getStyles = ({ x, y, size, duration, direction, state }) => ({
     position: 'absolute',
     willChange: 'transform',
-    background: styles.colorTertiary,
+    background: 'white',
     width: `1px`,
     height: '200%',
     transformOrigin: `center 0px 0px`,

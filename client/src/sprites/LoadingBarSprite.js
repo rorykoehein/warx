@@ -5,11 +5,11 @@ export default styled.div`
     position: relative;
     display: inline-block;
     max-width: 100%;
-    width: ${({ width = 32 }) => `${width}rem`};
-    height: ${({ height = 1.6 }) => `${height}rem`};
+    width: ${({ width = 24 }) => `${width}vw`};
+    height: ${({ height = 1 }) => `${height}vw`};
     background: ${styles.colorPrimary};
-    border: .1rem solid ${styles.colorTertiary};
-    box-shadow: 0 0 0 .5vw rgba(56, 201, 255, 0.2);
+    border: .1rem solid ${styles.colorPrimary};
+    box-shadow: 0 0 0 .25vw rgba(56, 201, 255, 0.2);
 
     &::after {
       content: "";
