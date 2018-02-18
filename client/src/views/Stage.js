@@ -26,7 +26,6 @@ export default class Stage extends PureComponent<{}> {
                         <Link href="https://github.com/nextminds/warx">source and issues</Link>
                     </SourceLink>
                 </KeyBoardHandler>
-
             </StageSprite>
         )
     }
