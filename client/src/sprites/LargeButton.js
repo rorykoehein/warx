@@ -1,6 +1,6 @@
 import styled from 'styled-components';
 import styles from './styles';
-import { lighten } from 'polished';
+import { lighten, transparentize } from 'polished';
 
 export default styled.button`
     display: inline-block;
@@ -15,6 +15,7 @@ export default styled.button`
     font-family: 'Roboto Condensed', sans-serif;
     text-transform: uppercase;
     cursor: pointer;
+    box-shadow: 0 0 0 .25vw ${transparentize(.8, lighten(.5, styles.colorPrimary))};
     
     &:hover {
       background: ${lighten(.1, styles.colorPrimary)};
