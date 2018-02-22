@@ -7,3 +7,4 @@ export * as explosions from './module-explosions';
 export * as players from "./module-players";
 export * as network from "./module-network";
 export * as game from './module-game';
+export * as servers from './module-servers';
