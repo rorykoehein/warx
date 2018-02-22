@@ -9,6 +9,8 @@ import { fibonacci } from '../shared/helpers';
 import { getSignedInPlayers } from './module-game';
 import type { ActionInterface, Store } from  '../../client/src/types/framework';
 
+
+
 // there is one central hub and X servers, each server registers itself at the
 // central hub on startup. the hub 'checks' on the servers on interval, on every
 // check the hub receives the latest info for the server
@@ -186,6 +188,7 @@ export const reducer = (state: State, action: Action) => {
             const {
                 data: { address, location, name, hub, maxPlayers }
             } = action;
+            console.log('SERVERS_INITIALIZED', action);
             return {
                 ...state,
                 servers: {
@@ -276,34 +279,42 @@ export const gameStarts = (action$, store, serverEnv = getServersEnv()) =>
     action$
         .ofType('GAME_STARTED')
         .first()
-        .flatMap(() => ([{
+        .map(() => ({
             type: 'SERVERS_INITIALIZED',
             data: serverEnv
-        }, {
-            type: 'SERVERS_REGISTER_REQUEST',
-            data: serverEnv
-        }]));
+        }));
 
-const hubServerCheckTime = 10000; // todo check on the server every 30 seconds?
+const hubServerCheckTime = 30000; // todo check on the server every 30 seconds?
 
+let lastDate = Number(Date.now());
 // checkTime the interval at which the hubs should 'check' on the servers
 export const hubServerRegisterRequests = (
     action$: ActionInterface, // todo: special redux-observable Action$ type?
     store: Store,
-    checkTime: number = hubServerCheckTime,
+    checkTime: number = 30000,
     httpFetch: Function = fetch,
     timer: Function = Observable.timer,
     now: Function = () => Number(Date.now())
 ) =>
     action$
         .ofType('SERVERS_HUB_REGISTRATION_RECEIVED')
+        .filter(({ data: { address }}) => {
+            // only register server if we don't know about it yet
+            const currentServers = getServers(store.getState());
+            return !currentServers[address];
+        })
         .flatMap(action =>
             timer(0, checkTime)
-                .map(() => action)
+                .map(() => {
+                    console.log('timer diff', lastDate - new Date().getTime() / 1000);
+                    lastDate = new Date().getTime() / 1000;
+                    return action;
+                })
         )
-        .mergeMap(({ data: { address }}) =>
-            httpFetch(`${address}/check`)
-                .map(({ maxPlayers, numPlayers, address, location, name }) => ({
+        .mergeMap(({ data: { address }}) => {
+            console.log('mergeMap check', Number(Date.now()));
+            return httpFetch(`${address}/check`)
+                .map(({maxPlayers, numPlayers, address, location, name}) => ({
                     type: 'SERVERS_HUB_CHECK_SUCCESS',
                     data: {
                         lastUpdated: now(),
@@ -317,10 +328,10 @@ export const hubServerRegisterRequests = (
                 .catch(error => Observable.of({
                     type: 'SERVERS_HUB_CHECK_ERROR',
                     data: {
-                        address: error.options.url.replace('/check', '')
+                        address
                     }
-                }))
-        );
+                }));
+        });
 
 // when we know new information about servers, send this to the client
 // todo: optimize: only send when server data has changes
@@ -355,10 +366,11 @@ export const serverReregisterRequests = (
     action$
         .ofType('SERVERS_INITIALIZED')
         .filter(({ data: { hub, ...rest }}) => !store.getState().isHub && hub)
-        .flatMap(action => timer(0, checkTime * 2).mapTo(action))
+        .flatMap(action => timer(0, checkTime * 2).map(() => action))
         .filter(() => {
             const time = now();
             const state: State = store.getState();
+            console.log('going in for (re)register', checkTime, time, state.lastHubCheck);
             return checkTime * 2 < time - state.lastHubCheck;
         })
         .map(({ data }) => ({
