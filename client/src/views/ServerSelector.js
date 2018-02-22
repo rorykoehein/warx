@@ -36,15 +36,19 @@ const connector: Connector<{}, Props> = connect(
 class ServerSelector extends PureComponent<Props, State> {
 
     onClick = (server) => {
-        // todo can we do this nicer?
-        window.location.href = server.address;
+        const selectedServer = this.props.currentServer;
+        if(selectedServer !== server.address) {
+            // todo can we do this nicer?
+            // todo add ?name=usernameFromForm
+            window.location.href = server.address;
+        }
     };
 
     render() {
         const selectedServer = this.props.currentServer;
         return (
             <div>
-                <Label>Switch server</Label>
+                <Label>Servers</Label>
                 <ScrollBox height={8}>
                     <DataTable>
                         {this.props.servers.map(server => (
@@ -60,7 +64,7 @@ class ServerSelector extends PureComponent<Props, State> {
                                     {server.address}
                                 </DataTableCell>
                                 <DataTableCell right>
-                                    {server.players}/{server.maxPlayers}
+                                    {server.numPlayers}/{server.maxPlayers}
                                 </DataTableCell>
                             </DataTableRow>
                         ))}
