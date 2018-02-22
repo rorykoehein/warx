@@ -1,3 +1,4 @@
+import 'babel-polyfill';
 import http from 'http';
 import app  from '../app/app';
 import socket  from '../network-messages/socket'; // we must bypass the app layer to connect to socket to the http here

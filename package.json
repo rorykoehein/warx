@@ -4,13 +4,13 @@
   "main": "www/index.js",
   "license": "GPL-3.0+",
   "engines": {
-    "node": "6.9.4",
-    "yarn": "1.3.2"
+    "node": "8.9.4",
+    "yarn": "1.1.0"
   },
   "dependencies": {
-    "babel-cli": "^6.26.0",
+    "babel-cli": "6.26",
     "babel-plugin-transform-flow-strip-types": "^6.22.0",
-    "babel-preset-es2015": "^6.24.1",
+    "babel-polyfill": "^6.26.0",
     "babel-preset-stage-0": "^6.24.1",
     "body-parser": "^1.18.2",
     "dotenv": "^5.0.0",
@@ -37,6 +37,7 @@
   },
   "devDependencies": {
     "babel-jest": "^22.0.4",
+    "babel-preset-env": "^1.6.1",
     "babel-preset-react-app": "^3.1.0",
     "jest": "^22.0.4",
     "jest-junit": "^3.4.1",
