@@ -3,6 +3,10 @@
   "version": "1.0.0",
   "main": "www/index.js",
   "license": "GPL-3.0+",
+  "engines": {
+    "node": "6.9.4",
+    "yarn": "1.3.2"
+  },
   "dependencies": {
     "babel-cli": "^6.26.0",
     "babel-plugin-transform-flow-strip-types": "^6.22.0",

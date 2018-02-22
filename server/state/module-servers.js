@@ -313,6 +313,12 @@ export const hubServerRegisterRequests = (
         )
         .mergeMap(({ data: { address }}) => {
             console.log('mergeMap check', Number(Date.now()));
+
+            // todo: 1. check success is never received
+            // todo: 2. server keeps on registering with hub
+            // todo: 3. every time server registers with hub is starts another timer
+            // todo: 4. SERVERS_HUB_CHECK_SUCCESS is never fired, so server is never registered so filter at the top never happens
+
             return httpFetch(`${address}/check`)
                 .map(({maxPlayers, numPlayers, address, location, name}) => ({
                     type: 'SERVERS_HUB_CHECK_SUCCESS',
