@@ -6,6 +6,7 @@ import { Observable } from 'rxjs/Observable';
 import { createSelector } from 'reselect';
 import { fetch, post,  } from '../shared/http';
 import { fibonacci } from '../shared/helpers';
+import { getSignedInPlayers } from './module-game';
 import type { ActionInterface, Store } from  '../../client/src/types/framework';
 
 // there is one central hub and X servers, each server registers itself at the
@@ -25,6 +26,7 @@ export type InitializedAction = {
         name: string,
         hub: string,
         maxPlayers: number,
+        numBots: number,
         isTrusted: boolean,
     }
 };
@@ -38,6 +40,7 @@ export type RegisterRequestAction = {
         name: string,
         hub: string,
         maxPlayers: number,
+        numBots: number,
         isTrusted: boolean,
     }
 };
@@ -106,14 +109,17 @@ export type Env = {
     +location: ?string,
     +name: ?string,
     +address: ?string,
+    +maxPlayers: ?number,
+    +numBots: ?number,
 };
 
 export type Server = {
     +address: string,
     +location: string,
     +name: string,
-    +players: number,
     +maxPlayers: number,
+    +numPlayers: ?number,
+    +numBots: number,
 };
 
 export type Servers = {
@@ -135,7 +141,8 @@ const getServersEnv = (): Env => ({
     location: process.env.LOCATION || 'n/a',
     name: process.env.SERVER_NAME || os.hostname(),
     address: process.env.ADDRESS, // todo see if it makes sense to use npm public-ip
-    maxPlayers: process.env.MAX_PLAYERS || 16
+    maxPlayers: Number(process.env.MAX_PLAYERS) || 16,
+    numBots: Number(process.env.NUM_BOTS) || 0,
 });
 
 // initial state for this module
@@ -171,7 +178,7 @@ export const createServerCheckReceived = ({ time }: { time: number }):
     });
 
 // reducer
-
+// todo: update the hub's state as well, so it shows the correct amount of players, etc.
 export const reducer = (state: State, action: Action) => {
     switch (action.type) {
         case 'SERVERS_INITIALIZED': {
@@ -187,7 +194,7 @@ export const reducer = (state: State, action: Action) => {
                         location,
                         name,
                         maxPlayers,
-                        players: 0,
+                        numPlayers: 0,
                     }
                 },
                 currentServer: address,
@@ -296,14 +303,14 @@ export const hubServerRegisterRequests = (
         )
         .mergeMap(({ data: { address }}) =>
             httpFetch(`${address}/check`)
-                .map(({ maxPlayers, players, address, location, name }) => ({
+                .map(({ maxPlayers, numPlayers, address, location, name }) => ({
                     type: 'SERVERS_HUB_CHECK_SUCCESS',
                     data: {
                         lastUpdated: now(),
                         address,
                         location,
                         name,
-                        players,
+                        numPlayers,
                         maxPlayers,
                     }
                 }))
@@ -316,13 +323,15 @@ export const hubServerRegisterRequests = (
         );
 
 // when we know new information about servers, send this to the client
-// todo: only send when server data has changes,
-// todo: only send to clients that are listening?
+// todo: optimize: only send when server data has changes
+// todo: optimize: only send to clients that are on server screen
 export const sendServersToClients = (action$: ActionInterface, store: Store) =>
     action$
         .filter(({ type }) =>
+            type === 'CONNECTION_REQUESTED' ||
             type === 'SERVERS_HUB_CHECK_SUCCESS' ||
-            type === 'SERVERS_HUB_REGISTRATION_RECEIVED'
+            type === 'SERVERS_HUB_REGISTRATION_RECEIVED' ||
+            type === 'SERVERS_HUB_CHECK_ERROR'
         )
         .map(() => ({
             type: 'SERVERS_CHANGED',
@@ -389,12 +398,40 @@ export const serverRegisterRequests = (
         );
 
 
+export const updateHub = (
+    action$,
+    store: Store,
+    now: Function = () => Number(Date.now())
+) =>
+    action$
+        .filter(({ type }) =>
+            type === 'DISCONNECTION_REQUESTED' ||
+            type === 'PLAYER_JOINED'
+        )
+        .map(() => getCurrentServer(store.getState()))
+        .filter(currentServer => currentServer)
+        .map(currentServer => {
+            return {
+                type: 'SERVERS_HUB_CHECK_SUCCESS',
+                data: {
+                    lastUpdated: now(),
+                    address: currentServer.address,
+                    location: currentServer.location,
+                    name: currentServer.name,
+                    numPlayers: currentServer.numPlayers,
+                    maxPlayers: currentServer.maxPlayers,
+                }
+            }
+        });
+
+
 export const epic = combineEpics(
     gameStarts,
     hubServerRegisterRequests,
     serverRegisterRequests,
     serverReregisterRequests,
     sendServersToClients,
+    updateHub,
 );
 
 // selectors
@@ -403,7 +440,7 @@ export const epic = combineEpics(
 export const getCurrentServer = (state: State): ?Server => {
     return state.currentServer ? {
         ...state.servers[state.currentServer],
-        players: Object.keys(state.players).length,
+        numPlayers: getSignedInPlayers(state).length,
     } : null;
 };
 

@@ -4,9 +4,9 @@ import 'rxjs';
 import { combineEpics } from 'redux-observable';
 import rules from '../shared/default-rules';
 import { getRandomPosition, replacePlayerProps } from "./helpers";
-
+import { toList } from '../shared/helpers';
 import type { Store } from '../../client/src/types/framework';
-import type { Players, Player, PlayerId } from '../../client/src/types/game';
+import type { Players, Player, PlayerId, PlayerList } from '../../client/src/types/game';
 
 // this module describes the core behaviors of the game: players connect, join,
 // spawn, latency, etc.
@@ -44,6 +44,7 @@ export const reducer = (state, action) => {
                         alive: false,
                         frags: 0,
                         deaths: 0,
+                        isSignedIn: false,
                     }
                 },
                 ...rest,
@@ -60,6 +61,7 @@ export const reducer = (state, action) => {
                     [`${playerId}`]: {
                         ...player,
                         name: playerName.trim().substring(0, 20),
+                        isSignedIn: true,
                     }
                 },
                 ...rest,
@@ -111,6 +113,8 @@ export const getRules = state => state.rules;
 export const getPlayers = (state): Players => state.players;
 export const getPlayerById = (state, id: ?PlayerId): ?Player =>
     (id !== null && id !== undefined) ? getPlayers(state)[id] : null;
+export const getSignedInPlayers = (state): PlayerList =>
+    toList(state.players).filter(player => player.isSignedIn);
 
 // epics
 export const spawnJoins = (action$, store: Store) =>

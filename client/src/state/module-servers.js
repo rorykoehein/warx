@@ -8,7 +8,7 @@ export type Server = {
     +address: string,
     +location: string,
     +name: string,
-    +players: number,
+    +numPlayers: number,
     +maxPlayers: number,
 };
 
