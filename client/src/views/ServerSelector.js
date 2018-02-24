@@ -66,6 +66,9 @@ class ServerSelector extends PureComponent<Props, State> {
                                 <DataTableCell right>
                                     {server.numPlayers}/{server.maxPlayers}
                                 </DataTableCell>
+                                <DataTableCell right>
+                                    {server.numBots} bots
+                                </DataTableCell>
                             </DataTableRow>
                         ))}
                     </DataTable>

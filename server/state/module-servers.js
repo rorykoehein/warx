@@ -9,8 +9,6 @@ import { fibonacci } from '../shared/helpers';
 import { getSignedInPlayers } from './module-game';
 import type { ActionInterface, Store } from  '../../client/src/types/framework';
 
-
-
 // there is one central hub and X servers, each server registers itself at the
 // central hub on startup. the hub 'checks' on the servers on interval, on every
 // check the hub receives the latest info for the server
@@ -186,7 +184,7 @@ export const reducer = (state: State, action: Action) => {
         case 'SERVERS_INITIALIZED': {
             // both on server and hub to initialize
             const {
-                data: { address, location, name, hub, maxPlayers }
+                data: { address, location, name, hub, maxPlayers, numBots }
             } = action;
             console.log('SERVERS_INITIALIZED', action);
             return {
@@ -197,6 +195,7 @@ export const reducer = (state: State, action: Action) => {
                         location,
                         name,
                         maxPlayers,
+                        numBots,
                         numPlayers: 0,
                     }
                 },
@@ -286,7 +285,6 @@ export const gameStarts = (action$, store, serverEnv = getServersEnv()) =>
 
 const hubServerCheckTime = 30000; // todo check on the server every 30 seconds?
 
-let lastDate = Number(Date.now());
 // checkTime the interval at which the hubs should 'check' on the servers
 export const hubServerRegisterRequests = (
     action$: ActionInterface, // todo: special redux-observable Action$ type?
@@ -305,22 +303,11 @@ export const hubServerRegisterRequests = (
         })
         .flatMap(action =>
             timer(0, checkTime)
-                .map(() => {
-                    console.log('timer diff', lastDate - new Date().getTime() / 1000);
-                    lastDate = new Date().getTime() / 1000;
-                    return action;
-                })
+                .map(() => action)
         )
         .mergeMap(({ data: { address }}) => {
-            console.log('mergeMap check', Number(Date.now()));
-
-            // todo: 1. check success is never received
-            // todo: 2. server keeps on registering with hub
-            // todo: 3. every time server registers with hub is starts another timer
-            // todo: 4. SERVERS_HUB_CHECK_SUCCESS is never fired, so server is never registered so filter at the top never happens
-
             return httpFetch(`${address}/check`)
-                .map(({maxPlayers, numPlayers, address, location, name}) => ({
+                .map(({ maxPlayers, numPlayers, address, location, name, numBots }) => ({
                     type: 'SERVERS_HUB_CHECK_SUCCESS',
                     data: {
                         lastUpdated: now(),
@@ -329,6 +316,7 @@ export const hubServerRegisterRequests = (
                         name,
                         numPlayers,
                         maxPlayers,
+                        numBots,
                     }
                 }))
                 .catch(error => Observable.of({
@@ -376,7 +364,6 @@ export const serverReregisterRequests = (
         .filter(() => {
             const time = now();
             const state: State = store.getState();
-            console.log('going in for (re)register', checkTime, time, state.lastHubCheck);
             return checkTime * 2 < time - state.lastHubCheck;
         })
         .map(({ data }) => ({
@@ -438,6 +425,7 @@ export const updateHub = (
                     name: currentServer.name,
                     numPlayers: currentServer.numPlayers,
                     maxPlayers: currentServer.maxPlayers,
+                    numBots: currentServer.numBots,
                 }
             }
         });
