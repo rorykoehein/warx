@@ -44,23 +44,55 @@ branch and master. Tests must pass on PRs before merging.
 
 ## Build and deploy
 
-This is still a bit awkward with some .sh files and manual steps.
+This is still a bit awkward with some .sh files, because we need to copy some 
+client files into the server, etc.
 
-First create a `dist` folder in the root.
+If you run your own server, you can choose to let this server register itself
+with a www.warx.io. Your server will then appear on all other servers that 
+registered themselves with this 'hub'. 
 
-### Heroku
-1. initialize heroku in the dist folder
+### Build
+Running `./build.sh` will create a production ready version in the `./dist` 
+folder. This will build both the server and client. To run it, run `yarn start`
+from the `./dist` folder.
 
-```
-$ cd dist/
-$ git init
-$ heroku git:remote -a {my-heroku-project}
-```
+### Environment vars
+When running the server you can set these env vars:
 
-2. run `./build.sh` and then `./heroku.sh` from the root project folder
+#### HUB
+The central hub to register your server with, your server will appear on all 
+other servers registered this this hun. Default: http://www.warx.io
 
-### Now.sh
-Run `./build.sh` an then `now` from the dist folder
+#### ADDRESS
+Your server's http(s) address, this is where users will be redirected to if they
+choose to join your server
+
+#### SERVER_NAME
+The name of your game server that will appear on all server lists
+
+#### LOCATION
+Geographical location, so players can join a server close to them.
+
+#### NUM_BOTS
+Number of bots to start the server with
+
+#### MAX_PLAYERS
+Maximum number of players that can join your server. More than 10 doesn't run 
+smoothly at the moment.
+
+*More env vars will be added related to rules*
+
+### Deploy to Heroku
+1. Create a heroku app and []add the needed env vars](https://devcenter.heroku.com/articles/config-vars) to your app
+2. Build using `./build.sh` from the root project folder
+2. Run `./heroku.sh` from the root project folder
+3. Fill in your app name in the prompt
+
+### Deploy to Now.sh
+1. Build using `./build.sh` to build to `./dist`
+2. Create an [.env.production](https://zeit.co/docs/features/env-and-secrets#--dotenv-option) file and fill in the needed env vars
+3. From the dist folder `now --dotenv=./.env.production`
+4. Set your now alias to the server name you chose in the env vars
 
 ## Modules in state
 The state folder is where the business logic lives. This is the largest layer and
