@@ -7,6 +7,7 @@ import { getRandomPosition, replacePlayerProps } from "./helpers";
 import { toList } from '../shared/helpers';
 import type { Store } from '../../client/src/types/framework';
 import type { Players, Player, PlayerId, PlayerList } from '../../client/src/types/game';
+import type { ActionInterface } from './types';
 
 // this module describes the core behaviors of the game: players connect, join,
 // spawn, latency, etc.
@@ -68,6 +69,23 @@ export const reducer = (state, action) => {
             };
         }
 
+        case 'PLAYER_SIGN_OUT_REQUEST': {
+            const { players, ...rest } = state;
+            const { data: { playerId } } = action;
+            const player = players[playerId];
+            return {
+                players: {
+                    ...players,
+                    [`${playerId}`]: {
+                        ...player,
+                        isSignedIn: false,
+                        alive: false,
+                    }
+                },
+                ...rest,
+            };
+        }
+
         case 'SPAWN': {
             const { players, ...rest } = state;
             const { data: { playerId, x, y } } = action;
@@ -117,7 +135,7 @@ export const getSignedInPlayers = (state): PlayerList =>
     toList(state.players).filter(player => player.isSignedIn);
 
 // epics
-export const spawnJoins = (action$, store: Store) =>
+export const spawnJoins = (action$: ActionInterface, store: Store) =>
     action$
         .ofType('JOIN_REQUESTED')
         .map(({ data: { playerId } }) => {
@@ -125,7 +143,7 @@ export const spawnJoins = (action$, store: Store) =>
             return spawn({ playerId, worldWidth, worldHeight, moveDistance });
         });
 
-export const broadcastJoins = (action$, store: Store) =>
+export const broadcastJoins = (action$: ActionInterface, store: Store) =>
     action$
         .ofType('JOIN_REQUESTED')
         .map(({ data: { playerId, playerName } }) => {
@@ -141,7 +159,23 @@ export const broadcastJoins = (action$, store: Store) =>
             };
         });
 
+export const broadcastSignOuts = (action$: ActionInterface, store: Store) =>
+    action$
+        .ofType('PLAYER_SIGN_OUT_REQUEST')
+        .map(({ data: { playerId }}) => store.getState().players[playerId])
+        .filter(player => player)
+        .map(player => ({
+            type: 'PLAYER_SIGNED_OUT',
+            origin: 'server',
+            sendToClient: true,
+            toAll: true,
+            data: {
+                player,
+            }
+        }));
+
 export const epic = combineEpics(
     broadcastJoins,
     spawnJoins,
+    broadcastSignOuts,
 );

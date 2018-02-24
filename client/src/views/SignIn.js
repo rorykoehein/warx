@@ -72,6 +72,9 @@ class SignIn extends PureComponent<Props, State> {
                             <KeyInstruction instruction="Toggle highscores">
                                 <Key>H</Key>
                             </KeyInstruction>
+                            <KeyInstruction instruction="Quit game">
+                                <Key>esc</Key>
+                            </KeyInstruction>
                         </KeyInstructions>
                         <SignInForm onSubmit={this.onSubmit}>
                             <LargeInput

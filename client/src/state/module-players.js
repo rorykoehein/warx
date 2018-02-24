@@ -1,6 +1,7 @@
 // @flow
 
 import { createSelector } from 'reselect';
+import { combineEpics } from 'redux-observable';
 import type { State, Player, PlayerId, Players, PlayerList } from '../types/game';
 import { toList } from '../shared/helpers';
 
@@ -15,6 +16,22 @@ type SelfJoinAction = {
 
 type PlayerJoinAction = {
     +type: 'PLAYER_JOINED',
+    +origin: 'server',
+    +data: {
+        +player: Player
+    }
+};
+
+type PlayerSignOutRequestAction = {
+    +type: 'PLAYER_SIGN_OUT_REQUEST',
+    +origin: 'server',
+    +data: {
+        +player: Player
+    }
+};
+
+type PlayerSignedOutAction = {
+    +type: 'PLAYER_SIGNED_OUT',
     +origin: 'server',
     +data: {
         +player: Player
@@ -47,7 +64,8 @@ type SpawnAction = {
     }
 };
 
-type Action = SelfJoinAction | PlayerJoinAction | PlayerLeftAction | PlayerUpdatedAction | SpawnAction;
+type Action = SelfJoinAction | PlayerJoinAction | PlayerSignedOutAction |
+    PlayerLeftAction | PlayerUpdatedAction | SpawnAction;
 
 // the part of the state this module is responsible for
 export type PlayersState = {
@@ -81,6 +99,7 @@ export const selfJoin = ({ playerName }: { playerName: string }): SelfJoinAction
 export const reducer = (state: PlayersState, action: Action): PlayersState => {
     const { players, currentPlayerId } = state;
     switch (action.type) {
+        // when a player signs in
         case 'PLAYER_JOINED': {
             const { data: { player } } = action;
             return {
@@ -93,6 +112,25 @@ export const reducer = (state: PlayersState, action: Action): PlayersState => {
             };
         }
 
+        // when a player signs out (back to sign in screen)
+        case 'PLAYER_SIGNED_OUT': {
+            const { data: { player } } = action;
+            const isCurrentPlayer = player.id === currentPlayerId;
+            return {
+                ...state,
+                isSignedIn: isCurrentPlayer ? false : state.isSignedIn,
+                players: {
+                    ...players,
+                    [player.id]: {
+                        ...player,
+                        alive: false,
+                        isSignedIn: false,
+                    },
+                }
+            };
+        }
+
+        // when a player leaves the server (remove the player)
         case 'PLAYER_LEFT': {
             const { data: { playerId } } = action;
             const { [playerId]: leftPlayer, ...restPlayers } = players;
@@ -147,4 +185,18 @@ export const getCurrentPlayer = (state: State): ?Player => getPlayerById(state, 
 export const getAlivePlayers = createSelector(
     getPlayers,
     (players: Players): PlayerList => toList(players).filter(player => player.alive)
+);
+
+const keyDownEsc = (action$, store) => action$
+    .ofType('KEY_DOWN')
+    .filter(({ data: { key } }) => console.log('key', key) || key === 'Escape')
+    .map(({ data: { key: escKey } }) => ({
+        type: 'PLAYER_SIGN_OUT_REQUEST',
+        sendToServer: true,
+        origin: 'client',
+        data: {}
+    }));
+
+export const epic = combineEpics(
+    keyDownEsc,
 );
