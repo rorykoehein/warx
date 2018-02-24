@@ -15,6 +15,54 @@ goal for this, so any improvements are welcome in PRs, also game-play.
 Feel free to fork and run your own instances, but please note this
 project is under the [GNU General Public License v3.0](LICENSE).
 
+## Build and deploy
+
+This is still a bit awkward with some .sh files, because we need to copy some 
+client files into the server, etc.
+
+If you run your own server, you can choose to let this server register itself
+with a www.warx.io. Your server will then appear on all other servers that 
+registered themselves with this 'hub'. 
+
+### Build
+Running `./build.sh` will create a production ready version in the `./dist` 
+folder. This will build both the server and client. To run it, run `yarn start`
+from the `./dist` folder.
+
+### Environment vars
+When running the server you can set these env vars:
+
+| ENV Variable | Description |
+| --- | --- |
+| HUB | The central hub to register your server with, your server will appear on all other servers registered this this hun. Default: http://www.warx.io |
+| ADDRESS | Your server's http(s) address, this is where players will be redirected to if they choose to join your server |
+| SERVER_NAME | The name of your game server that will appear on all server lists |
+| LOCATION | Geographical location, so players can join a server close to them. |
+| NUM_BOTS | Number of bots to start the server with. |
+| MAX_PLAYERS | Maximum number of players that can join your server. More than 10 doesn't run smoothly at the moment. |
+
+*More env vars will be added related to rules*
+
+### Deploy to Heroku
+1. Create a heroku app and []add the needed env vars](https://devcenter.heroku.com/articles/config-vars) to your app
+2. Build using `./build.sh` from the root project folder
+2. Run `./heroku.sh` from the root project folder
+3. Fill in your app name in the prompt
+
+### Deploy to Now.sh
+1. Build using `./build.sh` to build to `./dist`
+2. Create an [.env.production](https://zeit.co/docs/features/env-and-secrets#--dotenv-option) file and fill in the needed env vars
+3. From the dist folder `now --dotenv=./.env.production`
+4. Set your now alias to the server name you chose in the env vars
+
+## Tests
+Jest is used for unit tests. Run `yarn test` in the root dir to run the
+server tests or in the client dir to run the client tests.
+
+### CI
+CircleCI is configured to run the tests in this repository on every
+branch and master. Tests must pass on PRs before merging.
+
 ## Server and client
 This project is split up in a Node Express server and a React.js client.
 The server lives in the root dir, with the source in the `server` dir.
@@ -33,66 +81,6 @@ Each of these should be replacable with out touching other layers much. Ideally 
 5. messages-actions (network-state-glue: translates network messages to redux actions vice versa)
 6. game state (redux + redux-observable, possibly mobx or redux + sagas)
 7. data sources (not yet implemented)
-
-## Tests
-Jest is used for unit tests. Run `yarn test` in the root dir to run the
-server tests or in the client dir to run the client tests.
-
-### CI
-CircleCI is configured to run the tests in this repository on every
-branch and master. Tests must pass on PRs before merging.
-
-## Build and deploy
-
-This is still a bit awkward with some .sh files, because we need to copy some 
-client files into the server, etc.
-
-If you run your own server, you can choose to let this server register itself
-with a www.warx.io. Your server will then appear on all other servers that 
-registered themselves with this 'hub'. 
-
-### Build
-Running `./build.sh` will create a production ready version in the `./dist` 
-folder. This will build both the server and client. To run it, run `yarn start`
-from the `./dist` folder.
-
-### Environment vars
-When running the server you can set these env vars:
-
-#### HUB
-The central hub to register your server with, your server will appear on all 
-other servers registered this this hun. Default: http://www.warx.io
-
-#### ADDRESS
-Your server's http(s) address, this is where users will be redirected to if they
-choose to join your server
-
-#### SERVER_NAME
-The name of your game server that will appear on all server lists
-
-#### LOCATION
-Geographical location, so players can join a server close to them.
-
-#### NUM_BOTS
-Number of bots to start the server with
-
-#### MAX_PLAYERS
-Maximum number of players that can join your server. More than 10 doesn't run 
-smoothly at the moment.
-
-*More env vars will be added related to rules*
-
-### Deploy to Heroku
-1. Create a heroku app and []add the needed env vars](https://devcenter.heroku.com/articles/config-vars) to your app
-2. Build using `./build.sh` from the root project folder
-2. Run `./heroku.sh` from the root project folder
-3. Fill in your app name in the prompt
-
-### Deploy to Now.sh
-1. Build using `./build.sh` to build to `./dist`
-2. Create an [.env.production](https://zeit.co/docs/features/env-and-secrets#--dotenv-option) file and fill in the needed env vars
-3. From the dist folder `now --dotenv=./.env.production`
-4. Set your now alias to the server name you chose in the env vars
 
 ## Modules in state
 The state folder is where the business logic lives. This is the largest layer and
