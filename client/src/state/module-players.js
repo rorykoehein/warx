@@ -189,7 +189,7 @@ export const getAlivePlayers = createSelector(
 
 const keyDownEsc = (action$, store) => action$
     .ofType('KEY_DOWN')
-    .filter(({ data: { key } }) => console.log('key', key) || key === 'Escape')
+    .filter(({ data: { key } }) => key === 'Escape')
     .map(({ data: { key: escKey } }) => ({
         type: 'PLAYER_SIGN_OUT_REQUEST',
         sendToServer: true,

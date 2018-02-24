@@ -118,7 +118,7 @@ export type Server = {
     +location: string,
     +name: string,
     +maxPlayers: number,
-    +numPlayers: ?number,
+    +numPlayers: number, // number of _signed in_ players
     +numBots: number,
 };
 
@@ -141,7 +141,7 @@ const getServersEnv = (): Env => ({
     location: process.env.LOCATION || 'n/a',
     name: process.env.SERVER_NAME || os.hostname(),
     address: process.env.ADDRESS, // todo see if it makes sense to use npm public-ip
-    maxPlayers: Number(process.env.MAX_PLAYERS) || 16,
+    maxPlayers: Number(process.env.MAX_PLAYERS) || 8,
     numBots: Number(process.env.NUM_BOTS) || 0,
 });
 
@@ -186,7 +186,6 @@ export const reducer = (state: State, action: Action) => {
             const {
                 data: { address, location, name, hub, maxPlayers, numBots }
             } = action;
-            console.log('SERVERS_INITIALIZED', action);
             return {
                 ...state,
                 servers: {
@@ -334,9 +333,11 @@ export const sendServersToClients = (action$: ActionInterface, store: Store) =>
     action$
         .filter(({ type }) =>
             type === 'CONNECTION_REQUESTED' ||
+            type === 'DISCONNECTION_REQUESTED' ||
             type === 'SERVERS_HUB_CHECK_SUCCESS' ||
             type === 'SERVERS_HUB_REGISTRATION_RECEIVED' ||
-            type === 'SERVERS_HUB_CHECK_ERROR'
+            type === 'SERVERS_HUB_CHECK_ERROR' ||
+            type === 'PLAYER_SIGNED_OUT'
         )
         .map(() => ({
             type: 'SERVERS_CHANGED',
@@ -411,7 +412,8 @@ export const updateHub = (
     action$
         .filter(({ type }) =>
             type === 'DISCONNECTION_REQUESTED' ||
-            type === 'PLAYER_JOINED'
+            type === 'PLAYER_JOINED' ||
+            type === 'PLAYER_SIGNED_OUT'
         )
         .map(() => getCurrentServer(store.getState()))
         .filter(currentServer => currentServer)

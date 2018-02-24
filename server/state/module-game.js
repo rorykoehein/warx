@@ -3,14 +3,25 @@
 import 'rxjs';
 import { combineEpics } from 'redux-observable';
 import rules from '../shared/default-rules';
-import { getRandomPosition, replacePlayerProps } from "./helpers";
 import { toList } from '../shared/helpers';
+import { getRandomPosition, replacePlayerProps } from "./helpers";
+import { getCurrentServer } from './module-servers';
 import type { Store } from '../../client/src/types/framework';
 import type { Players, Player, PlayerId, PlayerList } from '../../client/src/types/game';
 import type { ActionInterface } from './types';
 
 // this module describes the core behaviors of the game: players connect, join,
 // spawn, latency, etc.
+
+const playerIsSignedIn = (state, playerId) => {
+    const player = getPlayerById(state, playerId);
+    return player && player.isSignedIn;
+};
+
+const canJoin = state => {
+    const server = getCurrentServer(state);
+    return server && server.maxPlayers > getSignedInPlayers(state).length;
+};
 
 export const initialState = {
     players: {},
@@ -56,17 +67,18 @@ export const reducer = (state, action) => {
             const { players, ...rest } = state;
             const { data: { playerId, playerName } } = action;
             const player = players[playerId];
-            return {
-                players: {
-                    ...players,
-                    [`${playerId}`]: {
-                        ...player,
-                        name: playerName.trim().substring(0, 20),
-                        isSignedIn: true,
-                    }
-                },
-                ...rest,
-            };
+            return canJoin(state)
+                ? {
+                    players: {
+                        ...players,
+                        [`${playerId}`]: {
+                            ...player,
+                            name: playerName.trim().substring(0, 20),
+                            isSignedIn: true,
+                        }
+                    },
+                    ...rest,
+                } : state;
         }
 
         case 'PLAYER_SIGN_OUT_REQUEST': {
@@ -138,6 +150,7 @@ export const getSignedInPlayers = (state): PlayerList =>
 export const spawnJoins = (action$: ActionInterface, store: Store) =>
     action$
         .ofType('JOIN_REQUESTED')
+        .filter(({ data: { playerId } }) => playerIsSignedIn(store.getState(), playerId))
         .map(({ data: { playerId } }) => {
             const { rules: { worldWidth, worldHeight, moveDistance }} = store.getState();
             return spawn({ playerId, worldWidth, worldHeight, moveDistance });
@@ -146,6 +159,7 @@ export const spawnJoins = (action$: ActionInterface, store: Store) =>
 export const broadcastJoins = (action$: ActionInterface, store: Store) =>
     action$
         .ofType('JOIN_REQUESTED')
+        .filter(({ data: { playerId } }) => playerIsSignedIn(store.getState(), playerId))
         .map(({ data: { playerId, playerName } }) => {
             const player = store.getState().players[playerId];
             return {
