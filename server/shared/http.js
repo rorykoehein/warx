@@ -13,6 +13,6 @@ export const post = (url, data) =>
     Observable.create(observer => {
         request({ url, method: 'POST', json: data })
             .then(data => observer.next(data))
-            .catch(error => observer.error(error, url, data))
+            .catch(error => console.log('SERVERS_HUB_CHECK_ERROR?') || observer.error(error, url, data))
             .finally(() => observer.complete())
     });

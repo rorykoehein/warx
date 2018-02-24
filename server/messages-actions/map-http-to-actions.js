@@ -32,7 +32,7 @@ export default (app, env = getEnv()) => {
         });
     } else {
         // the central hub will check on servers by calling this
-        app.get('/check', (req, res) => {
+        app.post('/check', (req, res) => {
             const state = store.getState();
             const server = getCurrentServer(state);
             if(!server) {
@@ -43,6 +43,7 @@ export default (app, env = getEnv()) => {
             res.json(server);
             store.dispatch(createServerCheckReceived({
                 time: Number(Date.now()),
+                servers: req.body.servers,
             }));
         });
     }

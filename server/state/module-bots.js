@@ -343,3 +343,6 @@ export const epic = combineEpics(
     setTargets,
     botShots,
 );
+
+// selectors
+export const getNumBots = (state: State): number => Object.keys(state.bots).length;

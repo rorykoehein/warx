@@ -4,8 +4,9 @@ import os from 'os';
 import { combineEpics } from 'redux-observable';
 import { Observable } from 'rxjs/Observable';
 import { createSelector } from 'reselect';
-import { fetch, post,  } from '../shared/http';
+import { post,  } from '../shared/http';
 import { fibonacci } from '../shared/helpers';
+import { getNumBots } from './module-bots';
 import { getSignedInPlayers } from './module-game';
 import type { ActionInterface, Store } from  '../../client/src/types/framework';
 
@@ -86,6 +87,7 @@ export type CheckReceivedAction = {
     +origin: 'server',
     +data: {
         +time: number,
+        +servers: Servers,
     },
 };
 
@@ -167,13 +169,14 @@ export const createHubRegistrationReceived = ({ address }: { address: string }):
         },
     });
 
-// hub: when a server requests to register on this hub
-export const createServerCheckReceived = ({ time }: { time: number }):
+// server: when a server receives the check from the hub
+export const createServerCheckReceived = ({ time, servers }: { time: number, servers: Servers }):
     CheckReceivedAction => ({
         type: 'SERVERS_CHECK_RECEIVED',
         origin: 'server',
         data: {
-            time
+            time,
+            servers,
         },
     });
 
@@ -233,9 +236,19 @@ export const reducer = (state: State, action: Action) => {
 
         case 'SERVERS_CHECK_RECEIVED': {
             // on the server when the hub has checked up with us
-            const { data: { time } } = action;
+            const { data: { time, servers } } = action;
+            const currentServer = getCurrentServer(state);
+            const address = state.currentServer;
+            const mergeCurrentServers = address && currentServer ? {
+                [address]: currentServer,
+                ...servers,
+            } : {};
             return {
                 ...state,
+                servers: {
+                    ...mergeCurrentServers,
+                    ...servers,
+                },
                 lastHubCheck: time,
             };
         }
@@ -288,8 +301,8 @@ const hubServerCheckTime = 30000; // todo check on the server every 30 seconds?
 export const hubServerRegisterRequests = (
     action$: ActionInterface, // todo: special redux-observable Action$ type?
     store: Store,
-    checkTime: number = 30000,
-    httpFetch: Function = fetch,
+    checkTime: number = hubServerCheckTime,
+    httpPost: Function = post,
     timer: Function = Observable.timer,
     now: Function = () => Number(Date.now())
 ) =>
@@ -305,7 +318,10 @@ export const hubServerRegisterRequests = (
                 .map(() => action)
         )
         .mergeMap(({ data: { address }}) => {
-            return httpFetch(`${address}/check`)
+            const currentServers = getServers(store.getState());
+            // todo: this means anyone can post servers to check,
+            // todo: we want the server to GET the list servers from the hub
+            return httpPost(`${address}/check`, { servers: currentServers })
                 .map(({ maxPlayers, numPlayers, address, location, name, numBots }) => ({
                     type: 'SERVERS_HUB_CHECK_SUCCESS',
                     data: {
@@ -320,6 +336,7 @@ export const hubServerRegisterRequests = (
                 }))
                 .catch(error => Observable.of({
                     type: 'SERVERS_HUB_CHECK_ERROR',
+                    error: true,
                     data: {
                         address
                     }
@@ -449,6 +466,7 @@ export const getCurrentServer = (state: State): ?Server => {
     return state.currentServer ? {
         ...state.servers[state.currentServer],
         numPlayers: getSignedInPlayers(state).length,
+        numBots: getNumBots(state),
     } : null;
 };
 
