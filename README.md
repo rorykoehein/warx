@@ -44,7 +44,7 @@ When running the server you can set these env vars:
 *More env vars will be added related to rules*
 
 ### Deploy to Heroku
-1. Create a heroku app and []add the needed env vars](https://devcenter.heroku.com/articles/config-vars) to your app
+1. Create a heroku app and [add the needed env vars](https://devcenter.heroku.com/articles/config-vars) to your app
 2. Build using `./build.sh` from the root project folder
 2. Run `./heroku.sh` from the root project folder
 3. Fill in your app name in the prompt
