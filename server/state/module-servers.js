@@ -184,9 +184,8 @@ export const reducer = (state: State, action: Action) => {
     switch (action.type) {
         case 'SERVERS_INITIALIZED': {
             // both on server and hub to initialize
-            const {
-                data: { address, location, name, hub, maxPlayers, numPlayers = 0, numBots }
-            } = action;
+            const { data: { address, location, name, hub, maxPlayers,
+                numPlayers = 0, numBots } } = action;
             return {
                 ...state,
                 servers: {
@@ -283,11 +282,11 @@ export const gameStarts = (action$, store, serverEnv = getServersEnv()) =>
             data: serverEnv
         }));
 
-const hubServerCheckTime = 5000; // todo check on the server every 30 seconds?
+const hubServerCheckTime = 20000;
 
 // checkTime the interval at which the hubs should 'check' on the servers
 export const hubServerRegisterRequests = (
-    action$: ActionInterface, // todo: special redux-observable Action$ type?
+    action$: ActionInterface,
     store: Store,
     checkTime: number = hubServerCheckTime,
     httpFetch: Function = fetch,
@@ -368,8 +367,6 @@ export const serverReregisterRequests = (
             data: data,
         }));
 
-
-// todo: what if the hub stops 'checking' on us? re-register after not
 // receiving a check for x seconds?
 export const serverRegisterRequests = (
     // $FlowFixMe
@@ -441,7 +438,6 @@ export const epic = combineEpics(
 
 // selectors
 
-// todo createSelector and get players from players module
 export const getCurrentServer = (state: State): ?Server => {
     return state.currentServer ? {
         ...state.servers[state.currentServer],
