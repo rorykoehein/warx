@@ -4,8 +4,7 @@ import os from 'os';
 import { combineEpics } from 'redux-observable';
 import { Observable } from 'rxjs/Observable';
 import { createSelector } from 'reselect';
-import { post,  } from '../shared/http';
-import { fibonacci } from '../shared/helpers';
+import { post, fetch } from '../shared/http';
 import { getNumBots } from './module-bots';
 import { getSignedInPlayers } from './module-game';
 import type { ActionInterface, Store } from  '../../client/src/types/framework';
@@ -27,8 +26,9 @@ export type InitializedAction = {
         name: string,
         hub: string,
         maxPlayers: number,
+        numPlayers: number,
         numBots: number,
-        isTrusted: boolean,
+        isTrusted: ?boolean,
     }
 };
 
@@ -87,7 +87,6 @@ export type CheckReceivedAction = {
     +origin: 'server',
     +data: {
         +time: number,
-        +servers: Servers,
     },
 };
 
@@ -176,7 +175,6 @@ export const createServerCheckReceived = ({ time, servers }: { time: number, ser
         origin: 'server',
         data: {
             time,
-            servers,
         },
     });
 
@@ -187,7 +185,7 @@ export const reducer = (state: State, action: Action) => {
         case 'SERVERS_INITIALIZED': {
             // both on server and hub to initialize
             const {
-                data: { address, location, name, hub, maxPlayers, numBots }
+                data: { address, location, name, hub, maxPlayers, numPlayers = 0, numBots }
             } = action;
             return {
                 ...state,
@@ -198,7 +196,7 @@ export const reducer = (state: State, action: Action) => {
                         name,
                         maxPlayers,
                         numBots,
-                        numPlayers: 0,
+                        numPlayers,
                     }
                 },
                 currentServer: address,
@@ -236,19 +234,9 @@ export const reducer = (state: State, action: Action) => {
 
         case 'SERVERS_CHECK_RECEIVED': {
             // on the server when the hub has checked up with us
-            const { data: { time, servers } } = action;
-            const currentServer = getCurrentServer(state);
-            const address = state.currentServer;
-            const mergeCurrentServers = address && currentServer ? {
-                [address]: currentServer,
-                ...servers,
-            } : {};
+            const { data: { time } } = action;
             return {
                 ...state,
-                servers: {
-                    ...mergeCurrentServers,
-                    ...servers,
-                },
                 lastHubCheck: time,
             };
         }
@@ -295,14 +283,14 @@ export const gameStarts = (action$, store, serverEnv = getServersEnv()) =>
             data: serverEnv
         }));
 
-const hubServerCheckTime = 30000; // todo check on the server every 30 seconds?
+const hubServerCheckTime = 5000; // todo check on the server every 30 seconds?
 
 // checkTime the interval at which the hubs should 'check' on the servers
 export const hubServerRegisterRequests = (
     action$: ActionInterface, // todo: special redux-observable Action$ type?
     store: Store,
     checkTime: number = hubServerCheckTime,
-    httpPost: Function = post,
+    httpFetch: Function = fetch,
     timer: Function = Observable.timer,
     now: Function = () => Number(Date.now())
 ) =>
@@ -318,10 +306,7 @@ export const hubServerRegisterRequests = (
                 .map(() => action)
         )
         .mergeMap(({ data: { address }}) => {
-            const currentServers = getServers(store.getState());
-            // todo: this means anyone can post servers to check,
-            // todo: we want the server to GET the list servers from the hub
-            return httpPost(`${address}/check`, { servers: currentServers })
+            return httpFetch(`${address}/check`)
                 .map(({ maxPlayers, numPlayers, address, location, name, numBots }) => ({
                     type: 'SERVERS_HUB_CHECK_SUCCESS',
                     data: {
@@ -336,7 +321,6 @@ export const hubServerRegisterRequests = (
                 }))
                 .catch(error => Observable.of({
                     type: 'SERVERS_HUB_CHECK_ERROR',
-                    error: true,
                     data: {
                         address
                     }
@@ -351,6 +335,7 @@ export const sendServersToClients = (action$: ActionInterface, store: Store) =>
         .filter(({ type }) =>
             type === 'CONNECTION_REQUESTED' ||
             type === 'DISCONNECTION_REQUESTED' ||
+            type === 'SERVERS_REGISTER_RESPONSE' ||
             type === 'SERVERS_HUB_CHECK_SUCCESS' ||
             type === 'SERVERS_HUB_REGISTRATION_RECEIVED' ||
             type === 'SERVERS_HUB_CHECK_ERROR' ||
@@ -378,12 +363,6 @@ export const serverReregisterRequests = (
     action$
         .ofType('SERVERS_INITIALIZED')
         .filter(({ data: { hub, ...rest }}) => !store.getState().isHub && hub)
-        .flatMap(action => timer(0, checkTime * 2).map(() => action))
-        .filter(() => {
-            const time = now();
-            const state: State = store.getState();
-            return checkTime * 2 < time - state.lastHubCheck;
-        })
         .map(({ data }) => ({
             type: 'SERVERS_REGISTER_REQUEST',
             data: data,
@@ -399,11 +378,13 @@ export const serverRegisterRequests = (
     httpPost: Function = post,
     now: Function = () => Number(Date.now()),
     timer: Function = Observable.timer,
-    retryTimes: number = 20,
+    checkTime: number = hubServerCheckTime,
 ) =>
     action$
         .ofType('SERVERS_REGISTER_REQUEST')
         .filter(({ data: { hub, ...rest }}) => !store.getState().isHub && hub)
+        // reregister every checkTime milliseconds
+        .flatMap(action => timer(0, checkTime).map(() => action))
         .mergeMap(({ data: { hub, ...rest }}) =>
             httpPost(`${hub}/register`, rest)
                 .map(({ servers }) => ({
@@ -413,11 +394,10 @@ export const serverRegisterRequests = (
                         servers
                     }
                 }))
-                .retryWhen(attempts =>
-                    Observable.range(1, retryTimes - 1)
-                        .zip(attempts, i => i)
-                        .flatMap(i => timer(fibonacci(i) * 1000))
-                )
+                .catch(() => Observable.of({
+                    type: 'SERVERS_REGISTER_ERROR',
+                    data: {}
+                }))
         );
 
 

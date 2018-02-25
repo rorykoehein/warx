@@ -32,7 +32,7 @@ export default (app, env = getEnv()) => {
         });
     } else {
         // the central hub will check on servers by calling this
-        app.post('/check', (req, res) => {
+        app.get('/check', (req, res) => {
             const state = store.getState();
             const server = getCurrentServer(state);
             if(!server) {

@@ -20,6 +20,8 @@ const getEnv = () => ({
     location: 'us',
     name: 'warx-us',
     address: 'http://us.warx.io',
+    numBots: 2,
+    maxPlayers: 6,
 });
 
 describe('module-servers', () => {
@@ -36,7 +38,7 @@ describe('module-servers', () => {
                 };
 
                 const input = '-a--c--a--';
-                const output = '-(bd|)';
+                const output = '-(b|)';
 
                 const ts = createTestScheduler();
                 const source = R(
@@ -88,14 +90,17 @@ describe('module-servers', () => {
                             lastUpdated: now(),
                         }
                     }
+
                 };
+
+                const timer = () => Observable.of([1]); // mock Observable.timer
 
                 const input = '-a-a--a';
                 const output = '-b-b--b';
                 const ts = createTestScheduler();
                 const source = R(ts.createColdObservable(input, values));
                 const actual = serverRegisterRequests(
-                    source, store, successPost, now
+                    source, store, successPost, now, timer, 0
                 );
                 ts.expectObservable(actual).toBe(output, values);
                 ts.flush();
@@ -120,102 +125,6 @@ describe('module-servers', () => {
                 ts.expectObservable(actual).toBe(output, values);
                 ts.flush();
             });
-
-            let errorPostCalled = 0; // keep track of this for retry test
-            const errorPost = (url, data) => Observable.create(observer => {
-                errorPostCalled++;
-                observer.error({});
-                observer.complete();
-            });
-
-            it('should retry if the registration request fails', () => {
-                expect.hasAssertions();
-                const values = {
-                    a: {
-                        type: 'SERVERS_REGISTER_REQUEST',
-                        data: getEnv()
-                    }
-                };
-
-                const input = '-a-';
-                const output = '---';
-                const retryTimes = 20;
-                const ts = createTestScheduler();
-                const source = R(ts.createColdObservable(input, values));
-                const actual = serverRegisterRequests(
-                    source, store, errorPost, now, timer, retryTimes
-                );
-                ts.expectObservable(actual).toBe(output, values);
-                ts.flush();
-                expect(errorPostCalled).toBe(retryTimes);
-            });
-        });
-
-        describe('serverReregisterRequests', () => {
-            expect.hasAssertions();
-            const now = (time) => () => time;
-            const timer = () => Observable.of([1]); // mock Observable.timer
-
-            const values = {
-                a: {
-                    type: 'SERVERS_INITIALIZED',
-                    data: {
-                        hub: 'http://www.warx.io',
-                    },
-                },
-                b: {
-                    type: 'SERVERS_REGISTER_REQUEST',
-                    data: {
-                        hub: 'http://www.warx.io',
-                    },
-                },
-            };
-
-            const store = lastCheckedTime => ({
-                getState: () => ({
-                    lastHubCheck: lastCheckedTime,
-                    isHub: false,
-                })
-            });
-
-            it('should not reregister if recently checked on', () => {
-                const input = '-a';
-                const output = '--';
-
-                const ts = createTestScheduler();
-                const source = R(
-                    ts.createColdObservable(input, values)
-                );
-                // last checked = 10
-                // now = 20
-                // check time = 6
-                // should have been checked at 16 and 22, missed just one check
-                const actual = serverReregisterRequests(source, store(10), 6, timer, now(20));
-                ts.expectObservable(actual).toBe(output, values);
-                ts.flush();
-
-
-            });
-
-            it('should reregister if not checked on for longer than' +
-                ' checkTime *2', () => {
-                expect.hasAssertions();
-                const input = '-a';
-                const output = '-b';
-
-                const ts = createTestScheduler();
-                const source = R(
-                    ts.createColdObservable(input, values)
-                );
-
-                // last checked = 10
-                // now = 20
-                // check time = 4
-                // should have been checked at 4 and 8, missed two checks
-                const actual = serverReregisterRequests(source, store(10), 4, timer, now(20));
-                ts.expectObservable(actual).toBe(output, values);
-                ts.flush();
-            });
         });
 
         describe('hubServerRegisterRequests ', () => {
@@ -225,7 +134,12 @@ describe('module-servers', () => {
             // mock fetch
             const successFetch = (url, data) => Observable.create(observer => {
                 observer.next({
-                    players: 5, address: 'http://x.com', location: 'y', name: 'z'
+                    numPlayers: 5,
+                    maxPlayers: 6,
+                    numBots: 2,
+                    address: 'http://x.com',
+                    location: 'y',
+                    name: 'z'
                 });
                 observer.complete();
             });
@@ -238,6 +152,12 @@ describe('module-servers', () => {
                 });
                 observer.complete();
             });
+
+            const store = {
+                getState: () => ({
+                    servers: {},
+                })
+            };
 
             it('should check on the servers every X seconds (success)', () => {
                 expect.hasAssertions();
@@ -254,8 +174,10 @@ describe('module-servers', () => {
                             address: 'http://x.com',
                             location: 'y',
                             name: 'z',
-                            players: 5,
                             lastUpdated: 9999,
+                            maxPlayers: 6,
+                            numPlayers: 5,
+                            numBots: 2,
                         },
                     },
                 };
@@ -265,7 +187,7 @@ describe('module-servers', () => {
 
                 const ts = createTestScheduler();
                 const source = R(ts.createColdObservable(input, values));
-                const actual = hubServerRegisterRequests(source, {}, 0, successFetch, timer, now);
+                const actual = hubServerRegisterRequests(source, store, 0, successFetch, timer, now);
                 ts.expectObservable(actual).toBe(output, values);
                 ts.flush();
             });
@@ -293,7 +215,7 @@ describe('module-servers', () => {
 
                 const ts = createTestScheduler();
                 const source = R(ts.createColdObservable(input, values));
-                const actual = hubServerRegisterRequests(source, {}, 0, errorFetch, timer, now);
+                const actual = hubServerRegisterRequests(source, store, 0, errorFetch, timer, now);
                 ts.expectObservable(actual).toBe(output, values);
                 ts.flush();
             });
@@ -303,6 +225,7 @@ describe('module-servers', () => {
     describe('reducer', () => {
         const initialStateWithPlayers = {
             players: {},
+            bots: { '1': {}, '2': {}},
             ...initialState,
         };
 
@@ -313,8 +236,14 @@ describe('module-servers', () => {
                         address: 'http://us.warx.io',
                         location: 'us',
                         name: 'warx-us',
-                        players: 0,
+                        numPlayers: 0,
+                        maxPlayers: 6,
+                        numBots: 2,
                     }
+                },
+                bots: {
+                    '1': {},
+                    '2': {},
                 },
                 currentServer: 'http://us.warx.io',
                 isLoadingServers: true,
@@ -334,6 +263,10 @@ describe('module-servers', () => {
                         location: 'us',
                         name: 'warx-us',
                         hub: 'http://www.warx.io',
+                        numBots: 2,
+                        maxPlayers: 6,
+                        numPlayers: 0,
+                        isTrusted: true,
                     }
                 });
 
@@ -363,13 +296,17 @@ describe('module-servers', () => {
                                 address: 'http://us2.warx.io',
                                 location: 'us',
                                 name: 'warx-us2',
-                                players: 2,
+                                numPlayers: 2,
+                                maxPlayers: 6,
+                                numBots: 2,
                             },
                             'http://www.warx.io': {
                                 address: 'http://www.warx.io',
                                 location: 'eu',
                                 name: 'warx',
-                                players: 10,
+                                numPlayers: 10,
+                                maxPlayers: 10,
+                                numBots: 2,
                             },
                         }
                     }
@@ -381,19 +318,25 @@ describe('module-servers', () => {
                             address: 'http://us.warx.io',
                             location: 'us',
                             name: 'warx-us',
-                            players: 0,
+                            maxPlayers: 6,
+                            numBots: 2,
+                            numPlayers: 0,
                         },
                         'http://us2.warx.io': {
                             address: 'http://us2.warx.io',
                             location: 'us',
                             name: 'warx-us2',
-                            players: 2,
+                            numPlayers: 2,
+                            maxPlayers: 6,
+                            numBots: 2,
                         },
                         'http://www.warx.io': {
                             address: 'http://www.warx.io',
                             location: 'eu',
                             name: 'warx',
-                            players: 10,
+                            numPlayers: 10,
+                            maxPlayers: 10,
+                            numBots: 2,
                         },
                     },
                     currentServer: 'http://us.warx.io',
@@ -402,6 +345,10 @@ describe('module-servers', () => {
                     isRegistered: true,
                     players: {},
                     lastHubCheck: 0,
+                    bots: {
+                        '1': {},
+                        '2': {},
+                    },
                 });
             });
         });
@@ -416,6 +363,10 @@ describe('module-servers', () => {
                     location: 'eu',
                     name: 'warx-eu',
                     hub: 'http://www.warx.io',
+                    numBots: 2,
+                    numPlayers: 5,
+                    maxPlayers: 6,
+                    isTrusted: true,
                 }
             });
 
@@ -427,7 +378,9 @@ describe('module-servers', () => {
                             address: 'http://www.warx.io',
                             location: 'eu',
                             name: 'warx-eu',
-                            players: 0,
+                            numPlayers: 5,
+                            numBots: 2,
+                            maxPlayers: 6,
                         }
                     },
                     currentServer: 'http://www.warx.io',
@@ -436,6 +389,10 @@ describe('module-servers', () => {
                     isRegistered: true,
                     players: {},
                     lastHubCheck: 0,
+                    bots: {
+                        '1': {},
+                        '2': {},
+                    },
                 });
             });
 
@@ -448,7 +405,9 @@ describe('module-servers', () => {
                     address: 'http://us.warx.io',
                     location: 'us',
                     name: 'warx-us',
-                    players: 5,
+                    numPlayers: 5,
+                    maxPlayers: 4,
+                    numBots: 1,
                 }
             });
 
@@ -460,13 +419,17 @@ describe('module-servers', () => {
                             address: 'http://www.warx.io',
                             location: 'eu',
                             name: 'warx-eu',
-                            players: 0,
+                            numPlayers: 5,
+                            numBots: 2,
+                            maxPlayers: 6,
                         },
                         'http://us.warx.io': {
                             address: 'http://us.warx.io',
                             location: 'us',
                             name: 'warx-us',
-                            players: 5,
+                            numPlayers: 5,
+                            maxPlayers: 4,
+                            numBots: 1,
                             lastUpdated: now1,
                         },
                     },
@@ -476,6 +439,7 @@ describe('module-servers', () => {
                     isRegistered: true,
                     players: {},
                     lastHubCheck: 0,
+                    bots: { '1': {}, '2': {}}
                 });
             });
 
@@ -488,7 +452,9 @@ describe('module-servers', () => {
                     address: 'http://us.warx.io',
                     location: 'us',
                     name: 'warx-us',
-                    players: 8,
+                    numPlayers: 8,
+                    numBots: 1,
+                    maxPlayers: 8,
                 }
             });
 
@@ -500,13 +466,17 @@ describe('module-servers', () => {
                             address: 'http://www.warx.io',
                             location: 'eu',
                             name: 'warx-eu',
-                            players: 0,
+                            numPlayers: 5,
+                            numBots: 2,
+                            maxPlayers: 6,
                         },
                         'http://us.warx.io': {
                             address: 'http://us.warx.io',
                             location: 'us',
                             name: 'warx-us',
-                            players: 8,
+                            numPlayers: 8,
+                            numBots: 1,
+                            maxPlayers: 8,
                             lastUpdated: now2,
                         },
                     },
@@ -516,6 +486,7 @@ describe('module-servers', () => {
                     isRegistered: true,
                     players: {},
                     lastHubCheck: 0,
+                    bots: { '1': {}, '2': {}}
                 });
             });
 
@@ -535,7 +506,9 @@ describe('module-servers', () => {
                             address: 'http://www.warx.io',
                             location: 'eu',
                             name: 'warx-eu',
-                            players: 0,
+                            numPlayers: 5,
+                            numBots: 2,
+                            maxPlayers: 6,
                         },
                     },
                     currentServer: 'http://www.warx.io',
@@ -544,6 +517,7 @@ describe('module-servers', () => {
                     isRegistered: true,
                     players: {},
                     lastHubCheck: 0,
+                    bots: {'1':{}, '2':{}}
                 });
             });
         });
