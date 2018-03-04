@@ -136,12 +136,16 @@ export type State = {
     lastHubCheck: 0,
 };
 
+// if we are not connecting to a hub and are not a hub ourselves, we'll use this
+// string as the address identifier/key
+const NOT_CONNECTED_ID = 'local';
+
 // returns env vars which describe this server
 const getServersEnv = (): Env => ({
-    hub: process.env.HUB,
+    hub: process.env.HUB || NOT_CONNECTED_ID,
     location: process.env.LOCATION || 'n/a',
     name: process.env.SERVER_NAME || os.hostname(),
-    address: process.env.ADDRESS, // todo see if it makes sense to use npm public-ip
+    address: process.env.ADDRESS || NOT_CONNECTED_ID,
     maxPlayers: Number(process.env.MAX_PLAYERS) || 8,
     numBots: Number(process.env.NUM_BOTS) || 0,
 });
@@ -154,6 +158,7 @@ export const initialState: State = {
     isRegistered: false,
     currentServer: null,
     lastHubCheck: 0,
+    isConnectedToHubNetwork: false,
 };
 
 // actions
@@ -202,6 +207,9 @@ export const reducer = (state: State, action: Action) => {
                 isLoadingServers: hub !== address,
                 isHub: hub === address,
                 isRegistered: hub === address,
+                isConnectedToHubNetwork: (
+                    address !== NOT_CONNECTED_ID && hub !== NOT_CONNECTED_ID
+                )
             };
         }
 
@@ -340,6 +348,8 @@ export const sendServersToClients = (action$: ActionInterface, store: Store) =>
             type === 'SERVERS_HUB_CHECK_ERROR' ||
             type === 'PLAYER_SIGNED_OUT'
         )
+        // don't send the servers to the client when not connected to a network
+        .filter(() => store.getState().isConnectedToHubNetwork)
         .map(() => ({
             type: 'SERVERS_CHANGED',
             sendToClient: true,
@@ -361,7 +371,12 @@ export const serverReregisterRequests = (
 ) =>
     action$
         .ofType('SERVERS_INITIALIZED')
-        .filter(({ data: { hub, ...rest }}) => !store.getState().isHub && hub)
+        .filter(({ data: { hub, ...rest }}) => {
+            // don't register if we are not connected to a hub network or if we
+            // are the hub in a hub network
+            const { isConnectedToHubNetwork, isHub } = store.getState();
+            return isConnectedToHubNetwork && !isHub && hub
+        })
         .map(({ data }) => ({
             type: 'SERVERS_REGISTER_REQUEST',
             data: data,
@@ -443,7 +458,9 @@ export const getCurrentServer = (state: State): ?Server => {
         ...state.servers[state.currentServer],
         numPlayers: getSignedInPlayers(state).length,
         numBots: getNumBots(state),
-    } : null;
+    } : {
+
+    };
 };
 
 export const getServers = (state: State): Servers => state.servers;

@@ -19,6 +19,7 @@ const playerIsSignedIn = (state, playerId) => {
 };
 
 const canJoin = state => {
+    // the player can only join if the server is not full
     const server = getCurrentServer(state);
     return server && server.maxPlayers > getSignedInPlayers(state).length;
 };

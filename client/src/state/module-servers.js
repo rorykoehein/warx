@@ -32,6 +32,7 @@ export const initialState = {
 export const reducer = (state: State, action) => {
     switch (action.type) {
         case 'SERVERS_CHANGED': {
+            console.log('SERVERS_CHANGED', action);
             return {
                 ...state,
                 currentServer: action.data.currentServer,
@@ -45,3 +46,6 @@ export const reducer = (state: State, action) => {
 
 export const getServerList = (state: State): ServerList => toList(state.servers);
 export const getCurrentServer = (state: State): ?string => state.currentServer;
+export const hasServers = (state: State): boolean => Boolean(
+    state.currentServer && Object.keys(state.servers).length
+);

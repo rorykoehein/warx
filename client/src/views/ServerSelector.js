@@ -2,9 +2,10 @@
 
 import React, { PureComponent } from 'react';
 import { connect } from 'react-redux';
-import { getServerList, getCurrentServer } from '../state/module-servers';
+import { getServerList, getCurrentServer, hasServers } from '../state/module-servers';
 import ScrollBox from '../sprites/ScrollBox';
 import DataTable from '../sprites/DataTable';
+import DataTableBody from '../sprites/DataTableBody';
 import DataTableRow from '../sprites/DataTableRow';
 import DataTableCell from '../sprites/DataTableCell';
 import Label from '../sprites/Label';
@@ -12,21 +13,18 @@ import Label from '../sprites/Label';
 import type { Connector } from 'react-redux';
 import type { ServerList } from '../state/module-servers';
 import type { State } from '../types/game';
-// import type { Servers } from "../../../server/state/module-servers"; // todo
-
-// type State = {
-//     // servers: Servers,
-// };
 
 type Props = {
     servers: ServerList,
     currentServer: ?string, // current server address
+    has: ?boolean, // current server address
 };
 
 const connector: Connector<{}, Props> = connect(
     (state) => ({
         servers: getServerList(state),
         currentServer: getCurrentServer(state),
+        has: hasServers(state),
     }),
     (dispatch: Dispatch) => ({
 
@@ -45,16 +43,18 @@ class ServerSelector extends PureComponent<Props, State> {
     };
 
     render() {
-        const selectedServer = this.props.currentServer;
-        return (
+        const { currentServer, servers, has } = this.props;
+        return !has ? null : (
             <div>
                 <Label>Servers</Label>
                 <ScrollBox height={8}>
                     <DataTable>
-                        {this.props.servers.map(server => (
+                        <DataTableBody>
+                        {servers.map(server => (
                             <DataTableRow
-                                isSelected={selectedServer === server.address}
+                                isSelected={currentServer === server.address}
                                 onClick={() => this.onClick(server)}
+                                key={server.address}
                             >
                                 <DataTableCell main>
                                     {server.name}
@@ -71,6 +71,7 @@ class ServerSelector extends PureComponent<Props, State> {
                                 </DataTableCell>
                             </DataTableRow>
                         ))}
+                        </DataTableBody>
                     </DataTable>
                 </ScrollBox>
             </div>
