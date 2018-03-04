@@ -251,6 +251,7 @@ describe('module-servers', () => {
                 isRegistered: false,
                 players: {},
                 lastHubCheck: 0,
+                isConnectedToHubNetwork: true,
             };
 
             it('should add itself to the list of servers on SERVERS_INITIALIZED', () => {
@@ -345,6 +346,7 @@ describe('module-servers', () => {
                     isRegistered: true,
                     players: {},
                     lastHubCheck: 0,
+                    isConnectedToHubNetwork: true,
                     bots: {
                         '1': {},
                         '2': {},
@@ -389,6 +391,7 @@ describe('module-servers', () => {
                     isRegistered: true,
                     players: {},
                     lastHubCheck: 0,
+                    isConnectedToHubNetwork: true,
                     bots: {
                         '1': {},
                         '2': {},
@@ -439,6 +442,7 @@ describe('module-servers', () => {
                     isRegistered: true,
                     players: {},
                     lastHubCheck: 0,
+                    isConnectedToHubNetwork: true,
                     bots: { '1': {}, '2': {}}
                 });
             });
@@ -486,6 +490,7 @@ describe('module-servers', () => {
                     isRegistered: true,
                     players: {},
                     lastHubCheck: 0,
+                    isConnectedToHubNetwork: true,
                     bots: { '1': {}, '2': {}}
                 });
             });
@@ -517,6 +522,7 @@ describe('module-servers', () => {
                     isRegistered: true,
                     players: {},
                     lastHubCheck: 0,
+                    isConnectedToHubNetwork: true,
                     bots: {'1':{}, '2':{}}
                 });
             });
