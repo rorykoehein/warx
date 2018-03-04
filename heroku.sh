@@ -1,4 +1,5 @@
 #!/bin/bash
+set -e
 
 echo "Deploy to Heroku..."
 
@@ -10,5 +11,5 @@ rm -rf ./git
 git init
 heroku git:remote -a ${app}
 git add .
-git commit -m "auto deploy"
+git commit -m "auto deploy" --allow-empty
 git push -f heroku master

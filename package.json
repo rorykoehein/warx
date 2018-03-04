@@ -9,10 +9,7 @@
   },
   "scripts": {
     "dependencies": {
-      "babel-cli": "6.26",
-      "babel-plugin-transform-flow-strip-types": "^6.22.0",
       "babel-polyfill": "^6.26.0",
-      "babel-preset-stage-0": "^6.24.1",
       "body-parser": "^1.18.2",
       "dotenv": "^5.0.0",
       "express": "^4.16.2",
@@ -34,12 +31,16 @@
     "test": "jest -o --watch",
     "test-ci": "jest --ci --coverage --testResultsProcessor=\"jest-junit\"",
     "build-server": "NODE_ENV=production babel ./server/ -d ./dist/server",
-    "build-shared": "NODE_ENV=production babel ./client/src/types -d ./dist/client/src/types"
+    "build-shared": "NODE_ENV=production babel ./client/src/types -d ./dist/client/src/types",
+    "babel-version": "babel --version"
   },
   "devDependencies": {
+    "babel-cli": "^6.26.0",
     "babel-jest": "^22.0.4",
+    "babel-plugin-transform-flow-strip-types": "^6.22.0",
     "babel-preset-env": "^1.6.1",
     "babel-preset-react-app": "^3.1.0",
+    "babel-preset-stage-0": "^6.24.1",
     "jest": "^22.0.4",
     "jest-junit": "^3.4.1",
     "plop": "^1.9.0"
@@ -65,5 +66,19 @@
       "mjs",
       "js"
     ]
+  },
+  "dependencies": {
+    "babel-polyfill": "^6.26.0",
+    "body-parser": "^1.18.2",
+    "dotenv": "^5.0.1",
+    "express": "^4.16.2",
+    "redux": "^3.7.2",
+    "redux-node-logger": "^0.1.0",
+    "redux-observable": "^0.18.0",
+    "request": "^2.83.0",
+    "request-promise-native": "^1.0.5",
+    "reselect": "^3.0.1",
+    "rxjs": "^5.5.6",
+    "socket.io": "^2.0.4"
   }
 }
