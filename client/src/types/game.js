@@ -15,6 +15,7 @@ export type Player = {
     +direction: Direction,
     +isMoving: boolean,
     +weaponLoaded: boolean,
+    +isSignedIn: boolean,
 }
 
 export type Shot = {

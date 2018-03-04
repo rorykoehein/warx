@@ -25,6 +25,7 @@ describe('module-game', () => {
                         alive: false,
                         frags: 0,
                         deaths: 0,
+                        isSignedIn: false
                     },
                 }
             });

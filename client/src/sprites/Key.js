@@ -1,12 +1,12 @@
 import styled from 'styled-components';
 
-const size = 4;
+const size = 3;
 const textSize = size/2;
 
 export default styled.div`
     display: inline-block;
     border: .2rem white solid;
-    border-radius: 1rem;
+    border-radius: ${size/4}rem;
     min-width: ${size}rem;
     height: ${size}rem;
     font-size: ${textSize}rem;

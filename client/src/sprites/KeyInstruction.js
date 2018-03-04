@@ -3,7 +3,7 @@ import styled from 'styled-components';
 export default styled.div`
     margin: 0 auto;
     width: 54rem;
-    font-size: 2.4rem;
+    font-size: 1.5rem;
     padding: 1rem;
     color: white;
     font-family: 'Roboto Condensed', sans-serif;
