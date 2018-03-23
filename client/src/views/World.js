@@ -9,6 +9,7 @@ import { getRules } from '../state/module-game';
 import WorldSprite from '../sprites/WorldSprite';
 import Players from './Players';
 import Explosions from './Explosions';
+import Bombs from './Bombs';
 import Shots from './Shots';
 
 type Props = {
@@ -78,6 +79,7 @@ class World extends PureComponent<Props, WorldState> {
                 <Players step={step} />
                 <Shots step={step} />
                 <Explosions step={step} />
+                <Bombs step={step} />
             </WorldSprite>
         )
     }

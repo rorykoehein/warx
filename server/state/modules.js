@@ -6,3 +6,4 @@ export * as explosions from './module-explosions';
 export * as network from "./module-network";
 export * as bots from "./module-bots";
 export * as servers from "./module-servers";
+export * as bombs from "./module-bombs";

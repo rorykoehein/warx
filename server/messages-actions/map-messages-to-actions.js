@@ -16,6 +16,8 @@ const allowedActions = {
     MOVE_STOP_REQUESTED: 1,
     SHOT_REQUESTED: 1,
     PLAYER_SIGN_OUT_REQUEST: 1,
+    BOMB_SET_REQUESTED: 1,
+    BOMB_DETONATE_REQUESTED: 1,
 };
 
 export default (messages) => {

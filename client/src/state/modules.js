@@ -1,6 +1,7 @@
 export * as messages from './module-messages';
 export * as movement from './module-movement';
 export * as sounds from './module-sounds';
+export * as bombs from './module-bombs';
 export * as scores from './module-scores';
 export * as shots from './module-shots';
 export * as explosions from './module-explosions';
