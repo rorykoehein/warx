@@ -4,7 +4,7 @@ export default styled.div`
     margin: 0 auto;
     width: 54rem;
     font-size: 1.5rem;
-    padding: 1rem;
+    padding: .5rem;
     color: white;
     font-family: 'Roboto Condensed', sans-serif;
     
@@ -12,7 +12,7 @@ export default styled.div`
       display: inline-block;
       color: grey;
       content: ${({ instruction }) => `'${instruction}'`};
-      padding-right: 2rem;
+      padding-right: 1rem;
       box-sizing: border-box;
       width: 50%;
       text-align: right;
