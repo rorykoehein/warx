@@ -8,5 +8,5 @@ export default styled.div`
     transform: ${({ x, y, size = 5 }) => `translate(${x - size/2}px, ${y - size/2}px)`};
     border-radius: 50%;
     z-index: 1;
-    background-color: white;
+    background-color: ${({ isCurrent }) => isCurrent ? styles.meColor : styles.colorSecondary};
 `;
