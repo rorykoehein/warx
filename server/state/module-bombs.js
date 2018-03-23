@@ -1,8 +1,9 @@
 import { combineEpics } from 'redux-observable';
 import type { Store } from "../../client/src/types/framework";
-import {getPlayerById, getRules} from "./module-game";
-import {addExplosion} from "./module-explosions";
-import { isHit} from "./module-shots";
+import { getPlayerById, getRules } from "./module-game";
+import { addExplosion } from "./module-explosions";
+import { isHit } from "./module-shots";
+import { pointCircleCollision } from './module-explosions';
 
 export const bombSet = (bomb) => ({
     type: 'BOMB_SET',
@@ -115,10 +116,26 @@ const bombPlayerLeaves = (action$, store) =>
         .filter(bomb => bomb)
         .map(bomb => bombDetonate(bomb));
 
+// explode when other explosions hit this bomb
+export const explosionsBombsExplosions = (action$, store: Store) => {
+    return action$
+        .ofType('EXPLOSION_ADDED')
+        .delay(250)
+        .flatMap(({ data: { x, y, size } }) =>
+            Object
+                .values(store.getState().bombs)
+                .filter(({ x: bombX, y: bombY }) =>
+                    pointCircleCollision([bombX, bombY], [x, y], size/2)
+                )
+                .map(bomb => bombDetonate(bomb))
+        );
+};
+
 export const epic = combineEpics(
     bombSetResponses,
     bombDetonateResponses,
     bombsExplosions,
     bombShots,
     bombPlayerLeaves,
+    explosionsBombsExplosions,
 );

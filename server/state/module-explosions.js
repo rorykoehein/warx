@@ -10,7 +10,7 @@ import type { PlayerId } from '../../client/src/types/game';
 // be 'hit', which will cause another explosion
 
 // helpers
-const pointCircleCollision = (point, circle, radius) => {
+export const pointCircleCollision = (point, circle, radius) => {
     if (radius === 0) return false;
     const dx = circle[0] - point[0];
     const dy = circle[1] - point[1];
@@ -51,7 +51,7 @@ export const hitsExplosions = (action$, store: Store) => {
 export const explosionsHits = (action$, store: Store) => {
     return action$
         .ofType('EXPLOSION_ADDED')
-        .delay(100)
+        .delay(250)
         .map(({ data: { x, y, size, causedBy } }) => {
             const players = store.getState().players;
             const collisions = Object.keys(players).filter(id => {
