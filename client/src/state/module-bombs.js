@@ -97,24 +97,11 @@ export const bombSetRequest = ({ playerId }: { playerId: PlayerId }): BombSetReq
     };
 };
 
-export const bombSet = (bomb: Bomb): BombSetAction => ({
-    type: 'BOMB_SET',
-    data: bomb,
-    origin: 'server',
-});
-
 export const bombDetonateRequest = ({ id }: { id: string }): BombDetonateRequestedAction => ({
     type: 'BOMB_DETONATE_REQUESTED',
     data: { id },
     origin: 'client',
 });
-
-export const bombDetonate = ({ id }: { id: string }): BombDetonateAction => ({
-    type: 'BOMB_DETONATED',
-    data: { id },
-    origin: 'server',
-});
-
 
 export const reducer = (state: State, action: Action): State => {
     const { bombs } = state;

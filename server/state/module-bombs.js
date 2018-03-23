@@ -105,9 +105,20 @@ const bombShots = (action$, store) =>
         })
         .flatMap((bombs) => bombs.map(bomb => bombDetonate(bomb)));
 
+const bombPlayerLeaves = (action$, store) =>
+    action$
+        .filter(({ type }) =>
+            type === 'PLAYER_SIGN_OUT_REQUEST' ||
+            type === 'DISCONNECTION_REQUESTED'
+        )
+        .map(({ data: { playerId } }) => store.getState().bombs[playerId])
+        .filter(bomb => bomb)
+        .map(bomb => bombDetonate(bomb));
+
 export const epic = combineEpics(
     bombSetResponses,
     bombDetonateResponses,
     bombsExplosions,
     bombShots,
+    bombPlayerLeaves,
 );
