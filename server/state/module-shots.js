@@ -5,13 +5,13 @@ import { hit } from './module-hits';
 
 // todo rename to laser in server and client
 
-const isHit = (shooter, opponent) => {
+export const isHit = (shooter, target) => {
     const { direction, x, y } = shooter;
-    const { x: opponentX, y: opponentY, alive } = opponent ;
-    return alive && ((direction === 'left' && opponentY === y && opponentX < x)
-        || (direction === 'right' && opponentY === y && opponentX > x)
-        || (direction === "down" && opponentX === x && opponentY > y)
-        || (direction === "up" && opponentX === x && opponentY < y));
+    const { x: targetX, y: targetY } = target ;
+    return (direction === 'left' && targetY === y && targetX < x)
+        || (direction === 'right' && targetY === y && targetX > x)
+        || (direction === "down" && targetX === x && targetY > y)
+        || (direction === "up" && targetX === x && targetY < y);
 };
 
 // epics
@@ -21,7 +21,7 @@ const shots = (action$, store) =>
         .map(({ data: { playerId } }) => {
             const { players } = store.getState();
             const shooter = players[playerId];
-            const hits = Object.keys(players).filter(key => isHit(shooter, players[key]));
+            const hits = Object.keys(players).filter(key => players[key].alive && isHit(shooter, players[key]));
             return { hits, playerId };
         })
         .filter(({ hits, playerId }) => hits.length > 0)

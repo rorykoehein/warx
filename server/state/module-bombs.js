@@ -2,25 +2,33 @@ import { combineEpics } from 'redux-observable';
 import type { Store } from "../../client/src/types/framework";
 import {getPlayerById, getRules} from "./module-game";
 import {addExplosion} from "./module-explosions";
+import { isHit} from "./module-shots";
 
 export const bombSet = (bomb) => ({
     type: 'BOMB_SET',
     data: bomb,
     origin: 'server',
+    sendToClient: true,
+    toAll: true,
 });
 
 export const bombDetonate = (bomb) => ({
     type: 'BOMB_DETONATED',
     data: bomb,
     origin: 'server',
+    sendToClient: true,
+    toAll: true,
 });
+
+export const initialState = {
+    bombs: {},
+};
 
 export const reducer = (state, action) => {
     const { bombs } = state;
     switch (action.type) {
         case 'BOMB_SET': {
             const { data: bomb } = action;
-            console.log('BOMB_SET', action);
             return {
                 ...state,
                 bombs: {
@@ -33,7 +41,6 @@ export const reducer = (state, action) => {
         case 'BOMB_DETONATED': {
             const { data: { id } } = action;
             const { bombs: { [id]: bombToRemove, ...restBombs } } = state;
-            console.log('BOMB_DETONATED', action, state, restBombs);
             return {
                 ...state,
                 bombs: restBombs
@@ -44,41 +51,40 @@ export const reducer = (state, action) => {
     return state;
 };
 
+// reply to a bomb set (drop) request, only allow if there is no previous bomb
+// dropped by this player
 const bombSetResponses = (action$, store) =>
     action$
         .ofType('BOMB_SET_REQUESTED')
-        // .throttle(() => Observable.interval(store.getState().rules.reloadTime))
-        .map((action) => {
-            // convert the action to something the store understands
+        .map(action => {
             const state = store.getState();
             const playerId = action.data.playerId;
-            // todo: player might be null
             const player = getPlayerById(state, playerId);
-            return bombSet({
-                id: playerId, // todo for now: 1 player 1 bomb
-                playerId,
-                x: player.x,
-                y: player.y,
-            })
-        });
+            const existingBomb = store.getState().bombs[playerId];
+            return { player, existingBomb };
+        })
+        .filter(({ player, existingBomb }) => player && !existingBomb)
+        .map(({ player }) => bombSet({
+            id: player.id,
+            x: player.x,
+            y: player.y,
+        }));
 
+// reply to a detonation request, with a detonation (response), but don't allow
+// detonating, when we don't have bomb for this player
 const bombDetonateResponses = (action$, store: Store) =>
     action$
         .ofType('BOMB_DETONATE_REQUESTED')
-        // todo: check if bomb detonating is allowed
-        .map(({ data: { id } }) => {
-            const bomb = store.getState().bombs[id]; // todo selector
-            console.log('BOMB_DETONATE_REQUESTED for id', id, bomb)
-            return bombDetonate(bomb);
-        });
+        .map(({ data: { id } }) => store.getState().bombs[id])
+        .filter(bomb => bomb)
+        .map(bomb => bombDetonate(bomb));
 
-export const bombsExplosions = (action$, store: Store) => {
-    return action$
+export const bombsExplosions = (action$, store: Store) =>
+    action$
         .ofType('BOMB_DETONATED')
         .map(({ data: { id, x, y, } }) => {
             // todo: ignore if bomb doesn't exist
             const size = getRules(store.getState()).explosionSize;
-            console.log('BOMB_DETONATED to explosion', id, x, y);
             return addExplosion({
                 id: `${id}bomb`, // todo: explosion id can be same as player id?
                 x,
@@ -87,10 +93,21 @@ export const bombsExplosions = (action$, store: Store) => {
                 causedBy: id
             });
         });
-};
+
+const bombShots = (action$, store) =>
+    action$
+        .ofType('SHOT_FIRED')
+        .map(({ data: { playerId } }) => {
+            const { players } = store.getState();
+            const { bombs } = store.getState();
+            const shooter = players[playerId];
+            return Object.values(bombs).filter(bomb => isHit(shooter, bomb));
+        })
+        .flatMap((bombs) => bombs.map(bomb => bombDetonate(bomb)));
 
 export const epic = combineEpics(
     bombSetResponses,
     bombDetonateResponses,
-    bombsExplosions
+    bombsExplosions,
+    bombShots,
 );

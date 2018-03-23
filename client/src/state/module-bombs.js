@@ -169,24 +169,6 @@ const bombSetRequests = (action$, store: Store) =>
             sendAction(action);
         });
 
-const bombSetResponses = (action$, store: Store) =>
-    action$
-        .ofType('BOMB_SET_REQUESTED')
-        // .throttle(() => Observable.interval(store.getState().rules.reloadTime))
-        .map((action: BombSetRequestedAction) => {
-            // convert the action to something the store understands
-            const state = store.getState();
-            const playerId = action.data.playerId;
-            // todo: player might be null
-            const player = getPlayerById(state, playerId);
-            return bombSet({
-                id: playerId, // todo for now: 1 player 1 bomb
-                playerId,
-                x: player.x,
-                y: player.y,
-            })
-        });
-
 const bombDetonateRequests = (action$, store: Store) =>
     action$
         .ofType('BOMB_DETONATE_KEY_PRESSED')
@@ -202,12 +184,6 @@ const bombDetonateRequests = (action$, store: Store) =>
             sendAction(action);
         });
 
-// todo: move to server
-const bombDetonateResponses = (action$, store: Store) =>
-    action$
-        .ofType('BOMB_DETONATE_REQUESTED')
-        .map(action => console.log('BOMB_DETONATE_REQUESTED to bombDetonate', action) || bombDetonate({ id: action.data.id }));
-
 const keyDownActionMap = {
     'b': () => bombSetKeyPress(),
     'n': () => bombDetonateKeyPress(),
@@ -222,7 +198,5 @@ const keyDownMoves = (action$, store) => action$
 export const epic = combineEpics(
     keyDownMoves,
     bombSetRequests,
-    bombSetResponses,
     bombDetonateRequests,
-    bombDetonateResponses,
 );
