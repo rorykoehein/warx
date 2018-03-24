@@ -78,13 +78,12 @@ const bombDetonateResponses = (action$, store: Store) =>
         .ofType('BOMB_DETONATE_REQUESTED')
         .map(({ data: { id } }) => store.getState().bombs[id])
         .filter(bomb => bomb)
-        .map(bomb => bombDetonate(bomb));
+        .map(bombDetonate);
 
 export const bombsExplosions = (action$, store: Store) =>
     action$
         .ofType('BOMB_DETONATED')
         .map(({ data: { id, x, y, } }) => {
-            // todo: ignore if bomb doesn't exist
             const size = getRules(store.getState()).explosionSize;
             return addExplosion({
                 id: `${id}bomb`, // todo: explosion id can be same as player id?
@@ -104,7 +103,7 @@ const bombShots = (action$, store) =>
             const shooter = players[playerId];
             return Object.values(bombs).filter(bomb => isHit(shooter, bomb));
         })
-        .flatMap((bombs) => bombs.map(bomb => bombDetonate(bomb)));
+        .flatMap((bombs) => bombs.map(bombDetonate));
 
 const bombPlayerLeaves = (action$, store) =>
     action$
@@ -114,11 +113,11 @@ const bombPlayerLeaves = (action$, store) =>
         )
         .map(({ data: { playerId } }) => store.getState().bombs[playerId])
         .filter(bomb => bomb)
-        .map(bomb => bombDetonate(bomb));
+        .map(bombDetonate);
 
 // explode when other explosions hit this bomb
-export const explosionsBombsExplosions = (action$, store: Store) => {
-    return action$
+export const explosionsBombsExplosions = (action$, store: Store) =>
+    action$
         .ofType('EXPLOSION_ADDED')
         .delay(250)
         .flatMap(({ data: { x, y, size } }) =>
@@ -127,9 +126,8 @@ export const explosionsBombsExplosions = (action$, store: Store) => {
                 .filter(({ x: bombX, y: bombY }) =>
                     pointCircleCollision([bombX, bombY], [x, y], size/2)
                 )
-                .map(bomb => bombDetonate(bomb))
+                .map(bombDetonate)
         );
-};
 
 export const epic = combineEpics(
     bombSetResponses,

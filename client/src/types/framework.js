@@ -1,12 +1,13 @@
 // @flow
+
 import type { State } from './game';
 import type { Store as ReduxStore, Dispatch as ReduxDispatch } from 'redux';
 
-export type ActionInterface = {
+export interface ActionInterface = {
     +type: string,
-    +origin?: ActionOrigin,
-    +sendToServer?: boolean,
-    +data?: any,
+    +origin: ActionOrigin,
+    +data: any,
+    +sendToServer: ?boolean,
 }
 
 export type Store = ReduxStore<State, ActionInterface>;

@@ -7,6 +7,8 @@ import { getPlayerById, isSignedIn } from "./module-players";
 import type { Store } from "../types/framework";
 import { sendAction } from "../socket";
 import {toList} from "../shared/helpers";
+import {selfShotFire} from "./module-shots";
+import {createKeyHandlerEpic} from "./module-game";
 
 // local types
 // when the current client fires a shot
@@ -15,7 +17,7 @@ type BombSetKeyPressedAction = {
     +origin: 'client',
 };
 
-type BombDetonateKeyPress = {
+type BombDetonateKeyPressAction = {
     +type: 'BOMB_DETONATE_KEY_PRESSED',
     +origin: 'client',
 };
@@ -51,7 +53,7 @@ type BombDetonateAction = {
 };
 
 type Action = BombSetKeyPressedAction | BombSetRequestedAction | BombSetAction |
-    BombDetonateRequestedAction | BombDetonateAction;
+    BombDetonateRequestedAction | BombDetonateKeyPressAction | BombDetonateAction;
 
 export type Bomb = {
     +id: string,
@@ -82,20 +84,18 @@ export const bombSetKeyPress = (): BombSetKeyPressedAction => ({
     origin: 'client',
 });
 
-export const bombDetonateKeyPress = (): BombDetonateKeyPress => ({
+export const bombDetonateKeyPress = (): BombDetonateKeyPressAction => ({
     type: 'BOMB_DETONATE_KEY_PRESSED',
     origin: 'client',
 });
 
-export const bombSetRequest = ({ playerId }: { playerId: PlayerId }): BombSetRequestedAction => {
-    return {
-        type: 'BOMB_SET_REQUESTED',
-        data: {
-            playerId,
-        },
-        origin: 'client',
-    };
-};
+export const bombSetRequest = ({ playerId }: { playerId: PlayerId }): BombSetRequestedAction => ({
+    type: 'BOMB_SET_REQUESTED',
+    data: {
+        playerId,
+    },
+    origin: 'client',
+});
 
 export const bombDetonateRequest = ({ id }: { id: string }): BombDetonateRequestedAction => ({
     type: 'BOMB_DETONATE_REQUESTED',
@@ -171,19 +171,13 @@ const bombDetonateRequests = (action$, store: Store) =>
             sendAction(action);
         });
 
-const keyDownActionMap = {
+const keyDownActionMap = createKeyHandlerEpic({
     'b': () => bombSetKeyPress(),
     'n': () => bombDetonateKeyPress(),
-};
-
-const keyDownMoves = (action$, store) => action$
-    .ofType('KEY_DOWN')
-    .filter(({ data: { key } }) => keyDownActionMap[key] && isSignedIn(store.getState()))
-    .map(({ data: { key: downKey } }) => keyDownActionMap[downKey]());
-
+}, true);
 
 export const epic = combineEpics(
-    keyDownMoves,
+    keyDownActionMap,
     bombSetRequests,
     bombDetonateRequests,
 );

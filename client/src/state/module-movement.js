@@ -3,9 +3,8 @@
 import 'rxjs';
 import { Observable } from 'rxjs/Observable';
 import { combineEpics } from 'redux-observable';
-import { isSignedIn } from "./module-players";
+import { createKeyHandlerEpic } from "./module-game";
 import { sendAction } from '../socket';
-import { selfShotFire } from './module-shots'; // todo move out
 
 import type { ActionInterface, ActionOrigin } from '../types/framework';
 import type { State, PlayerId, Direction } from '../types/game';
@@ -83,7 +82,6 @@ export const moveStopToServer = ({ direction }: { direction: Direction }): Actio
 export const reducer = (state: State, action: Action): State => {
     const {players} = state;
     switch (action.type) {
-
         case 'MOVE_TO': {
             const { data: { direction, playerId, x, y }} = action;
             const player = players[playerId];
@@ -143,30 +141,19 @@ export const reducer = (state: State, action: Action): State => {
 };
 
 // epics
-const keyDownActionMap = {
+const keyDownMoves = createKeyHandlerEpic({
     ArrowLeft: () => selfMoveStart({ direction: 'left' }),
     ArrowUp: () => selfMoveStart({ direction: 'up' }),
     ArrowRight: () => selfMoveStart({ direction: 'right' }),
     ArrowDown: () => selfMoveStart({ direction: 'down' }),
-    ' ': () => selfShotFire(), // todo: move to shots.js (future module)
-};
+}, true);
 
-const keyDownMoves = (action$, store) => action$
-    .ofType('KEY_DOWN')
-    .filter(({ data: { key } }) => keyDownActionMap[key] && isSignedIn(store.getState()))
-    .map(({ data: { key: downKey } }) => keyDownActionMap[downKey]());
-
-const keyUpActionMap = {
+const keyUpMoves = createKeyHandlerEpic({
     ArrowLeft: () => selfMoveStop({ direction: 'left' }),
     ArrowUp: () => selfMoveStop({ direction: 'up' }),
     ArrowRight: () => selfMoveStop({ direction: 'right' }),
     ArrowDown: () => selfMoveStop({ direction: 'down' }),
-};
-
-const keyUpMoves = (action$, store) => action$
-    .ofType('KEY_UP')
-    .filter(({ data: { key } }) => keyUpActionMap[key] && isSignedIn(store.getState()))
-    .map(({ data: { key: downKey } }) => keyUpActionMap[downKey]());
+}, false);
 
 const selfStartMoves = (action$) => action$
     .ofType('SELF_MOVE_STARTED')
