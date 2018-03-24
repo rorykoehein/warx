@@ -5,8 +5,11 @@ import { Observable } from 'rxjs/Observable';
 import { combineEpics } from 'redux-observable';
 import { getRandomPosition } from "./helpers";
 import { generateId } from "../shared/helpers";
+import { bombSetRequest, bombDetonate } from "./module-bombs";
+import { pointCircleCollision } from './module-explosions';
 
 import type { Store } from '../../client/src/types/framework';
+import {getRules} from "./module-game";
 
 type Env = {
     numBots: number,
@@ -277,6 +280,31 @@ export const driveBot = (
             })
     });
 
+export const botBombs = (
+    // $FlowFixMe
+    action$,
+    store: Store,
+    random: Function = (max, start = 0) => Math.floor(Math.random() * max + start),
+    timer: Function = Observable.timer,
+) => action$
+    .ofType('ADD_BOT')
+    .flatMap(({ data: { playerId: botId }}) => {
+        const randTime = random(20000, 5000);
+        return timer(randTime, randTime)
+            .map(() => {
+                const { bombs, players } = store.getState();
+                const { x: playerX, y: playerY } = players[botId];
+                const bomb = bombs[botId];
+                const size = getRules(store.getState()).explosionSize;
+                const notWithinOwnBombRadius = bomb && !pointCircleCollision(
+                    [playerX, playerY], [bomb.x, bomb.y], size/2
+                );
+                return notWithinOwnBombRadius
+                    ? bombDetonate(bomb)
+                    : bombSetRequest({ playerId: botId })
+            });
+    });
+
 export const botShots = (
     // $FlowFixMe
     action$,
@@ -342,6 +370,7 @@ export const epic = combineEpics(
     driveBot,
     setTargets,
     botShots,
+    botBombs,
 );
 
 // selectors

@@ -24,7 +24,7 @@
       "socket.io": "^2.0.4"
     },
     "start": "node ./server/www",
-    "dev": "DEBUG=http,mail,express:* NUM_BOTS=0 NODE_ENV=development babel-node --inspect ./server/www",
+    "dev": "DEBUG=http,mail,express:* NUM_BOTS=2 NODE_ENV=development babel-node --inspect ./server/www",
     "devhub": "DEBUG=http,mail,express:* MAX_PLAYERS=6 NUM_BOTS=0 LOCATION=eu SERVER_NAME=warx.io-EU PORT=7001 ADDRESS=http://localhost:7001 HUB=http://localhost:7001 NODE_ENV=development babel-node --inspect ./server/www",
     "devserver": "DEBUG=http,mail,express:* MAX_PLAYERS=6 NUM_BOTS=2 LOCATION=us SERVER_NAME=warx.io-US PORT=7002 ADDRESS=http://localhost:7002 HUB=http://localhost:7001 NODE_ENV=development babel-node ./server/www",
     "devserver2": "DEBUG=http,mail,express:* MAX_PLAYERS=6 NUM_BOTS=0 LOCATION=us SERVER_NAME=warx.io-US2 PORT=7003 ADDRESS=http://localhost:7003 HUB=http://localhost:7001 NODE_ENV=development babel-node ./server/www",

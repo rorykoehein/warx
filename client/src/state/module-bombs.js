@@ -149,10 +149,7 @@ const bombSetRequests = (action$, store: Store) =>
                 playerId: currentPlayerId,
             })
         })
-        .do(action => {
-            // tell the server about this client initiated action
-            sendAction(action);
-        });
+        .do(sendAction);
 
 const bombDetonateRequests = (action$, store: Store) =>
     action$
@@ -161,13 +158,9 @@ const bombDetonateRequests = (action$, store: Store) =>
             // convert the action to something the store understands
             const state = store.getState();
             const currentPlayerId = state.currentPlayerId;
-            console.log('BOMB_DETONATE_KEY_PRESSED to bombDetonateRequest', currentPlayerId);
             return bombDetonateRequest({ id: currentPlayerId })
         })
-        .do(action => {
-            // tell the server about this client initiated action
-            sendAction(action);
-        });
+        .do(sendAction);
 
 const keyDownActionMap = createKeyHandlerEpic({
     'b': () => bombSetKeyPress(),

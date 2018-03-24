@@ -5,6 +5,14 @@ import { addExplosion } from "./module-explosions";
 import { isHit } from "./module-shots";
 import { pointCircleCollision } from './module-explosions';
 
+export const bombSetRequest = ({ playerId }) => ({
+    type: 'BOMB_SET_REQUESTED',
+    data: {
+        playerId,
+    },
+    origin: 'server',
+});
+
 export const bombSet = (bomb) => ({
     type: 'BOMB_SET',
     data: bomb,
