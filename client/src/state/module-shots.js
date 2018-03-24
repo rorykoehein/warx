@@ -5,11 +5,10 @@ import { Observable } from 'rxjs/Observable';
 import { combineEpics } from 'redux-observable';
 import { sendAction } from '../socket';
 import { toList } from '../shared/helpers';
-
+import { createKeyHandlerEpic } from "./module-game";
 import type { Store } from '../types/framework';
 import type { State, PlayerId } from '../types/game';
 import type { ActionOrigin } from '../types/framework';
-import { createKeyHandlerEpic } from "./module-game";
 
 // local types
 // when the current client fires a shot

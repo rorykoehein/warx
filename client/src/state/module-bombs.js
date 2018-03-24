@@ -3,11 +3,9 @@
 import { createSelector } from 'reselect';
 import { combineEpics } from 'redux-observable';
 import type {PlayerId } from "../types/game";
-import { getPlayerById, isSignedIn } from "./module-players";
 import type { Store } from "../types/framework";
 import { sendAction } from "../socket";
 import {toList} from "../shared/helpers";
-import {selfShotFire} from "./module-shots";
 import {createKeyHandlerEpic} from "./module-game";
 
 // local types

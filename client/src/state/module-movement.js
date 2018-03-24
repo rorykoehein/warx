@@ -5,7 +5,6 @@ import { Observable } from 'rxjs/Observable';
 import { combineEpics } from 'redux-observable';
 import { createKeyHandlerEpic } from "./module-game";
 import { sendAction } from '../socket';
-
 import type { ActionInterface, ActionOrigin } from '../types/framework';
 import type { State, PlayerId, Direction } from '../types/game';
 

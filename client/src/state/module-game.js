@@ -4,10 +4,9 @@ import { combineEpics } from 'redux-observable';
 import { Observable } from 'rxjs/Observable';
 import defaultRules from '../shared/default-rules';
 import { sendAction } from "../socket";
-
+import {isSignedIn} from "./module-players";
 import type { Store, ActionInterface } from '../types/framework';
 import type { State, Rules } from '../types/game';
-import {isSignedIn} from "./module-players";
 
 // local types
 type GameStateChangedAction = {
