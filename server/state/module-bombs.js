@@ -60,6 +60,11 @@ export const reducer = (state, action) => {
     return state;
 };
 
+const getBombCoords = ({ x, y, direction: dir }, step) => ({
+    x: dir === 'left' ? x + step : dir === 'right' ? x - step : x,
+    y: dir === 'up' ? y + step : dir === 'down' ? y - step : y,
+});
+
 // reply to a bomb set (drop) request, only allow if there is no previous bomb
 // dropped by this player
 const bombSetResponses = (action$, store) =>
@@ -73,11 +78,11 @@ const bombSetResponses = (action$, store) =>
             return { player, existingBomb };
         })
         .filter(({ player, existingBomb }) => player && !existingBomb)
-        .map(({ player }) => bombSet({
-            id: player.id,
-            x: player.x,
-            y: player.y,
-        }));
+        .map(({ player }) => {
+            const { rules: { moveDistance }} = store.getState();
+            const { x, y } = getBombCoords(player, moveDistance);
+            return bombSet({ id: player.id, x, y });
+        });
 
 // reply to a detonation request, with a detonation (response), but don't allow
 // detonating, when we don't have bomb for this player

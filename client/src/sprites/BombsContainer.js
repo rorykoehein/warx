@@ -4,9 +4,9 @@ import { TransitionGroup } from 'react-transition-group';
 export default class BombsContainer extends React.PureComponent {
     render() {
         return (
-            <div>
+            <TransitionGroup>
                 {this.props.children}
-            </div>
+            </TransitionGroup>
         );
     }
 }
