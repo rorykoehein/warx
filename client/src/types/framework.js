@@ -3,11 +3,11 @@
 import type { State } from './game';
 import type { Store as ReduxStore, Dispatch as ReduxDispatch } from 'redux';
 
-export interface ActionInterface = {
+export interface ActionInterface {
     +type: string,
-    +origin: ActionOrigin,
+    +origin?: ActionOrigin,
     +data: any,
-    +sendToServer: ?boolean,
+    +sendToServer?: boolean,
 }
 
 export type Store = ReduxStore<State, ActionInterface>;

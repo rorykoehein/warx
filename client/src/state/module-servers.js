@@ -32,7 +32,6 @@ export const initialState = {
 export const reducer = (state: State, action) => {
     switch (action.type) {
         case 'SERVERS_CHANGED': {
-            console.log('SERVERS_CHANGED', action);
             return {
                 ...state,
                 currentServer: action.data.currentServer,

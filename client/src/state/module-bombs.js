@@ -106,7 +106,6 @@ export const reducer = (state: State, action: Action): State => {
     switch (action.type) {
         case 'BOMB_SET': {
             const { data: bomb } = action;
-            console.log('BOMB_SET', action);
             return {
                 ...state,
                 bombs: {
@@ -119,7 +118,6 @@ export const reducer = (state: State, action: Action): State => {
         case 'BOMB_DETONATED': {
             const { data: { id } } = action;
             const { bombs: { [id]: bombToRemove, ...restBombs } } = state;
-            console.log('BOMB_DETONATED', action, state, restBombs);
             return {
                 ...state,
                 bombs: restBombs
