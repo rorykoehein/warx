@@ -42,9 +42,10 @@ const valueMap = {
     type: {
         MOVE_START_REQUESTED: 'a',
         MOVE_STOP_REQUESTED: 'o',
-        MOVE_STOPPED: 's',
-        MOVE_STARTED: 'r',
-        MOVE_SYNC: 'm',
+        // MOVE_STOPPED: 's',
+        // MOVE_STARTED: 'r',
+        // MOVE_SYNC: 'm',
+        MOVE_SYNCS: 'm',
         MOVE: 'v',
         PING: '0',
         PONG: '1',

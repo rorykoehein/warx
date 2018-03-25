@@ -102,6 +102,25 @@ export const reducer = (state: State, action: Action): State => {
             };
         }
 
+        case 'MOVE_SYNCS': {
+            const { data: moves } = action;
+            if (!moves) return state;
+
+            const oldPlayers = state.players;
+            const replacePlayers = moves.reduce((acc, move) => ({
+                ...acc,
+                [move.id]: {
+                    ...players[move.id],
+                    ...move,
+                }
+            }), oldPlayers);
+
+            return {
+                ...state,
+                players: replacePlayers,
+            };
+        }
+
         case 'MOVE_SYNC': {
             const {data: {playerId, x, y, direction}} = action;
             const player = players[playerId];
