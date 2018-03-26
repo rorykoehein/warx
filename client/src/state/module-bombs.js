@@ -8,16 +8,24 @@ import { sendAction } from "../socket";
 import {toList} from "../shared/helpers";
 import {createKeyHandlerEpic} from "./module-game";
 
+// this module handles bombs in the game world. a player can drop and detonate
+// with a key press. when detonated, the bomb causes an explosion (see
+// module-explosions). to drop or detonate, the client sends a request action to
+// the server, the server then determines if a bomb can be set or detonated by
+// this user, and updates all the users with a 'set' or 'detonate' action.
+
 // local types
 // when the current client fires a shot
 type BombSetKeyPressedAction = {
     +type: 'BOMB_SET_KEY_PRESSED',
     +origin: 'client',
+    +data: {},
 };
 
 type BombDetonateKeyPressAction = {
     +type: 'BOMB_DETONATE_KEY_PRESSED',
     +origin: 'client',
+    +data: {},
 };
 
 type BombSetRequestedAction = {
@@ -79,11 +87,13 @@ export const initialState: State = {
 // to be used from the UI
 export const bombSetKeyPress = (): BombSetKeyPressedAction => ({
     type: 'BOMB_SET_KEY_PRESSED',
+    data: {},
     origin: 'client',
 });
 
 export const bombDetonateKeyPress = (): BombDetonateKeyPressAction => ({
     type: 'BOMB_DETONATE_KEY_PRESSED',
+    data: {},
     origin: 'client',
 });
 

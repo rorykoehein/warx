@@ -10,6 +10,12 @@ import type { PlayerId, Player } from '../../client/src/types/game';
 import type { Store } from "../../client/src/types/framework";
 import { toList } from '../shared/helpers';
 
+// this module handles bombs in the game world. the client sends a request
+// action to the server, the server then determines if a bomb can be set or
+// detonated by this user, and updates all the users with a 'set' or 'detonate'
+// action. an explosions from module-explosions occurs after detonating or
+// shooting a bomb.
+
 type Bomb = {
     +id: string,
     +x: number,
