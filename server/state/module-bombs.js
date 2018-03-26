@@ -1,11 +1,63 @@
+// @flow
+
+import { createSelector } from 'reselect';
 import { combineEpics } from 'redux-observable';
-import type { Store } from "../../client/src/types/framework";
 import { getPlayerById, getRules } from "./module-game";
 import { addExplosion } from "./module-explosions";
 import { isHit } from "./module-shots";
 import { pointCircleCollision } from './module-explosions';
+import type { PlayerId, Player } from '../../client/src/types/game';
+import type { Store } from "../../client/src/types/framework";
+import { toList } from '../shared/helpers';
 
-export const bombSetRequest = ({ playerId }) => ({
+type Bomb = {
+    +id: string,
+    +x: number,
+    +y: number,
+}
+
+type Bombs = {
+    [bombId: string]: Bomb,
+}
+
+type BombList = Array<Bomb>;
+
+type BombSetRequestAction = {
+    +type: 'BOMB_SET_REQUESTED',
+    +origin: 'server',
+    +data: {
+        +playerId: PlayerId,
+    }
+};
+
+type BombSetAction = {
+    +type: 'BOMB_SET',
+    +origin: 'server',
+    +sendToClient: true,
+    +toAll: true,
+    +data: Bomb
+};
+
+type BombDetonateAction = {
+    +type: 'BOMB_DETONATED',
+    +origin: 'server',
+    +sendToClient: true,
+    +toAll: true,
+    +data: Bomb
+};
+
+type BombState = {
+    bombs: Bombs,
+};
+
+type Coords = {
+    x: number,
+    y: number,
+}
+
+type Action = BombSetRequestAction | BombSetAction | BombDetonateAction;
+
+export const bombSetRequest = ({ playerId }: { playerId: PlayerId }): BombSetRequestAction => ({
     type: 'BOMB_SET_REQUESTED',
     data: {
         playerId,
@@ -13,7 +65,7 @@ export const bombSetRequest = ({ playerId }) => ({
     origin: 'server',
 });
 
-export const bombSet = (bomb) => ({
+export const bombSet = (bomb: Bomb): BombSetAction => ({
     type: 'BOMB_SET',
     data: bomb,
     origin: 'server',
@@ -21,7 +73,7 @@ export const bombSet = (bomb) => ({
     toAll: true,
 });
 
-export const bombDetonate = (bomb) => ({
+export const bombDetonate = (bomb: Bomb): BombDetonateAction => ({
     type: 'BOMB_DETONATED',
     data: bomb,
     origin: 'server',
@@ -29,11 +81,11 @@ export const bombDetonate = (bomb) => ({
     toAll: true,
 });
 
-export const initialState = {
+export const initialState: BombState = {
     bombs: {},
 };
 
-export const reducer = (state, action) => {
+export const reducer = (state: BombState, action: Action): BombState => {
     const { bombs } = state;
     switch (action.type) {
         case 'BOMB_SET': {
@@ -60,10 +112,19 @@ export const reducer = (state, action) => {
     return state;
 };
 
-const getBombCoords = ({ x, y, direction: dir }, step) => ({
+const getBombCoords = ({ direction: dir, x, y }: Player, step: number) : Coords => ({
     x: dir === 'left' ? x + step : dir === 'right' ? x - step : x,
     y: dir === 'up' ? y + step : dir === 'down' ? y - step : y,
 });
+
+// selectors
+export const getBombs = (state: BombState): Bombs => state.bombs;
+export const getBombList = createSelector(
+    getBombs,
+    (bombs: Bombs): BombList => toList(bombs)
+);
+
+// epics
 
 // reply to a bomb set (drop) request, only allow if there is no previous bomb
 // dropped by this player
@@ -74,7 +135,7 @@ const bombSetResponses = (action$, store) =>
             const state = store.getState();
             const playerId = action.data.playerId;
             const player = getPlayerById(state, playerId);
-            const existingBomb = store.getState().bombs[playerId];
+            const existingBomb = getBombs(state)[playerId];
             return { player, existingBomb };
         })
         .filter(({ player, existingBomb }) => player && !existingBomb)
@@ -89,11 +150,15 @@ const bombSetResponses = (action$, store) =>
 const bombDetonateResponses = (action$, store: Store) =>
     action$
         .ofType('BOMB_DETONATE_REQUESTED')
-        .map(({ data: { id } }) => store.getState().bombs[id])
+        .map(({ data: { id } }) => getBombs(store.getState())[id])
         .filter(bomb => bomb)
         .map(bombDetonate);
 
-export const bombsExplosions = (action$, store: Store) =>
+export const bombsExplosions = (
+    // $FlowFixMe
+    action$,
+    store: Store
+) =>
     action$
         .ofType('BOMB_DETONATED')
         .map(({ data: { id, x, y, } }) => {
@@ -107,35 +172,46 @@ export const bombsExplosions = (action$, store: Store) =>
             });
         });
 
-const bombShots = (action$, store) =>
+const bombShots = (
+    // $FlowFixMe
+    action$,
+    store: Store
+) =>
     action$
         .ofType('SHOT_FIRED')
         .map(({ data: { playerId } }) => {
-            const { players } = store.getState();
-            const { bombs } = store.getState();
+            const state = store.getState();
+            const { players } = state;
             const shooter = players[playerId];
-            return Object.values(bombs).filter(bomb => isHit(shooter, bomb));
+            return getBombList(state).filter(bomb => isHit(shooter, bomb));
         })
         .flatMap((bombs) => bombs.map(bombDetonate));
 
-const bombPlayerLeaves = (action$, store) =>
+const bombPlayerLeaves = (
+    // $FlowFixMe
+    action$,
+    store: Store
+) =>
     action$
         .filter(({ type }) =>
             type === 'PLAYER_SIGN_OUT_REQUEST' ||
             type === 'DISCONNECTION_REQUESTED'
         )
-        .map(({ data: { playerId } }) => store.getState().bombs[playerId])
+        .map(({ data: { playerId } }) => getBombs(store.getState())[playerId])
         .filter(bomb => bomb)
         .map(bombDetonate);
 
 // explode when other explosions hit this bomb
-export const explosionsBombsExplosions = (action$, store: Store) =>
+export const explosionsBombsExplosions = (
+    // $FlowFixMe
+    action$,
+    store: Store
+) =>
     action$
         .ofType('EXPLOSION_ADDED')
         .delay(250)
         .flatMap(({ data: { x, y, size } }) =>
-            Object
-                .values(store.getState().bombs)
+            getBombList(store.getState())
                 .filter(({ x: bombX, y: bombY }) =>
                     pointCircleCollision([bombX, bombY], [x, y], size/2)
                 )
