@@ -91,7 +91,6 @@ export const hits = (action$, store: Store) =>
             })
         );
 
-
 export const hitsNewPlayerState = (action$, store: Store) =>
     action$
         .ofType('HIT')

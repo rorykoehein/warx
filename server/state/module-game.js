@@ -2,6 +2,7 @@
 
 import 'rxjs';
 import { combineEpics } from 'redux-observable';
+import { createSelector } from 'reselect';
 import rules from '../shared/default-rules';
 import { toList } from '../shared/helpers';
 import { getRandomPosition, replacePlayerProps } from "./helpers";
@@ -146,6 +147,11 @@ export const getPlayerById = (state, id: ?PlayerId): ?Player =>
     (id !== null && id !== undefined) ? getPlayers(state)[id] : null;
 export const getSignedInPlayers = (state): PlayerList =>
     toList(state.players).filter(player => player.isSignedIn);
+
+export const getAlivePlayers = createSelector(
+    getPlayers,
+    (players: Players): PlayerList => toList(players).filter(player => player.alive)
+);
 
 // epics
 export const spawnJoins = (action$: ActionInterface, store: Store) =>

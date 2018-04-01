@@ -4,7 +4,7 @@ import 'rxjs';
 import { combineEpics } from 'redux-observable';
 import loop from '../shared/loop';
 import { replacePlayerProps } from "./helpers";
-import { getPlayerById, getRules } from "./module-game";
+import { getAlivePlayers, getPlayerById, getRules } from "./module-game";
 
 import type { State as FullState, ActionInterface } from './types';
 import type { Store } from '../../client/src/types/framework';
@@ -12,6 +12,7 @@ import type {
     Player, Direction, Rules,
     PlayerId
 } from '../../client/src/types/game';
+import {Observable} from "rxjs/Observable";
 
 const calculateMovement = (
     startX: number, startY: number, startTime: number, endTime: number, rules: Rules, direction: Direction
@@ -43,13 +44,6 @@ const canMove = (player: Player, direction: Direction, rules: Rules): boolean =>
         (direction === 'down' && y + moveDistance < worldHeight);
 };
 
-// actions
-// export const doThing = (): ActionType => ({
-//      type: 'THING_DONE',
-//      origin: 'client',
-//      data: {}
-// });
-
 // reducer
 export const reducer = (state: FullState, action: ActionInterface): FullState => {
     switch (action.type) {
@@ -62,19 +56,21 @@ export const reducer = (state: FullState, action: ActionInterface): FullState =>
         }
 
         case 'MOVE_STOPPED': {
-            const { data: { direction, playerId } } = action;
+            const { data: { direction, playerId, time } } = action;
             return replacePlayerProps(state, playerId, {
                 direction,
                 isMoving: false,
+                lastMove: time,
             });
         }
 
         case 'MOVE_TO': {
-            const { data: { direction, playerId, x, y } } = action;
+            const { data: { direction, playerId, x, y, time } } = action;
             return replacePlayerProps(state, playerId, {
                 direction,
                 x,
                 y,
+                lastMove: time,
             });
         }
 
@@ -114,17 +110,19 @@ const moves = (action$, store: Store) => action$
                         playerId,
                         x,
                         y,
+                        time: endTime,
                     }
                 } : {
                     type: 'MOVE_STOPPED',
                     origin: 'server',
-                    sendToClient: true,
-                    toAll: true,
+                    sendToClient: false,
+                    toAll: false,
                     data: {
                         playerId,
                         direction,
                         x: player.x,
                         y: player.y,
+                        time: endTime,
                     },
                 };
             })
@@ -147,25 +145,28 @@ const moveStarts = (action$, store: Store) => action$
     .filter(({ player }) => player)
     .flatMap(({ direction, player, playerId }: { direction: Direction, player: Player, playerId: PlayerId }) => {
         // stop any current movement
+        const time = Number(Date.now());
         return [{
             type: 'MOVE_STOPPED',
             origin: 'server',
-            sendToClient: true,
-            toAll: true,
+            sendToClient: false,
+            toAll: false,
             data: {
                 playerId,
                 direction: player.direction,
+                time: time,
             },
         }, {
             type: 'MOVE_STARTED',
             origin: 'server',
-            sendToClient: true,
-            toAll: true,
+            sendToClient: false,
+            toAll: false,
             data: {
                 playerId,
                 direction,
                 x: player.x,
                 y: player.y,
+                time: time,
             },
         }];
     });
@@ -183,40 +184,44 @@ const moveStops = (action$, store: Store) => action$
         return {
             type: 'MOVE_STOPPED',
             origin: 'server',
-            sendToClient: true,
-            toAll: true,
+            sendToClient: false,
+            toAll: false,
             data: {
                 playerId,
                 direction,
                 x: player.x,
                 y: player.y,
+                time: Number(Date.now()),
             },
         };
     });
 
-// todo: or just loop every 1000ms and send all the player x/y which have moved since the last iteration using lastMove
+const loopLength = 50;
+let lastTime = Number(Date.now());
+const slowLoop = Observable.interval(loopLength);
 const moveSyncs = (action$, store: Store) => action$
-    .ofType('MOVE_TO')
-    .groupBy(payload => payload.data.playerId)
-    .flatMap(group => group
-        .throttleTime(store.getState().rules.syncTime)
-        .map(payload => {
-            const { direction, playerId, x, y, step } = payload.data;
-            return {
-                data: {
-                    direction,
-                    playerId,
-                    x,
-                    y,
-                    step,
-                },
-                type: 'MOVE_SYNC',
+    .ofType('GAME_STARTED')
+    .flatMap(() =>
+            slowLoop
+            .map(() => {
+                const thisTime = lastTime;
+                lastTime = Number(Date.now());
+                return getAlivePlayers(store.getState())
+                    .filter(player => player.lastMove && player.lastMove > thisTime)
+                    .reduce((acc, { id, x, y, direction }) => ({
+                        ...acc,
+                        [id]: { x, y, direction }
+                    }), {});
+            })
+            .filter(moves => Object.keys(moves).length > 0)
+            .map(moves => ({
+                data: moves,
+                type: 'MOVE_SYNCS',
                 origin: 'server',
                 sendToClient: true,
                 toAll: true,
-            };
-        })
-    );
+            }))
+        );
 
 export const epic = combineEpics(
     moves,
