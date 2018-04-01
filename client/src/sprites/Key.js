@@ -13,6 +13,6 @@ export default styled.div`
     line-height: 1em;
     padding: ${(size - textSize)/ 2}rem;
     text-align: center;
-    margin-right: 1rem;
+    margin: 0 0.5rem;
     text-transform: uppercase;
 `;

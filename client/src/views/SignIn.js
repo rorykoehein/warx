@@ -69,6 +69,9 @@ class SignIn extends PureComponent<Props, State> {
                             <KeyInstruction instruction="Shoot">
                                 <Key>Space</Key>
                             </KeyInstruction>
+                            <KeyInstruction instruction="Drop & Detonate Bomb">
+                                <Key>B</Key> & <Key>N</Key>
+                            </KeyInstruction>
                             <KeyInstruction instruction="Toggle highscores">
                                 <Key>H</Key>
                             </KeyInstruction>

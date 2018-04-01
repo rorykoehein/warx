@@ -4,13 +4,32 @@ import { combineEpics } from 'redux-observable';
 import { getRules } from './module-game';
 import { hit } from './module-hits';
 import type { PlayerId } from '../../client/src/types/game';
+import type {Store} from "../../client/src/types/framework";
 
 // other modules may this module when players are hit, bombs explode, etc.
 // if any player is located within the radius of an explosion, that player will
 // be 'hit', which will cause another explosion
 
+type Point = [number, number]; // x, y tuple
+
+type ExplosionData = {
+    +id: string,
+    +x: number,
+    +y: number,
+    +size: number,
+    +causedBy: PlayerId,
+}
+
+type ExplosionAction = {
+    +type: 'EXPLOSION_ADDED',
+    +origin: 'server',
+    +sendToClient: true,
+    +toAll: true,
+    +data: ExplosionData
+};
+
 // helpers
-const pointCircleCollision = (point, circle, radius) => {
+export const pointCircleCollision = (point: Point, circle: Point, radius: number) => {
     if (radius === 0) return false;
     const dx = circle[0] - point[0];
     const dy = circle[1] - point[1];
@@ -19,8 +38,7 @@ const pointCircleCollision = (point, circle, radius) => {
 
 // actions
 export const addExplosion = (
-    { id, x, y, size, causedBy }: { id: number, x: number, y: number, size: number, causedBy: PlayerId }) =>
-    ({
+    { id, x, y, size, causedBy }: ExplosionData): ExplosionAction => ({
         type: 'EXPLOSION_ADDED',
         origin: 'server',
         sendToClient: true,
@@ -35,8 +53,11 @@ export const addExplosion = (
     });
 
 // epics
-export const hitsExplosions = (action$, store: Store) => {
-    return action$
+export const hitsExplosions = (
+    // $FlowFixMe
+    action$,
+    store: Store
+) => action$
         .ofType('HIT')
         .flatMap(({ data: { shooter, hits } }) => {
             const players = store.getState().players;
@@ -46,12 +67,15 @@ export const hitsExplosions = (action$, store: Store) => {
                 return addExplosion({ id: playerId, x: player.x, y: player.y, size, causedBy: shooter });
             });
         });
-};
 
-export const explosionsHits = (action$, store: Store) => {
-    return action$
+export const explosionsHits = (
+    // $FlowFixMe
+    action$,
+    store: Store
+) =>
+    action$
         .ofType('EXPLOSION_ADDED')
-        .delay(100)
+        .delay(250)
         .map(({ data: { x, y, size, causedBy } }) => {
             const players = store.getState().players;
             const collisions = Object.keys(players).filter(id => {
@@ -61,7 +85,6 @@ export const explosionsHits = (action$, store: Store) => {
             return hit({ hits: collisions, shooter: causedBy });
         })
         .filter(({ data: { hits } }) => hits.length > 0);
-};
 
 export const epic = combineEpics(
     hitsExplosions,

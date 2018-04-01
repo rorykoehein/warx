@@ -4,8 +4,8 @@ import { combineEpics } from 'redux-observable';
 import { Observable } from 'rxjs/Observable';
 import defaultRules from '../shared/default-rules';
 import { sendAction } from "../socket";
-
-import type { Store } from '../types/framework';
+import {isSignedIn} from "./module-players";
+import type { Store, ActionInterface } from '../types/framework';
 import type { State, Rules } from '../types/game';
 
 // local types
@@ -49,25 +49,21 @@ export const initialState = {
 };
 
 // actions
-export const keyDown = ({ key }: { key: string }): KeyDownAction => {
-    return {
-        type: 'KEY_DOWN',
-        origin: 'client',
-        data: {
-            key
-        }
-    };
-};
+export const keyDown = ({ key }: { key: string }): KeyDownAction => ({
+    type: 'KEY_DOWN',
+    origin: 'client',
+    data: {
+        key
+    }
+});
 
-export const keyUp = ({ key }: { key: string }): KeyUpAction => {
-    return {
-        type: 'KEY_UP',
-        origin: 'client',
-        data: {
-            key
-        }
-    };
-};
+export const keyUp = ({ key }: { key: string }): KeyUpAction => ({
+    type: 'KEY_UP',
+    origin: 'client',
+    data: {
+        key
+    }
+});
 
 // reducer
 export const reducer = (state: State, action: Action): State => {
@@ -94,41 +90,29 @@ export const reducer = (state: State, action: Action): State => {
 };
 
 // selectors
-// ping latency
 export const getLatency = (state: State) => state.latency;
-
-// rules
 export const getRules = (state: State): Rules => state.rules || defaultRules;
 
-
 // epics
-
-/**
- * search products epic
- * @param action$
- * @returns {any|*|Observable}
- */
 // todo: remove this automated stuff, in favor of explicit server actions for now
-const sendToServer = (action$) => {
-    return action$
+const sendToServer = (action$) =>
+    action$
         .filter(action => action.origin === 'client' && action.sendToServer === true)
         .do(action => {
             sendAction(action);
         })
         .ignoreElements();
-};
 
-const connected = (action$) => {
+const connected = (action$) =>
     // todo this time needs to come from the server
-    return action$
+    action$
         .ofType('CONNECTED')
         .switchMap(() =>
             Observable.timer(0, 30000) // todo add ping time to config/rules
                 .takeUntil(action$.ofType('DISCONNECTED'))
                 .map(() => ({ type: 'PING', origin: 'client', data: { sendTime: new Date() } }))
                 .do(action => sendAction(action))
-        )
-};
+        );
 
 // todo: pings should go the other way, clients should not send their own ping
 const pings = (action$, store: Store) =>
@@ -151,6 +135,18 @@ const pings = (action$, store: Store) =>
                     origin: 'client',
                 })
         ).do(action => sendAction(action));
+
+
+export type KeyActionMap = {
+    [key: string]: () => ActionInterface
+};
+
+export const createKeyHandlerEpic = (keyActionMap: KeyActionMap, down: boolean = true) =>
+    (action$, store) =>
+        action$
+            .ofType(down ? 'KEY_DOWN' : 'KEY_UP')
+            .filter(({ data: { key } }) => keyActionMap[key] && isSignedIn(store.getState()))
+            .map(({ data: { key } }) => keyActionMap[key]());
 
 export const epic = combineEpics(
     sendToServer,

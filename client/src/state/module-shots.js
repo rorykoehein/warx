@@ -5,7 +5,7 @@ import { Observable } from 'rxjs/Observable';
 import { combineEpics } from 'redux-observable';
 import { sendAction } from '../socket';
 import { toList } from '../shared/helpers';
-
+import { createKeyHandlerEpic } from "./module-game";
 import type { Store } from '../types/framework';
 import type { State, PlayerId } from '../types/game';
 import type { ActionOrigin } from '../types/framework';
@@ -49,57 +49,51 @@ type ShotRequestAction = {
 type Action = SelfShotFireAction | ShotFireAction | ShotCoolAction | WeaponReloadAction | ShotRequestAction;
 
 // initial state
-const initialState = {
+export const initialState = {
     shots: {},
 };
 
 // actions
 
 // to be used from the UI
-export const selfShotFire = (): SelfShotFireAction => {
-    return {
-        type: 'SELF_SHOT_FIRED',
-        origin: 'client',
-    };
-};
+export const selfShotFire = (): SelfShotFireAction => ({
+    type: 'SELF_SHOT_FIRED',
+    origin: 'client',
+    data: {},
+    sendToServer: false,
+});
 
 // to receive from server
-export const shotFire = (payload : { playerId: PlayerId, origin: ActionOrigin }): ShotFireAction => {
-    return {
-        type: 'SHOT_FIRED',
-        origin: payload.origin,
-        data: {
-            playerId: payload.playerId,
-        }
-    };
-};
+export const shotFire = (payload : { playerId: PlayerId, origin: ActionOrigin }): ShotFireAction => ({
+    type: 'SHOT_FIRED',
+    origin: payload.origin,
+    data: {
+        playerId: payload.playerId,
+    }
+});
 
-export const weaponReload = ({ playerId } : { playerId: PlayerId }): WeaponReloadAction => {
-    return {
-        type: 'WEAPON_RELOADED',
-        origin: 'client',
-        data: {
-            playerId,
-        }
-    };
-};
+export const weaponReload = ({ playerId } : { playerId: PlayerId }): WeaponReloadAction => ({
+    type: 'WEAPON_RELOADED',
+    origin: 'client',
+    data: {
+        playerId,
+    }
+});
 
 // to send to server
-export const shotFireToServer = (): ShotRequestAction => {
-    return {
-        type: 'SHOT_REQUESTED',
-    };
-};
+export const shotFireToServer = (): ShotRequestAction => ({
+    type: 'SHOT_REQUESTED',
+    origin: 'client',
+    data: {}
+});
 
-export const shotCool = ({ playerId } : { playerId: PlayerId }): ShotCoolAction => {
-    return {
-        type: 'SHOT_COOLED',
-        origin: 'client',
-        data: {
-            playerId,
-        }
-    };
-};
+export const shotCool = ({ playerId } : { playerId: PlayerId }): ShotCoolAction => ({
+    type: 'SHOT_COOLED',
+    origin: 'client',
+    data: {
+        playerId,
+    }
+});
 
 // reducer
 export const reducer = (state: State, action: Action): State => {
@@ -161,9 +155,8 @@ export const getShots = (state: State) => state.shots;
 export const getShotsList = (state: State) => toList(getShots(state));
 
 // epics
-const selfShots = (action$, store: Store) => {
-    // todo this time needs to come from the server
-    return action$
+const selfShots = (action$, store: Store) =>
+    action$
         .ofType('SELF_SHOT_FIRED')
         .throttle(() => Observable.interval(store.getState().rules.reloadTime))
         .map(() => {
@@ -175,27 +168,24 @@ const selfShots = (action$, store: Store) => {
                 origin: 'client'
             })
         })
-        .do(() => {
-            // tell the server about this client initiated action
-            sendAction(shotFireToServer());
-        })
-};
+        .do(() => sendAction(shotFireToServer()));
 
-const shots = (action$, store: Store) => {
-    return action$
+const shots = (action$, store: Store) =>
+    action$
         .ofType('SHOT_FIRED')
         .delayWhen(() => Observable.timer(store.getState().rules.coolTime))
         .map(({ data: { playerId } }) => shotCool({ playerId }));
-};
 
-const reloads = (action$, store: Store) => {
-    return action$
+const reloads = (action$, store: Store) =>
+    action$
         .ofType('SHOT_FIRED')
         .delayWhen(() => Observable.timer(store.getState().rules.reloadTime))
         .map(({ data: { playerId } }) => weaponReload({ playerId }));
-};
+
+const keyDownShots = createKeyHandlerEpic({ ' ': selfShotFire }, true);
 
 export const epic = combineEpics(
+    keyDownShots,
     selfShots,
     shots,
     reloads,
