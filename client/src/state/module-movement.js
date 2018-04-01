@@ -22,14 +22,15 @@ type MoveToAction = {
     }
 };
 
-type MoveSyncAction = {
-    +type: 'MOVE_SYNC',
+type MoveSyncsAction = {
+    +type: 'MOVE_SYNCS',
     +origin: ActionOrigin,
     +data: {
-        +playerId: PlayerId,
-        +direction: Direction,
-        +x: number,
-        +y: number,
+        [playerId: PlayerId]: {
+            +direction: Direction,
+            +x: number,
+            +y: number,
+        }
     }
 };
 
@@ -43,7 +44,7 @@ type MoveStoppedAction = {
     }
 };
 
-type Action = MoveToAction | MoveSyncAction | MoveStoppedAction;
+type Action = MoveToAction | MoveSyncsAction | MoveStoppedAction;
 
 // actions
 // to be used from the UI
@@ -107,35 +108,16 @@ export const reducer = (state: State, action: Action): State => {
             if (!moves) return state;
 
             const oldPlayers = state.players;
-            const replacePlayers = moves.reduce((acc, move) => ({
-                ...acc,
-                [move.id]: {
-                    ...players[move.id],
-                    ...move,
-                }
-            }), oldPlayers);
+            const replacePlayers = Object
+                .entries(moves)
+                .reduce((acc, [id, move]) => ({
+                    ...acc,
+                    [id]: { ...players[id], ...move }
+                }), oldPlayers);
 
             return {
                 ...state,
                 players: replacePlayers,
-            };
-        }
-
-        case 'MOVE_SYNC': {
-            const {data: {playerId, x, y, direction}} = action;
-            const player = players[playerId];
-            if (!player) return state;
-            return {
-                ...state,
-                players: {
-                    ...players,
-                    [playerId]: {
-                        ...player,
-                        x,
-                        y,
-                        direction,
-                    },
-                },
             };
         }
 

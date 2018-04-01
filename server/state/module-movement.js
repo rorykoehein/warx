@@ -44,13 +44,6 @@ const canMove = (player: Player, direction: Direction, rules: Rules): boolean =>
         (direction === 'down' && y + moveDistance < worldHeight);
 };
 
-// actions
-// export const doThing = (): ActionType => ({
-//      type: 'THING_DONE',
-//      origin: 'client',
-//      data: {}
-// });
-
 // reducer
 export const reducer = (state: FullState, action: ActionInterface): FullState => {
     switch (action.type) {
@@ -203,30 +196,6 @@ const moveStops = (action$, store: Store) => action$
         };
     });
 
-// todo: or just loop every 1000ms and send all the player x/y which have moved since the last iteration using lastMove
-// const moveSyncs = (action$, store: Store) => action$
-//     .ofType('MOVE_TO')
-//     // .groupBy(payload => payload.data.playerId)
-//     .flatMap(group => group
-//         .throttleTime(store.getState().rules.syncTime)
-//         .map(payload => {
-//             const { direction, playerId, x, y, step } = payload.data;
-//             return {
-//                 data: {
-//                     direction,
-//                     playerId,
-//                     x,
-//                     y,
-//                     step,
-//                 },
-//                 type: 'MOVE_SYNC',
-//                 origin: 'server',
-//                 sendToClient: true,
-//                 toAll: true,
-//             };
-//         })
-//     );
-
 const loopLength = 50;
 let lastTime = Number(Date.now());
 const slowLoop = Observable.interval(loopLength);
@@ -235,19 +204,16 @@ const moveSyncs = (action$, store: Store) => action$
     .flatMap(() =>
             slowLoop
             .map(() => {
-                const players = getAlivePlayers(store.getState());
                 const thisTime = lastTime;
                 lastTime = Number(Date.now());
-                return players
+                return getAlivePlayers(store.getState())
                     .filter(player => player.lastMove && player.lastMove > thisTime)
-                    .map(player => ({
-                        direction: player.direction,
-                        x: player.x,
-                        y: player.y,
-                        id: player.id,
-                    }));
+                    .reduce((acc, { id, x, y, direction }) => ({
+                        ...acc,
+                        [id]: { x, y, direction }
+                    }), {});
             })
-            .filter(moves => moves.length > 0)
+            .filter(moves => Object.keys(moves).length > 0)
             .map(moves => ({
                 data: moves,
                 type: 'MOVE_SYNCS',
